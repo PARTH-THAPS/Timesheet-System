@@ -1,14 +1,29 @@
 # Build output
 /build/
 /dist/
+**/build/
+**/dist/
 
 # NetBeans private settings
-/nbproject/private/
+**/nbproject/private/
+
+# GlassFish generated files
 /glassfish/
 
 # Logs
 *.log
 
+# Compiled files
+*.class
+
+# Java artifacts
+*.jar
+*.war
+*.ear
+
 # macOS
 .DS_Store
-.settings
+**/.DS_Store
+
+# IDE settings
+.settings/
