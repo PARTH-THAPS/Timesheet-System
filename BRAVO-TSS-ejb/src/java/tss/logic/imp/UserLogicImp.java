@@ -20,10 +20,7 @@ import tss.entity.Person;
 import tss.logic.UserLogic;
 import tss.dto.User;
 
-/**
- *
- * @author parth
- */
+
 
 @Stateless
 @DeclareRoles({UserLogic.USER_ROLE,UserLogic.ADMIN_ROLE})
