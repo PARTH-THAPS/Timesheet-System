@@ -8,7 +8,10 @@ import jakarta.ejb.Remote;
 import tss.entity.Person;
 import tss.dto.User;
 
-
+/**
+ *
+ * @author parth
+ */
 @Remote
 public interface UserLogic {
     public static final  String USER_ROLE="User" ;

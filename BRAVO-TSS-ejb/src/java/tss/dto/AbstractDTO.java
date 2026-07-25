@@ -10,7 +10,10 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Objects;
 
-
+/**
+ *
+ * @author parth
+ */
 public class AbstractDTO implements Serializable {
     private static final long serialVersionUID = 5231885890948093876L;
 

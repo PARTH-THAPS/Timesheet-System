@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/jeewa-2026-bravo/BRAVO-TSS-ejb/src/java/tss/dao/PersonDao.java</file>
+            <file>file:/C:/jeewa-2026-bravo/BRAVO-TSS-ejb/src/java/tss/dto/AbstractDTO.java</file>
+            <file>file:/C:/jeewa-2026-bravo/BRAVO-TSS-ejb/src/java/tss/dto/User.java</file>
+            <file>file:/C:/jeewa-2026-bravo/BRAVO-TSS-ejb/src/java/tss/entity/AbstractEntity.java</file>
+            <file>file:/C:/jeewa-2026-bravo/BRAVO-TSS-ejb/src/java/tss/entity/Person.java</file>
+            <file>file:/C:/jeewa-2026-bravo/BRAVO-TSS-ejb/src/java/tss/entity/Role.java</file>
+            <file>file:/C:/jeewa-2026-bravo/BRAVO-TSS-ejb/src/java/tss/logic/UserLogic.java</file>
+            <file>file:/C:/jeewa-2026-bravo/BRAVO-TSS-ejb/src/java/tss/logic/imp/UserLogicImp.java</file>
+        </group>
+    </open-files>
+</project-private>

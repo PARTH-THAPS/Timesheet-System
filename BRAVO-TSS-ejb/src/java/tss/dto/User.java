@@ -4,6 +4,10 @@
  */
 package tss.dto;
 
+/**
+ *
+ * @author parth
+ */
 public class User extends AbstractDTO {
      private static final long serialVersionUID = 282980014285470000L;
 

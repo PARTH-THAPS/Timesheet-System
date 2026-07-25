@@ -7,7 +7,10 @@ package tss.web.i18n;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 
-
+/**
+ *
+ * @author parth
+ */
 @Named
 @RequestScoped
 public class Messages {

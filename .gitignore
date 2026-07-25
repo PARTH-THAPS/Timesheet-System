@@ -1,29 +1,16 @@
 # Build output
 /build/
 /dist/
-**/build/
-**/dist/
 
 # NetBeans private settings
-**/nbproject/private/
-
-# GlassFish generated files
+/nbproject/private/
 /glassfish/
 
 # Logs
 *.log
 
-# Compiled files
-*.class
-
-# Java artifacts
-*.jar
-*.war
-*.ear
-
 # macOS
 .DS_Store
-**/.DS_Store
-
-# IDE settings
-.settings/
+.settings
+/BRAVO-TSS-ejb/build/
+/BRAVO-TSS-ejb/dist/
