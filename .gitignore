@@ -1,0 +1,14 @@
+# Build output
+/build/
+/dist/
+
+# NetBeans private settings
+/nbproject/private/
+/glassfish/
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+.settings
