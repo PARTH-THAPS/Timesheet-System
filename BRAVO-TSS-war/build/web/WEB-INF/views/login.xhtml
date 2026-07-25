@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns:b="http://bootsfaces.net/ui"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:param name="pageHeadline" value="${msg.loginPageHeadline}"/>
+    <ui:define name="content">
+        
+           
+        <form class="form form-horizontal" role="form" method="post" action="j_security_check" name="loginForm">
+            <div class="field grid align-items-baseline">
+                <label class="ui-outputlabel ui-widget col-2 ui-required" for="username">
+                    <span class="ui-outputlabel-label">${msg.loginUsernameLabel}</span>
+                    <span class="ui-outputlabel-rfi">*</span>
+                </label>
+                <input id="username" name="j_username" type="text"
+                       class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1 ui-state-filled" aria-required="true"
+                       placeholder="${msg.loginUsernamePlaceholder}"/>
+            </div>
+
+            <div class="field grid align-items-baseline">
+                <label class="ui-outputlabel ui-widget col-2 ui-required" for="password">
+                    <span class="ui-outputlabel-label">${msg.loginPasswordLabel}</span>
+                    <span class="ui-outputlabel-rfi">*</span>
+                </label>
+                <input id="password" name="j_password" type="password"
+                       class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1 ui-state-filled" aria-required="true"
+                       placeholder="${msg.loginPasswordPlaceholder}"/>
+            </div>
+
+            <button id="loginButton"
+                    class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left"
+                    type="submit">
+                <span class="ui-button-icon-left ui-icon ui-c pi pi-sign-in"></span>
+                <span class="ui-button-text ui-c">${msg.loginButtonLabel}</span>
+            </button>
+        </form>
+
+        <!--
+        this page is also registered as login error page in web.xml
+        show error message only if j_username parameter is set
+        (this happens after a failed login attempt)
+        -->
+       
+    </ui:define>
+</ui:composition>
