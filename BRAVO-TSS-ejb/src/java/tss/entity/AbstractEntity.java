@@ -1,4 +1,7 @@
-
+/*
+ * (C) Dr. Volker Riediger - Jakarta EE Web Applications
+ * University of Koblenz - Faculty 4: Computer Science
+ */
 package tss.entity;
 
 import jakarta.persistence.Column;
