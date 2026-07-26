@@ -12,11 +12,6 @@ glassfish/
 # Compiled Java files
 *.class
 
-# Java archives
-*.jar
-*.war
-*.ear
-
 # Logs
 *.log
 
@@ -28,3 +23,4 @@ glassfish/
 # OS files
 .DS_Store
 Thumbs.db
+
