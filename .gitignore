@@ -24,5 +24,3 @@ glassfish/
 .DS_Store
 Thumbs.db
 
-# Keep project libraries
-# (do not ignore lib/*.jar)

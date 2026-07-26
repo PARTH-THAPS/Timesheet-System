@@ -12,6 +12,8 @@ import jakarta.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -23,6 +25,7 @@ public class Person extends AbstractEntity  implements Serializable  {
     @Column(unique = true)
     private String emailAddress;
     private boolean consent;
+    
     @Column(nullable=false)
     private String password; 
 
@@ -31,10 +34,12 @@ public class Person extends AbstractEntity  implements Serializable  {
     
     @OneToMany(mappedBy="person")
     private List<Contract> contract;
-   
+
+  
     public Person() {
      
     }
+
     public String getFirstName() {
         return firstName;
     }
