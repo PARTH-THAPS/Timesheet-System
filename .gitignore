@@ -1,18 +1,28 @@
-# Build output
-/build/
-/dist/
+# NetBeans generated files
+**/nbproject/private/
 
-# NetBeans private settings
-/nbproject/private/
-/glassfish/
+# Build output
+**/build/
+**/dist/
+
+# GlassFish generated deployment
+**/gfdeploy/
+glassfish/
+
+# Compiled Java files
+*.class
 
 # Logs
 *.log
 
-# macOS
+# IDE settings
+.settings/
+.idea/
+*.iml
+
+# OS files
 .DS_Store
-.settings
-/BRAVO-TSS-war/build/
-/BRAVO-TSS-war/dist/
-/BRAVO-TSS-ejb/dist/
-/BRAVO-TSS-ejb/build/
+Thumbs.db
+
+# Keep project libraries
+# (do not ignore lib/*.jar)
