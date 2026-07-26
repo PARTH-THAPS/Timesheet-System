@@ -8,8 +8,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -21,18 +23,18 @@ public class Person extends AbstractEntity  implements Serializable  {
     @Column(unique = true)
     private String emailAddress;
     private boolean consent;
-    
-    
     @Column(nullable=false)
     private String password; 
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    
+    @OneToMany(mappedBy="person")
+    private List<Contract> contract;
    
     public Person() {
      
     }
-    
     public String getFirstName() {
         return firstName;
     }
