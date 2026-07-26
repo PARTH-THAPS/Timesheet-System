@@ -12,3 +12,7 @@
 # macOS
 .DS_Store
 .settings
+/BRAVO-TSS-war/build/
+/BRAVO-TSS-war/dist/
+/BRAVO-TSS-ejb/dist/
+/BRAVO-TSS-ejb/build/
