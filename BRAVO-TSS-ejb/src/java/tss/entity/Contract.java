@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import java.time.LocalDate;
 
 /**
@@ -17,8 +19,9 @@ import java.time.LocalDate;
  */
 
 @Entity
+@NamedQueries({@NamedQuery( name ="getUserByEmail",query="SELECT p from Person p WHERE p.emailAddress=:emailAddress ")})
 public class Contract extends AbstractEntity {
-    
+ 
     
     @Enumerated(EnumType.STRING)
     private ContractStatus status; 
