@@ -27,7 +27,7 @@ import tss.logic.PersonLogic;
 @Stateless
 @LocalBean
 @Path("v1/person")
-public class RestEndpoint {
+public class PersonRestEndpoint {
     @EJB
     private PersonLogic personLogic;
 
