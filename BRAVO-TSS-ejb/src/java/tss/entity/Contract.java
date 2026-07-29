@@ -49,7 +49,7 @@ public class Contract extends AbstractEntity {
     }
 
     
-    Contract()
+    public Contract()
     {
     
     }
