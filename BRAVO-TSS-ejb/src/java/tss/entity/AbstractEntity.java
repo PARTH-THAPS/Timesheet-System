@@ -23,7 +23,7 @@ public class AbstractEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @Column(unique = true, length = 36)
     private String uuid;
@@ -48,7 +48,7 @@ public class AbstractEntity implements Serializable {
         }
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
