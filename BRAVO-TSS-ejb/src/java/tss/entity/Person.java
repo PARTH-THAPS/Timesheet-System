@@ -33,7 +33,7 @@ public class Person extends AbstractEntity  implements Serializable  {
     private Role role;
     
     @OneToMany(mappedBy="person")
-    private List<Contract> contract;
+    private List<Contract> contract ;
 
   
     public Person() {
