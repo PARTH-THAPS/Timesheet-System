@@ -9,8 +9,8 @@ package tss.entity;
  * @author parth
  */
 public enum ContractStatus {
-    IN_PROGRESS,
-    SIGNED_BY_EMPLOYEE,
-    SIGNED_BY_SUPERVISOR,
+    PREPARED,
+    STARTED,
+    TERMINATED,
     ARCHIVED
 }
