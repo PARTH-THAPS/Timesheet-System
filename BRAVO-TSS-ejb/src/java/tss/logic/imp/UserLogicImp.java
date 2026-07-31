@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package tss.logic.imp;
 
 import jakarta.annotation.Resource;
@@ -19,11 +15,6 @@ import tss.dao.PersonDao;
 import tss.entity.Person;
 import tss.logic.UserLogic;
 import tss.dto.User;
-
-/**
- *
- * @author parth
- */
 
 @Stateless
 @DeclareRoles({UserLogic.USER_ROLE,UserLogic.ADMIN_ROLE})

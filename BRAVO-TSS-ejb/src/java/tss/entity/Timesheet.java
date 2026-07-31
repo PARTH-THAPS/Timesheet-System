@@ -1,20 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package tss.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-
-/**
- *
- * @author Tia Benny
- */
 
 @Entity
 public class Timesheet extends AbstractEntity {
@@ -23,14 +16,30 @@ public class Timesheet extends AbstractEntity {
     private TimesheetStatus status;
     private LocalDate startDate;
     private LocalDate endDate;
-    private double hoursDue;
+    private double hoursDue;                // Calculated
     private LocalDate signedByEmployee;
     private LocalDate signedBySupervisor;
+    
     @OneToMany(mappedBy = "timesheet")
     private List<TimesheetEntry> entries;
     
-    Timesheet(){
-        
+    @ManyToOne
+    private Contract contract;
+    
+    public Timesheet(LocalDate startDate, LocalDate endDate, Contract contract){
+            this.status = TimesheetStatus.IN_PROGRESS;
+            this.startDate = startDate;
+            this.endDate = endDate;
+            this.hoursDue = calculateHoursDue();
+            this.signedByEmployee = null;
+            this.signedBySupervisor = null;
+            this.entries = new ArrayList<>();
+            this.contract = contract;
+    }
+    
+    private double calculateHoursDue() {
+        //TODO: Implement
+        return 10;
     }
 
     public TimesheetStatus getStatus() {
@@ -45,24 +54,12 @@ public class Timesheet extends AbstractEntity {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
     public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
     public double getHoursDue() {
         return hoursDue;
-    }
-
-    public void setHoursDue(double hoursDue) {
-        this.hoursDue = hoursDue;
     }
 
     public LocalDate getSignedByEmployee() {
@@ -85,9 +82,13 @@ public class Timesheet extends AbstractEntity {
         return entries;
     }
 
-    public void setEntries(List<TimesheetEntry> entries) {
-        this.entries = entries;
+    public List<TimesheetEntry> addEntry(TimesheetEntry entry) {
+        this.entries.add(entry);
+        return entries;
     }
     
-    
+    public List<TimesheetEntry> removeEntry(TimesheetEntry entry) {
+        this.entries.remove(entry);
+        return entries;
+    }
 }
