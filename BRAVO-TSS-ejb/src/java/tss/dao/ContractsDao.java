@@ -1,18 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package tss.dao;
 
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 import tss.entity.Contract;
 
-/**
- *
- * @author parth
- */
 @Stateless
 public class ContractsDao {
     
@@ -34,16 +28,17 @@ public class ContractsDao {
           return em.merge(contract);
     }
     
-    public void deleteContract(long id)
+    public void deleteContract(Contract contract)
     {
-      Contract contract=em.find(Contract.class, id);
-      if(contract!=null)
-      {
       em.remove(contract);
-      }
     }
     
     
+    
+    public List<Contract> findAllContracts() {
+
+        return em.createNamedQuery("getAllContracts", Contract.class).getResultList();
+    }
     
     
     

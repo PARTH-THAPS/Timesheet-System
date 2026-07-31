@@ -1,11 +1,8 @@
-/* * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template */package tss.dto;
+package tss.dto;
 
 import java.time.LocalDate;
 import tss.entity.TimesheetFrequency;
 
-/**
- * * * @author Tia Benny
- */
 public class ContractDTO extends AbstractDTO {
 
     private String name;

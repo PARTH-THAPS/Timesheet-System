@@ -12,10 +12,7 @@ import tss.entity.Person;
 import tss.entity.Role;
 import util.PasswordHash;
 
-/**
- *
- * @author parth
- */
+
 @Stateless
 public class PersonLogicImp implements PersonLogic {
     
