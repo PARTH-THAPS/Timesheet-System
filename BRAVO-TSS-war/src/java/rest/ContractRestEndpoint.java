@@ -37,7 +37,6 @@ public class ContractRestEndpoint {
     public Contract createContract(ContractDTO contractDto) {
         Person person = personDao.findPerson(contractDto.getPersonId());    
     
-        //   LOGGER.log(Level.INFO, "ERROR WHICH IS {0}", contractDto.getPersonId());  
         return contractlogic.createContract(
                 contractDto.getName(), 
                 contractDto.getStartDate(), 

@@ -1,13 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package tss.dto;
 
-/**
- *
- * @author parth
- */
+
 public class PersonDTO extends AbstractDTO {
     private String firstName;
     private String lastName;

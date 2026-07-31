@@ -13,13 +13,10 @@ import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import java.time.LocalDate;
 
-/**
- *
- * @author parth
- */
+
 
 @Entity
-@NamedQueries({@NamedQuery( name ="getUserByEmail",query="SELECT p from Person p WHERE p.emailAddress=:emailAddress ")})
+@NamedQueries({@NamedQuery( name ="getAllContracts",query="SELECT c FROM Contract c")})
 public class Contract extends AbstractEntity {
  
     
