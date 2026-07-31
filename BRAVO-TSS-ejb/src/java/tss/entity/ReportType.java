@@ -9,8 +9,7 @@ package tss.entity;
  * @author Tia Benny
  */
 public enum ReportType {
-    VACATION,
     WORK,
+    VACATION,
     SICK_LEAVE
-    
 }

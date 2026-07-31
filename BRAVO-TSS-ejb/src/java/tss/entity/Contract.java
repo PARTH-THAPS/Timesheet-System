@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package tss.entity;
 
 import jakarta.persistence.Column;
@@ -10,11 +6,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
-
-/**
- *
- * @author parth
- */
 
 @Entity
 public class Contract extends AbstractEntity {
@@ -46,7 +37,7 @@ public class Contract extends AbstractEntity {
     }
 
     
-    Contract()
+    public Contract()
     {
     
     }

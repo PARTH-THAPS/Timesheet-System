@@ -1,6 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package tss.web.Bean;
 
 import jakarta.ejb.EJB;
@@ -9,59 +6,48 @@ import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.logging.Level;
 import tss.dto.User;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import tss.logic.UserLogic;
 
-/**
- *
- * @author parth
- */
-
 @Named
 @SessionScoped
-public class loginBean implements Serializable{
-    private static final long serialVersionUID=1L;
-    private static final Logger LOG=Logger.getLogger(loginBean.class.getName());
-    
-    
+public class loginBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(loginBean.class.getName());
+
     private User currentUser;
+    
     @EJB
     private UserLogic u;
-    public boolean isLoggedIn()
-    {
-         return true;
+
+    public boolean isLoggedIn() {
+        return true;
     }
-    
-    
- private Principal oldPrincipal = null;
- 
- public User getUser()
- {
- Principal p = FacesContext.getCurrentInstance()
+
+    private Principal oldPrincipal = null;
+
+    public User getUser() {
+        Principal p = FacesContext.getCurrentInstance()
                 .getExternalContext()
                 .getUserPrincipal();
- 
- if(p==null){
- currentUser=null;
- }
-  else {
+
+        if (p == null) {
+            currentUser = null;
+        } else {
             if (oldPrincipal == null || !p.getName().equals(oldPrincipal.getName())) {
-               currentUser=u.getCurrentUser();
-               LOG.log(Level.INFO, "Contacts: LOGIN user {0}", p.getName());
+                currentUser = u.getCurrentUser();
+                LOG.log(Level.INFO, "Contacts: LOGIN user {0}", p.getName());
             }
         }
         oldPrincipal = p;
         return currentUser;
- }
+    }
 
- 
- 
- public void invalidateSession()
- {
- LOG.log(Level.INFO, "invalidateSession()");
+    public void invalidateSession() {
+        LOG.log(Level.INFO, "invalidateSession()");
         Principal p = FacesContext.getCurrentInstance()
                 .getExternalContext()
                 .getUserPrincipal();
@@ -73,15 +59,11 @@ public class loginBean implements Serializable{
         FacesContext.getCurrentInstance()
                 .getExternalContext()
                 .invalidateSession();
- }
- 
- 
-public void logout()
-{
-invalidateSession();
-FacesContext.getCurrentInstance().responseComplete();
+    }
 
-}
- 
-    
+    public void logout() {
+        invalidateSession();
+        FacesContext.getCurrentInstance().responseComplete();
+
+    }
 }

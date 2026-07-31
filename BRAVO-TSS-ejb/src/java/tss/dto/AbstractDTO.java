@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package tss.dto;
 
 import jakarta.json.bind.annotation.JsonbTransient;
@@ -10,10 +6,6 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- *
- * @author parth
- */
 public class AbstractDTO implements Serializable {
     private static final long serialVersionUID = 5231885890948093876L;
 
