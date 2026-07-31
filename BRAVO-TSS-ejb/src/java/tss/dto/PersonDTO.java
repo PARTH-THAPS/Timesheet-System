@@ -9,7 +9,7 @@ package tss.dto;
  * @author parth
  */
 public class PersonDTO extends AbstractDTO {
-      private String firstName;
+    private String firstName;
     private String lastName;
     private String emailAddress;
     private boolean consent;
