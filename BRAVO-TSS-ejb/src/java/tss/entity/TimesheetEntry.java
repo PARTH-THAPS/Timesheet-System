@@ -21,6 +21,9 @@ public class TimesheetEntry extends AbstractEntity {
     @ManyToOne
     private Timesheet timesheet;
     
+    public TimesheetEntry() {
+    }
+    
     public TimesheetEntry(ReportType type, String description, LocalTime startTime, LocalTime endTime, LocalDate entryDate, Timesheet timesheet){
         this.type = type;
         this.description = description;
