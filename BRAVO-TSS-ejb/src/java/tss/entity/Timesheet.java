@@ -26,6 +26,9 @@ public class Timesheet extends AbstractEntity {
     @ManyToOne
     private Contract contract;
     
+    public Timesheet() {
+    }
+    
     public Timesheet(LocalDate startDate, LocalDate endDate, Contract contract){
             this.status = TimesheetStatus.IN_PROGRESS;
             this.startDate = startDate;
