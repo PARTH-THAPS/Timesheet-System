@@ -31,6 +31,10 @@ public class TimesheetEntry extends AbstractEntity {
         calculateHours();
     }
     
+    public TimesheetEntry() {
+    
+    }
+    
     private void calculateHours() {
         if (startTime != null && endTime != null) {
             // TODO: Implement
