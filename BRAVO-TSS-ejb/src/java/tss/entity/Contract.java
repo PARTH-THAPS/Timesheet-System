@@ -11,7 +11,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.List;
 
 
 
@@ -34,8 +36,22 @@ public class Contract extends AbstractEntity {
     private int workingDaysPerWeek;
     private int vacationDaysPerYear;
     
+    
+    
     @ManyToOne
     private Person person;
+    
+    @OneToMany(mappedBy = "contract")
+    private List<Timesheet> timesheet;
+
+    public List<Timesheet> getTimesheet() {
+        return timesheet;
+    }
+
+    public void setTimesheet(List<Timesheet> timesheet) {
+        this.timesheet = timesheet;
+    }
+    
 
     public double getVacationHours() {
         return vacationHours;

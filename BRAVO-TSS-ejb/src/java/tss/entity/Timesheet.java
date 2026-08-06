@@ -26,8 +26,20 @@ public class Timesheet extends AbstractEntity {
     private double hoursDue;
     private LocalDate signedByEmployee;
     private LocalDate signedBySupervisor;
+    
     @OneToMany(mappedBy = "timesheet")
     private List<TimesheetEntry> entries;
+    
+    private Contract contract;
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
+    }
+    
     
     Timesheet(){
         
