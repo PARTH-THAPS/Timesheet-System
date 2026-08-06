@@ -13,7 +13,7 @@ public class HolidayDTO extends AbstractDTO {
     public HolidayDTO() {
     }
 
-    public HolidayDTO(Long id, String day, LocalDate date, String holiday, String state, int year) {
+    public HolidayDTO(String day, LocalDate date, String holiday, String state, int year) {
         this.day = day;
         this.date = date;
         this.holiday = holiday;

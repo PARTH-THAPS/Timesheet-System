@@ -21,7 +21,7 @@ public class PersonLogicImp implements PersonLogic {
     
 
     @Override
-    public Person CreatePerson(String firstName, String lastName, String emailAddress, boolean consent, String password, Role role) {
+    public Person createPerson(String firstName, String lastName, String emailAddress, boolean consent, String password, Role role) {
         Person person = new Person();
         person.setFirstName(firstName);
         person.setLastName(lastName);
@@ -33,5 +33,21 @@ public class PersonLogicImp implements PersonLogic {
         personDao.createPerson(person);
 
         return person;
+    }
+    
+    
+   @Override
+   public Person findPerson(Long id)
+    {
+    Person person= personDao.findPerson(id);
+    if(person==null)
+    {
+     throw new IllegalArgumentException(
+                "No Person found with id: " + id
+            );
+    
+    }
+    
+    return person;
     }
 }

@@ -8,12 +8,11 @@ import jakarta.ejb.Remote;
 import tss.entity.Person;
 import tss.entity.Role;
 
-/**
- *
- * @author parth
- */
 @Remote
 public interface PersonLogic {
  
-     Person CreatePerson(String firstName,String lastName, String emailAddress,boolean consent,String password,Role role);
+     Person createPerson(String firstName,String lastName, String emailAddress,boolean consent,String password,Role role);
+     Person findPerson(Long id);
+
+
 }
