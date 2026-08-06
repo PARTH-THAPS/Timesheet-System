@@ -14,7 +14,7 @@ import tss.entity.Contract;
 @Remote
 public interface ContractLogic {
 
-    Contract createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, LocalDate terminationDate, double hoursPerWeek, double vacationHours, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, Person person);
+    Contract createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, Person person);
 
     Contract updateContract(Contract updatedContract);
     
@@ -24,7 +24,7 @@ public interface ContractLogic {
     
     Contract updateContractStatus(Long contrcatId,ContractStatus contractStatus);
     
-    
+    void CheckForArchivedTimesheet (Contract contract);
     
 //    Contract PrintContract();
 
