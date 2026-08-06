@@ -16,12 +16,13 @@ public interface ContractLogic {
 
     Contract createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, LocalDate terminationDate, double hoursPerWeek, double vacationHours, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, Person person);
 
-    Contract updateContract(Long contractId, ContractStatus contractStatus, String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, LocalDate terminationDate, double hoursPerWeek, double vacationHours, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, Person person);
+    Contract updateContract(Contract updatedContract);
     
     void deleteContract(Long contractId);
     
+    Contract searchContract(Long contractId);
     
-    
+    Contract updateContractStatus(Long contrcatId,ContractStatus contractStatus);
     
     
     

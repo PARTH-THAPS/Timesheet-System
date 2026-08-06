@@ -34,7 +34,7 @@ public class Person extends AbstractEntity  implements Serializable  {
     private Role role;
     
     @OneToMany(mappedBy="person")
-    @JsonbTransient
+//    @JsonbTransient
     private List<Contract> contract ;
 
   

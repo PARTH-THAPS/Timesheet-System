@@ -33,14 +33,7 @@ public class ContractsDao {
       em.remove(contract);
     }
     
-    
-    
     public List<Contract> findAllContracts() {
-
         return em.createNamedQuery("getAllContracts", Contract.class).getResultList();
-    }
-    
-    
-    
-    
+    }       
 }

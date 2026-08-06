@@ -21,7 +21,6 @@ public List<Holiday> createHoliday(List<Holiday> holidays) {
     return holidayDao.createHoliday(holidays);
 }
     
-    
     @Override
     public List<Holiday> findByState(String state)
     {

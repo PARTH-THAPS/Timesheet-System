@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package rest;
 
 import jakarta.ejb.EJB;
@@ -17,17 +13,11 @@ import tss.entity.Person;
 import tss.entity.Role;
 import tss.logic.PersonLogic;
 
-/**
- *
- * @author parth
- */
-
-
-//Test API 
 @Stateless
 @LocalBean
 @Path("v1/person")
 public class PersonRestEndpoint {
+
     @EJB
     private PersonLogic personLogic;
 
@@ -35,9 +25,8 @@ public class PersonRestEndpoint {
     @Path("create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Person createPerson(PersonDTO  request) {
-
-        return personLogic.CreatePerson(
+    public PersonDTO createPerson(PersonDTO request) {
+        Person person = personLogic.createPerson(
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmailAddress(),
@@ -45,5 +34,17 @@ public class PersonRestEndpoint {
                 request.getPassword(),
                 Role.valueOf(request.getRole())
         );
+        return toDTO(person);
+    }
+
+    private PersonDTO toDTO(Person person) {
+        PersonDTO dto = new PersonDTO();
+        dto.setUuid(person.getUuid());
+        dto.setJpaVersion(person.getJpaVersion());
+        dto.setFirstName(person.getFirstName());
+        dto.setLastName(person.getLastName());
+        dto.setEmailAddress(person.getEmailAddress());
+        dto.setRole(person.getRole().name());
+        return dto;
     }
 }

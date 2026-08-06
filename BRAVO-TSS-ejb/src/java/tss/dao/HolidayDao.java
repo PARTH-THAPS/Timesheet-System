@@ -20,9 +20,9 @@ public class HolidayDao {
         return holidays;
     }
 
-    public List<Holiday> findByState(String state) {
+    public List<Holiday> findByState(String State) {
         try {
-            return em.createNamedQuery("getHolidayByState", Holiday.class).setParameter("State", state).getResultList();
+            return em.createNamedQuery("getHolidayByState", Holiday.class).setParameter("State", State).getResultList();
         } catch (NoResultException e) {
             return null;
         }
