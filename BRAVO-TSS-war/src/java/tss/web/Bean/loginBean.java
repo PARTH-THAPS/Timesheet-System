@@ -1,6 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package tss.web.Bean;
 
 import jakarta.ejb.EJB;
@@ -15,10 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import tss.logic.UserLogic;
 
-/**
- *
- * @author parth
- */
 
 @Named
 @SessionScoped

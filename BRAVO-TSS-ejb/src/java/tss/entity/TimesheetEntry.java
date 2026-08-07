@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package tss.entity;
 
 import jakarta.persistence.Entity;
@@ -11,10 +8,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-/**
- *
- * @author Tia Benny
- */
+
 @Entity
 public class TimesheetEntry extends AbstractEntity {
     
