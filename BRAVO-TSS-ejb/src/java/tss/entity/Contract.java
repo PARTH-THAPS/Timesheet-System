@@ -5,7 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class Contract extends AbstractEntity {
@@ -36,7 +38,17 @@ public class Contract extends AbstractEntity {
         this.vacationHours = vacationHours;
     }
 
-    
+    @OneToMany(mappedBy = "contract")
+    private List<Timesheet> timesheet;
+
+    public List<Timesheet> getTimesheet() {
+        return timesheet;
+    }
+
+    public void setTimesheet(List<Timesheet> timesheet) {
+        this.timesheet = timesheet;
+    }
+
     public Contract()
     {
     
