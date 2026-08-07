@@ -6,7 +6,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 import java.time.Duration;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -26,16 +25,6 @@ public class TimesheetEntry extends AbstractEntity {
     public TimesheetEntry() {
     }
     
-    public TimesheetEntry(ReportType type, String description, LocalTime startTime, LocalTime endTime, LocalDate entryDate, Timesheet timesheet){
-        this.type = type;
-        this.description = description;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.entryDate = entryDate;
-        this.timesheet = timesheet;
-        
-    }
-    
     @Transient
     public double getHours() {
         if (startTime != null && endTime != null) {
@@ -49,9 +38,6 @@ public class TimesheetEntry extends AbstractEntity {
     }
 
     public void setType(ReportType type) {
-        if (type == null) {
-            throw new IllegalArgumentException("Entry type must not be null");
-        }
         this.type = type;
     }
 
@@ -68,13 +54,7 @@ public class TimesheetEntry extends AbstractEntity {
     }
 
     public void setStartTime(LocalTime startTime) {
-        if (startTime == null) {
-            throw new IllegalArgumentException("startTime must not be null");
-        }
-        if (endTime != null && startTime.isAfter(endTime)) {
-            throw new IllegalArgumentException("startTime cannot be after endTime");
-        }
-        this.startTime = startTime;   
+        this.startTime = startTime;
     }
 
     public LocalTime getEndTime() {
@@ -82,12 +62,6 @@ public class TimesheetEntry extends AbstractEntity {
     }
 
     public void setEndTime(LocalTime endTime) {
-        if (endTime == null) {
-            throw new IllegalArgumentException("endTime must not be null");
-        }
-        if (startTime != null && endTime.isBefore(startTime)) {
-            throw new IllegalArgumentException("endTime cannot be before startTime");
-        }
         this.endTime = endTime;
     }
 
@@ -96,9 +70,6 @@ public class TimesheetEntry extends AbstractEntity {
     }
 
     public void setEntryDate(LocalDate entryDate) {
-        if (entryDate == null) {
-            throw new IllegalArgumentException("entryDate must not be null");
-        }
         this.entryDate = entryDate;
     }
 
@@ -107,10 +78,6 @@ public class TimesheetEntry extends AbstractEntity {
     }
 
     public void setTimesheet(Timesheet timesheet) {
-        if (timesheet == null) {
-            throw new IllegalArgumentException("TimesheetEntry must belong to a Timesheet");
-        }
         this.timesheet = timesheet;
     }
-    
 }

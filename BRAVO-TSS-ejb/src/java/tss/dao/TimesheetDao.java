@@ -25,14 +25,14 @@ public class TimesheetDao {
         em.persist(timesheet);
     }
     
-    public Timesheet update(Timesheet timesheet) {
+    public Timesheet updateTimesheet(Timesheet timesheet) {
         if (timesheet == null) {
             throw new IllegalArgumentException("timesheet must not be null");
         }
         return em.merge(timesheet);
     }
     
-    public void delete(Timesheet timesheet) {
+    public void deleteTimesheet(Timesheet timesheet) {
         if (timesheet == null) {
             throw new IllegalArgumentException("timesheet must not be null");
         } 
@@ -86,5 +86,5 @@ public class TimesheetDao {
      return null;
      }
     }
-
+    
 }
