@@ -11,10 +11,6 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- *
- * @author Tia Benny
- */
 
 @Entity
 public class Timesheet extends AbstractEntity {

@@ -1,4 +1,4 @@
-
+package rest;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -7,8 +7,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import java.util.logging.Level;
-import tss.dao.PersonDao;
 import tss.logic.ContractLogic;
 import tss.entity.Contract;
 import tss.entity.Person;
