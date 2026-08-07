@@ -1,4 +1,3 @@
-
 package tss.dao;
 
 import jakarta.ejb.Stateless;

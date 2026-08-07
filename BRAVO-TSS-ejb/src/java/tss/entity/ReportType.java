@@ -3,8 +3,7 @@ package tss.entity;
 
 
 public enum ReportType {
-    VACATION,
     WORK,
+    VACATION,
     SICK_LEAVE
-    
 }

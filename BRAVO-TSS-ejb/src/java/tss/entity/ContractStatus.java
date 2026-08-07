@@ -1,6 +1,4 @@
-
 package tss.entity;
-
 
 public enum ContractStatus {
     PREPARED,

@@ -56,7 +56,7 @@ public class ContractRestEndpoint {
     dto.setName(contract.getName());
     dto.setStartDate(contract.getStartDate());
     dto.setEndDate(contract.getEndDate());
-    dto.setFrequency(contract.getFrequency());          // direct assign, same enum type
+    dto.setFrequency(contract.getFrequency());          
     dto.setTerminationDate(contract.getTerminationDate());
     dto.setHoursPerWeek(contract.getHoursPerWeek());
     dto.setVacationHours(contract.getVacationHours());

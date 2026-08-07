@@ -1,4 +1,3 @@
-
 package tss.entity;
 
 import jakarta.persistence.Column;
