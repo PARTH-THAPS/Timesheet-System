@@ -2,11 +2,13 @@ package tss.dao;
 
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
+import tss.entity.Contract;
+import tss.entity.Timesheet;
+import tss.entity.TimesheetStatus;
 
-/**
- * Contains all methods concerning Timesheet and TimesheetEntry
- */
 @Stateless
 public class TimesheetDao {
     
@@ -16,19 +18,73 @@ public class TimesheetDao {
     /**
      * Only gets called when creating a contract
      */
-    public void createTimesheet() {
-        
+    public void createTimesheet(Timesheet timesheet) {
+        if (timesheet == null) {
+            throw new IllegalArgumentException("timesheet must not be null");
+        }
+        em.persist(timesheet);
     }
     
-    public void getTimesheet() {
-        
+    public Timesheet update(Timesheet timesheet) {
+        if (timesheet == null) {
+            throw new IllegalArgumentException("timesheet must not be null");
+        }
+        return em.merge(timesheet);
     }
     
-    public void addEntry() {
-        
+    public void delete(Timesheet timesheet) {
+        if (timesheet == null) {
+            throw new IllegalArgumentException("timesheet must not be null");
+        } 
+        Timesheet managed = em.find(Timesheet.class, timesheet.getId()); 
+        if (managed != null){
+            em.remove(managed);
+        }
     }
     
-    public void removeEntry() {
-        
+    public Timesheet findById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id must not be null");
+        }
+        Timesheet ts = em.find(Timesheet.class, id);
+        if (ts == null) {
+            throw new NoResultException("No Timesheet found with id " + id);
+        }
+        return ts;
     }
+    
+    public void deleteById(Long id) {
+        Timesheet ts = findById(id);
+        em.remove(ts);
+    }
+    
+    public List<Timesheet> findByContract(Contract contract) {
+        try{
+        return em.createQuery(
+                "SELECT t FROM Timesheet t WHERE t.contract = :contract ORDER BY t.startDate",
+                Timesheet.class)
+                .setParameter("contract", contract)
+                .getResultList();
+    }
+        catch (NoResultException e)
+     {
+     return null;
+     }
+    }
+    
+    public List<Timesheet> findByContractAndStatus(Contract contract, TimesheetStatus status) {
+        try{
+        return em.createQuery(
+                "SELECT t FROM Timesheet t WHERE t.contract = :contract AND t.status = :status ORDER BY t.startDate",
+                Timesheet.class)
+                .setParameter("contract", contract)
+                .setParameter("status", status)
+                .getResultList();
+    }
+        catch (NoResultException e)
+     {
+     return null;
+     }
+    }
+
 }
