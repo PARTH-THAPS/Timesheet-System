@@ -1,4 +1,3 @@
-
 package tss.logic;
 
 import jakarta.ejb.Remote;

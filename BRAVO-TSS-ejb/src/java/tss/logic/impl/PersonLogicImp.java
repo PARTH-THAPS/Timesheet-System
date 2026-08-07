@@ -2,6 +2,7 @@
 package tss.logic.impl;
 
 import jakarta.ejb.EJB;
+import jakarta.ejb.Local;
 import jakarta.ejb.Stateless;
 import tss.dao.PersonDao;
 import tss.logic.PersonLogic;

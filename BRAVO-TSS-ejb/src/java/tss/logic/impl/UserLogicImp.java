@@ -1,5 +1,5 @@
-
 package tss.logic.impl;
+
 
 import jakarta.annotation.Resource;
 import java.util.logging.Level;
@@ -16,8 +16,6 @@ import tss.dao.PersonDao;
 import tss.entity.Person;
 import tss.logic.UserLogic;
 import tss.dto.User;
-
-
 
 @Stateless
 @DeclareRoles({UserLogic.USER_ROLE,UserLogic.ADMIN_ROLE,UserLogic.ASSISTANT_ROLE,UserLogic.GUEST_ROLE,UserLogic.SECREATRY_ROLE})

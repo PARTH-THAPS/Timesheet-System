@@ -1,10 +1,8 @@
-
 package tss.logic;
 
 import jakarta.ejb.Remote;
 import tss.entity.Person;
 import tss.dto.User;
-
 
 @Remote
 public interface UserLogic {
