@@ -1,6 +1,7 @@
 package tss.logic.impl;
 
 import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -16,6 +17,8 @@ import tss.entity.TimesheetStatus;
 import tss.dao.ContractsDao;
 
 
+
+@Stateless
 public class TimesheetLogicImp implements TimesheetLogic{
     
     @EJB

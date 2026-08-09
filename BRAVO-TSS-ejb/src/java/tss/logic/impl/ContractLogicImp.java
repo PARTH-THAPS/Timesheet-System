@@ -13,12 +13,16 @@ import tss.entity.Contract;
 import tss.entity.Person;
 import tss.entity.Timesheet;
 import tss.entity.TimesheetStatus;
+import tss.logic.TimesheetLogic;
 
 @Stateless
 public class ContractLogicImp implements ContractLogic {
 
     @EJB
     private ContractsDao contractsDao;
+    
+    @EJB
+    TimesheetLogic timesheetLogic;
 
     @Override
     public Contract createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, Person person) {
@@ -103,6 +107,7 @@ public class ContractLogicImp implements ContractLogic {
         ContractStatus currentStatus = contract.getStatus();
         if (currentStatus == ContractStatus.PREPARED && newStatus == ContractStatus.STARTED) {
             contract.setStatus(newStatus);
+            timesheetLogic.generateTimesheetsForContract(contract);  
         } else if (currentStatus == ContractStatus.STARTED && newStatus == ContractStatus.TERMINATED) {
             List<Timesheet> timesheets = contract.getTimesheet();
             boolean hasInProgressTimesheet = timesheets.stream().anyMatch(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS && t.getEntries() != null && !t.getEntries().isEmpty());
