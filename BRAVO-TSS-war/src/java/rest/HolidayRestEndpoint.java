@@ -9,7 +9,9 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import tss.dto.HolidayDTO;
@@ -55,9 +57,6 @@ public class HolidayRestEndpoint {
 //
 //        return holidayLogic.findByState(State);
 //    }
-    
-    
-    
     @POST
     @Path("create")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -84,6 +83,19 @@ public class HolidayRestEndpoint {
         List<Holiday> holidays = holidayLogic.findByState(state);
         return toDTOList(holidays);
     }
+    
+    
+    
+    @GET
+    @Path("find/{state}/range")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<HolidayDTO> getHolidaysByStateAndRange(@PathParam("state") String state,
+            @QueryParam("startDate") String startDate,
+            @QueryParam("endDate") String endDate) {
+        List<Holiday> holidays = holidayLogic.findByStateAndRange(
+                state, LocalDate.parse(startDate), LocalDate.parse(endDate));
+        return toDTOList(holidays);
+    }
 
     private List<HolidayDTO> toDTOList(List<Holiday> holidays) {
         List<HolidayDTO> dtos = new ArrayList<>();
@@ -92,8 +104,9 @@ public class HolidayRestEndpoint {
         }
         return dtos;
     }
+
     
-    
+
     private HolidayDTO toDTO(Holiday holiday) {
         HolidayDTO dto = new HolidayDTO();
         dto.setUuid(holiday.getUuid());

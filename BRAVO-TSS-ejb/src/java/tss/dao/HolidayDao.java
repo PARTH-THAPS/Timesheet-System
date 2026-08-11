@@ -2,14 +2,13 @@ package tss.dao;
 
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import java.time.LocalDate;
 import java.util.List;
 import tss.entity.Holiday;
 
 @Stateless
 public class HolidayDao {
-
     @PersistenceContext(unitName = "BRAVO-TSS-ejbPU")
     private EntityManager em;
 
@@ -20,11 +19,17 @@ public class HolidayDao {
         return holidays;
     }
 
-    public List<Holiday> findByState(String State) {
-        try {
-            return em.createNamedQuery("getHolidayByState", Holiday.class).setParameter("State", State).getResultList();
-        } catch (NoResultException e) {
-            return null;
-        }
+    public List<Holiday> findByState(String state) {
+        return em.createNamedQuery("getHolidayByState", Holiday.class)
+                 .setParameter("State", state)
+                 .getResultList();
+    }
+
+    public List<Holiday> findByStateAndDateRange(String state, LocalDate startDate, LocalDate endDate) {
+        return em.createNamedQuery("getHolidayByStateAndDateRange", Holiday.class)
+                 .setParameter("State", state)
+                 .setParameter("startDate", startDate)
+                 .setParameter("endDate", endDate)
+                 .getResultList();
     }
 }
