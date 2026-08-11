@@ -2,6 +2,7 @@ package tss.logic.impl;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import java.time.LocalDate;
 import java.util.List;
 import tss.dao.HolidayDao;
 import tss.entity.Holiday;
@@ -25,6 +26,12 @@ public List<Holiday> createHoliday(List<Holiday> holidays) {
     public List<Holiday> findByState(String state)
     {
            return holidayDao.findByState(state);
+    }
     
+    
+    @Override
+    public List<Holiday> findByStateAndRange(String state,LocalDate StartDate , LocalDate endDate)
+    {
+           return holidayDao.findByStateAndDateRange(state, StartDate, endDate);
     }
 }
