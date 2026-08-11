@@ -7,7 +7,11 @@ import java.time.LocalDate;
 
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "getHolidayByState", query = "SELECT h from Holiday h WHERE h.State=:State")})
+    @NamedQuery(name = "getHolidayByState", query = "SELECT h from Holiday h WHERE h.State=:State"),
+    @NamedQuery(
+            name = "getHolidayByStateAndDateRange",
+            query = "SELECT h FROM Holiday h WHERE h.State = :State AND h.Date BETWEEN :startDate AND :endDate"
+    )})
 public class Holiday extends AbstractEntity {
 
     private String Day;
