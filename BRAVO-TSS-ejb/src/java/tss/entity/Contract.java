@@ -5,12 +5,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.List;
+import jakarta.persistence.OneToMany;
+import java.time.LocalDate;
+import java.util.List;
 
 @Entity
+@NamedQueries({@NamedQuery( name ="getAllContracts",query="SELECT c FROM Contract c")})
 public class Contract extends AbstractEntity {
-    
-    
+ 
     @Enumerated(EnumType.STRING)
     private ContractStatus status; 
     private String name;
@@ -25,8 +32,21 @@ public class Contract extends AbstractEntity {
     private int workingDaysPerWeek;
     private int vacationDaysPerYear;
     
+       
     @ManyToOne
     private Person person;
+    
+    @OneToMany(mappedBy = "contract")
+    private List<Timesheet> timesheet;
+
+    public List<Timesheet> getTimesheet() {
+        return timesheet;
+    }
+
+    public void setTimesheet(List<Timesheet> timesheet) {
+        this.timesheet = timesheet;
+    }
+    
 
     public double getVacationHours() {
         return vacationHours;
@@ -36,7 +56,6 @@ public class Contract extends AbstractEntity {
         this.vacationHours = vacationHours;
     }
 
-    
     public Contract()
     {
     
@@ -57,7 +76,6 @@ public class Contract extends AbstractEntity {
     public void setPerson(Person person) {
         this.person = person;
     }
-    
     
 
     public String getName() {

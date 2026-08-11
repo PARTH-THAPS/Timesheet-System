@@ -1,4 +1,5 @@
-package tss.logic.imp;
+package tss.logic.impl;
+
 
 import jakarta.annotation.Resource;
 import java.util.logging.Level;
@@ -17,7 +18,7 @@ import tss.logic.UserLogic;
 import tss.dto.User;
 
 @Stateless
-@DeclareRoles({UserLogic.USER_ROLE,UserLogic.ADMIN_ROLE})
+@DeclareRoles({UserLogic.USER_ROLE,UserLogic.ADMIN_ROLE,UserLogic.ASSISTANT_ROLE,UserLogic.GUEST_ROLE,UserLogic.SECREATRY_ROLE})
 public class UserLogicImp implements UserLogic {
     
     private static final Logger LOG= Logger.getLogger(UserLogicImp.class.getName());
