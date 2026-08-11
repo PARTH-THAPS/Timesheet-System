@@ -1,3 +1,4 @@
+
 package tss.dto;
 
 import jakarta.json.bind.annotation.JsonbTransient;
@@ -5,6 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Objects;
+
 
 public class AbstractDTO implements Serializable {
     private static final long serialVersionUID = 5231885890948093876L;

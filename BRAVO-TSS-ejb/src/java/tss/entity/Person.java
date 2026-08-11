@@ -1,4 +1,5 @@
 package tss.entity;
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
@@ -33,7 +34,8 @@ public class Person extends AbstractEntity  implements Serializable  {
     private Role role;
     
     @OneToMany(mappedBy="person")
-    private List<Contract> contract;
+//    @JsonbTransient
+    private List<Contract> contract ;
 
   
     public Person() {
@@ -74,9 +76,18 @@ public class Person extends AbstractEntity  implements Serializable  {
     
     public String getPassword(){
     return password;
+    
+    
 }
+    public List<Contract> getContract() {
+        return contract;
+    }
+
+    public void setContract(List<Contract> contract) {
+        this.contract = contract;
+    }
 
 public void setPassword(String password){
     this.password = password;
-}
+    }
 }

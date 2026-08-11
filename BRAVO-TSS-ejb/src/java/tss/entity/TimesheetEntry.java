@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -12,8 +14,7 @@ public class TimesheetEntry extends AbstractEntity {
     
     @Enumerated(EnumType.STRING)
     private ReportType type;
-    private String description;
-    private double hours;           // Calculated
+    private String description;       
     private LocalTime startTime;
     private LocalTime endTime;
     private LocalDate entryDate;
@@ -24,22 +25,12 @@ public class TimesheetEntry extends AbstractEntity {
     public TimesheetEntry() {
     }
     
-    public TimesheetEntry(ReportType type, String description, LocalTime startTime, LocalTime endTime, LocalDate entryDate, Timesheet timesheet){
-        this.type = type;
-        this.description = description;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.entryDate = entryDate;
-        this.timesheet = timesheet;
-        calculateHours();
-    }
-    
-    private void calculateHours() {
+    @Transient
+    public double getHours() {
         if (startTime != null && endTime != null) {
-            // TODO: Implement
-        } else {
-            hours = 0;
+            return Duration.between(startTime, endTime).toMinutes() / 60.0;
         }
+        return 0.0;
     }
 
     public ReportType getType() {
@@ -58,17 +49,12 @@ public class TimesheetEntry extends AbstractEntity {
         this.description = description;
     }
 
-    public double getHours() {
-        return hours;
-    }
-
     public LocalTime getStartTime() {
         return startTime;
     }
 
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
-        calculateHours();
     }
 
     public LocalTime getEndTime() {
@@ -77,7 +63,6 @@ public class TimesheetEntry extends AbstractEntity {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
-        calculateHours();
     }
 
     public LocalDate getEntryDate() {
@@ -95,7 +80,4 @@ public class TimesheetEntry extends AbstractEntity {
     public void setTimesheet(Timesheet timesheet) {
         this.timesheet = timesheet;
     }
-    
-    
-    
 }
