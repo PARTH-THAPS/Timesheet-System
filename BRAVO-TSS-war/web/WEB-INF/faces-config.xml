@@ -15,9 +15,5 @@
         </resource-bundle>
     </application>
 
-    <navigation-rule>
-        <from-view-id>*</from-view-id>
-        <navigation-case>
-        </navigation-case>
-    </navigation-rule>
+    
 </faces-config>

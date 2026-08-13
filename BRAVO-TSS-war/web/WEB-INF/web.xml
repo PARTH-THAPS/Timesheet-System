@@ -53,26 +53,62 @@
         </user-data-constraint>
     </security-constraint>
     <security-constraint>
-        <display-name>Authenticated acccess to user Data </display-name>
+        <display-name>Authenticated access to employee pages</display-name>
         <web-resource-collection>
-            <web-resource-name>User Pages</web-resource-name>
+            <web-resource-name>Employee Pages</web-resource-name>
             <description/>
-            <url-pattern>/views/users/*</url-pattern>
+            <url-pattern>/views/employee/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
-            <description>Authenticated Users</description>
-            <role-name>USER</role-name>
+            <description>Employee</description>
+            <role-name>EMPLOYEE</role-name>
         </auth-constraint>
     </security-constraint>
     <security-constraint>
-        <display-name>Authenticate Access to staff Pages </display-name>
+        <display-name>Authenticated access to supervisor pages</display-name>
         <web-resource-collection>
-            <web-resource-name>Staff pages</web-resource-name>
+            <web-resource-name>Supervisor Pages</web-resource-name>
             <description/>
-            <url-pattern>/views/users/*</url-pattern>
+            <url-pattern>/views/supervisor/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
-            <description>ADMIN</description>
+            <description>Supervisor</description>
+            <role-name>SUPERVISOR</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Authenticated access to assistant pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Assistant Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/assistant/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Assistant</description>
+            <role-name>ASSISTANT</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Authenticated access to secretary pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Secretary Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/secretary/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Secretary</description>
+            <role-name>SECRETARY</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Authenticated access to administrator pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Administrator Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/admin/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Administrator</description>
             <role-name>ADMIN</role-name>
         </auth-constraint>
     </security-constraint>
@@ -85,11 +121,23 @@
         </form-login-config>
     </login-config>
     <security-role>
-        <description>All Authenticated users</description>
-        <role-name>USER</role-name>
+        <description>Employee: works under one or more contracts (student or staff)</description>
+        <role-name>EMPLOYEE</role-name>
     </security-role>
     <security-role>
-        <description>ADMIN</description>
+        <description>Supervisor: contractual boss of an employee; signs time sheets</description>
+        <role-name>SUPERVISOR</role-name>
+    </security-role>
+    <security-role>
+        <description>Assistant: manages tasks and contracts of employees</description>
+        <role-name>ASSISTANT</role-name>
+    </security-role>
+    <security-role>
+        <description>Secretary: prints, forwards and archives time sheets</description>
+        <role-name>SECRETARY</role-name>
+    </security-role>
+    <security-role>
+        <description>Administrator: installs, configures, and operates the TSS</description>
         <role-name>ADMIN</role-name>
     </security-role>
 </web-app>
