@@ -24,7 +24,9 @@ public class loginBean implements Serializable {
     private UserLogic u;
 
     public boolean isLoggedIn() {
-        return true;
+        return FacesContext.getCurrentInstance()
+            .getExternalContext()
+            .getUserPrincipal() != null;
     }
 
     private Principal oldPrincipal = null;

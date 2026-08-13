@@ -15,21 +15,38 @@ public class PersonDao {
     public void createPerson(Person person) {
         em.persist(person);
     }
-    
-    public Person getPerson(String emailAddress)
-    {
-     try{
-     return em.createNamedQuery("getUserByEmail", Person.class)
+
+    public Person getPerson(String emailAddress) {
+        try {
+            return em.createNamedQuery("getUserByEmail", Person.class)
                     .setParameter("emailAddress", emailAddress)
                     .getSingleResult();
-     }
-     catch (NoResultException e)
-     {
-     return null;
-     }
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
-    public Person findPerson(Long id) {
+    public Person findPersonById(Long id) {
         return em.find(Person.class, id);
+    }
+
+    public void deletePerson(Person person) {
+        if (person == null) {
+            throw new IllegalArgumentException("Person must not be null");
+        }
+
+        Person p = em.find(Person.class, person.getId());
+
+        if (p != null) {
+            em.remove(p);
+        }
+    }
+
+    public Person updatePerson(Person person) {
+        if (person == null) {
+            throw new IllegalArgumentException("Person must not be null");
+        }
+
+        return em.merge(person);
     }
 }
