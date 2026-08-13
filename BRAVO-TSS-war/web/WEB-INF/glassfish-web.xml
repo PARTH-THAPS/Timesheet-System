@@ -17,12 +17,24 @@
 -->
 <glassfish-web-app error-url="">
   <security-role-mapping>
-    <role-name>USER</role-name>
-    <group-name>AUTHENTICATED</group-name>
+    <role-name>EMPLOYEE</role-name>
+    <group-name>EMPLOYEE</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>SUPERVISOR</role-name>
+    <group-name>SUPERVISOR</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>ASSISTANT</role-name>
+    <group-name>ASSISTANT</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>SECRETARY</role-name>
+    <group-name>SECRETARY</group-name>
   </security-role-mapping>
   <security-role-mapping>
     <role-name>ADMIN</role-name>
-    <group-name>AUTHENTICATED</group-name>
+    <group-name>ADMIN</group-name>
   </security-role-mapping>
   <class-loader delegate="true"/>
   <jsp-config>
