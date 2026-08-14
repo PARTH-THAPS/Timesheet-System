@@ -20,12 +20,12 @@ public class ContractLogicImp implements ContractLogic {
 
     @EJB
     private ContractsDao contractsDao;
-    
+
     @EJB
     TimesheetLogic timesheetLogic;
 
     @Override
-    public Contract createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, Person person) {
+    public Contract createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, Person person, String state) {
         Contract contract = new Contract();
         validateContractDates(startDate, endDate);
         contract.setStatus(ContractStatus.PREPARED);
@@ -40,6 +40,11 @@ public class ContractLogicImp implements ContractLogic {
         contract.setWorkingDaysPerWeek(workingDaysPerWeek);
         contract.setVacationDaysPerYear(vacationDaysPerYear);
         contract.setPerson(person);
+        if (state == null) {
+            contract.setState("Deutschland");
+        } else {
+            contract.setState(state);
+        }
         contractsDao.createContract(contract);
         return contract;
     }
@@ -107,7 +112,7 @@ public class ContractLogicImp implements ContractLogic {
         ContractStatus currentStatus = contract.getStatus();
         if (currentStatus == ContractStatus.PREPARED && newStatus == ContractStatus.STARTED) {
             contract.setStatus(newStatus);
-            timesheetLogic.generateTimesheetsForContract(contract);  
+            timesheetLogic.generateTimesheetsForContract(contract);
         } else if (currentStatus == ContractStatus.STARTED && newStatus == ContractStatus.TERMINATED) {
             List<Timesheet> timesheets = contract.getTimesheet();
             boolean hasInProgressTimesheet = timesheets.stream().anyMatch(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS && t.getEntries() != null && !t.getEntries().isEmpty());

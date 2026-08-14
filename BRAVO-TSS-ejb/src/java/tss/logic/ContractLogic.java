@@ -10,7 +10,7 @@ import tss.entity.Contract;
 @Remote
 public interface ContractLogic {
 
-    Contract createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, Person person);
+    Contract createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, Person person, String state);
 
     Contract updateContract(Contract updatedContract);
     

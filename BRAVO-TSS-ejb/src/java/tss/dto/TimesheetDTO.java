@@ -13,6 +13,15 @@ public class TimesheetDTO extends AbstractDTO {
     private double hoursDue;
     private Long contractId;
     private List<TimesheetEntryDTO> entries;
+    private String state;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public TimesheetDTO() {
         this.entries = Collections.emptyList();
