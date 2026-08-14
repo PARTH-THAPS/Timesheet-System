@@ -37,7 +37,7 @@ public class ContractRestEndpoint {
     public ContractDTO createContract(ContractDTO contractDto) {
 
         Person person = personLogic.findPerson(contractDto.getPersonId());
-        Contract contrcat = contractlogic.createContract(
+        Contract contract = contractlogic.createContract(
                 contractDto.getName(),
                 contractDto.getStartDate(),
                 contractDto.getEndDate(),
@@ -46,10 +46,11 @@ public class ContractRestEndpoint {
                 contractDto.getHoursDue(),
                 contractDto.getWorkingDaysPerWeek(),
                 contractDto.getVacationDaysPerYear(),
-                person
+                person,
+                contractDto.getState()
         );
 
-        return toDTO(contrcat);
+        return toDTO(contract);
     }
 
     @POST

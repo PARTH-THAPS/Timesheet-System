@@ -15,7 +15,6 @@ import tss.entity.ContractStatus;
 import tss.entity.TimesheetFrequency;
 import tss.entity.TimesheetStatus;
 import tss.dao.ContractsDao;
-import tss.dao.TimeSheetEntriesDao;
 import tss.entity.Holiday;
 import tss.logic.HolidayLogic;
 
@@ -27,14 +26,9 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
     @EJB
     private ContractsDao contractsDao;
-    
-    @EJB
-    private TimeSheetEntriesDao timesheetEntriesDao;
-    
+
     @EJB
     HolidayLogic holidayLogic;
-    
-    
 
     @Override
     public void generateTimesheetsForContract(Contract contract) {
@@ -59,21 +53,18 @@ public class TimesheetLogicImp implements TimesheetLogic {
             ts.setStartDate(startDate);
             ts.setEndDate(periodEnd);
             ts.setContract(contract);
-            //ts.setHoursDue(hoursDue(periodStart, periodEnd, contract.getHoursPerWeek(), contract.getWorkingDaysPerWeek()));
+            // ts.setHoursDue(hoursDue(periodStart, periodEnd, contract.getHoursPerWeek(), contract.getWorkingDaysPerWeek()));
             ts.setSignedByEmployee(null);
             ts.setSignedBySupervisor(null);
 
             timesheetDAO.createTimesheet(ts);
-            
 
             startDate = periodEnd.plusDays(1);
         }
     }
 
     private LocalDate calculatePeriodEnd(LocalDate startDate, TimesheetFrequency frequency, LocalDate endDate) {
-
         LocalDate periodEnd;
-
         if (frequency == TimesheetFrequency.WEEKLY) {
             periodEnd = startDate.plusWeeks(1).minusDays(1);
         } else {
@@ -92,38 +83,24 @@ public class TimesheetLogicImp implements TimesheetLogic {
         if (entry == null) {
             throw new IllegalArgumentException("Entry cannot be null");
         }
+
         Timesheet timesheet = timesheetDAO.findById(timesheetId);
         if (timesheet == null) {
             throw new IllegalArgumentException("No timesheet found with id: " + timesheetId);
         }
+
         validateEntryModification(timesheet);
 
         entry.setTimesheet(timesheet);
         timesheet.getEntries().add(entry);
-
         timesheetDAO.updateTimesheet(timesheet);
+
         return timesheet;
     }
-    
-    //Add Timesheet Entries
-    public void addTimesheet(Timesheet timeSheet)
-    {          
-    TimesheetEntry timesheetEntries= new TimesheetEntry();
-    List <Holiday>holidays=checkForHolidays(timeSheet,"RLP");
-    timesheetEntries.setTimesheet(timeSheet);
-    timesheetEntries.setType(null);
-    timesheetEntries.setDescription(null);
-    timesheetEntries.setEntryDate(null);
-    timesheetEntries.setStartTime(null);
-    timesheetEntries.setEndTime(null);
-    timesheetEntriesDao.addTimeSheetEntries(timesheetEntries);
-    }
-    //holidays logic
-    public List<Holiday> checkForHolidays(Timesheet timeSheet,String State)
-    {  
-             LocalDate startDate=timeSheet.getStartDate();
-             LocalDate endDate=timeSheet.getEndDate();
-             return holidayLogic.findByStateAndRange(State, startDate, endDate);
+
+    // holidays logic
+    public List<Holiday> checkForHolidays(LocalDate startDate, LocalDate endDate, String State) {
+        return holidayLogic.findByStateAndRange(State, startDate, endDate);
     }
 
     @Override
@@ -131,14 +108,15 @@ public class TimesheetLogicImp implements TimesheetLogic {
         if (updatedEntry == null) {
             throw new IllegalArgumentException("Updated entry cannot be null");
         }
+
         Timesheet timesheet = timesheetDAO.findById(timesheetId);
         if (timesheet == null) {
             throw new IllegalArgumentException("No timesheet found with id: " + timesheetId);
         }
+
         validateEntryModification(timesheet);
 
         TimesheetEntry existing = findEntry(timesheet, entryId);
-
         existing.setEntryDate(updatedEntry.getEntryDate());
         existing.setStartTime(updatedEntry.getStartTime());
         existing.setEndTime(updatedEntry.getEndTime());
@@ -146,6 +124,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
         existing.setType(updatedEntry.getType());
 
         timesheetDAO.updateTimesheet(timesheet);
+
         return timesheet;
     }
 
@@ -155,11 +134,11 @@ public class TimesheetLogicImp implements TimesheetLogic {
         if (timesheet == null) {
             throw new IllegalArgumentException("No timesheet found with id: " + timesheetId);
         }
+
         validateEntryModification(timesheet);
 
         TimesheetEntry entry = findEntry(timesheet, entryId);
         timesheet.getEntries().remove(entry);
-
         timesheetDAO.updateTimesheet(timesheet);
     }
 
@@ -168,13 +147,16 @@ public class TimesheetLogicImp implements TimesheetLogic {
         if (contract == null) {
             throw new IllegalArgumentException("Contract cannot be null");
         }
+
         List<Timesheet> timesheets = contract.getTimesheet();
         if (timesheets == null) {
             return;
         }
+
         List<Timesheet> toDelete = timesheets.stream()
                 .filter(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS)
                 .toList();
+
         for (Timesheet ts : toDelete) {
             timesheetDAO.deleteTimesheet(ts);
         }
@@ -207,9 +189,11 @@ public class TimesheetLogicImp implements TimesheetLogic {
         if (timesheet.getStatus() != TimesheetStatus.IN_PROGRESS) {
             throw new IllegalStateException("Timesheet can only be signed by employee when IN_PROGRESS");
         }
+
         timesheet.setSignedByEmployee(LocalDate.now());
         timesheet.setStatus(TimesheetStatus.SIGNED_BY_EMPLOYEE);
         timesheetDAO.updateTimesheet(timesheet);
+
         return timesheet;
     }
 
@@ -222,9 +206,11 @@ public class TimesheetLogicImp implements TimesheetLogic {
         if (timesheet.getStatus() != TimesheetStatus.SIGNED_BY_EMPLOYEE) {
             throw new IllegalStateException("Signature can only be revoked when status is SIGNED_BY_EMPLOYEE");
         }
+
         timesheet.setSignedByEmployee(null);
         timesheet.setStatus(TimesheetStatus.IN_PROGRESS);
         timesheetDAO.updateTimesheet(timesheet);
+
         return timesheet;
     }
 
@@ -237,9 +223,11 @@ public class TimesheetLogicImp implements TimesheetLogic {
         if (timesheet.getStatus() != TimesheetStatus.SIGNED_BY_EMPLOYEE) {
             throw new IllegalStateException("Timesheet can only be signed by supervisor when SIGNED_BY_EMPLOYEE");
         }
+
         timesheet.setSignedBySupervisor(LocalDate.now());
         timesheet.setStatus(TimesheetStatus.SIGNED_BY_SUPERVISOR);
         timesheetDAO.updateTimesheet(timesheet);
+
         return timesheet;
     }
 
@@ -252,23 +240,31 @@ public class TimesheetLogicImp implements TimesheetLogic {
         if (timesheet.getStatus() != TimesheetStatus.SIGNED_BY_EMPLOYEE) {
             throw new IllegalStateException("Changes can only be requested when status is SIGNED_BY_EMPLOYEE");
         }
+
         timesheet.setSignedByEmployee(null);
         timesheet.setStatus(TimesheetStatus.IN_PROGRESS);
         timesheetDAO.updateTimesheet(timesheet);
+
         return timesheet;
     }
 
-    private double calculateHoursDue(LocalDate startDate, LocalDate endDate, double hoursPerWeek, int workingDaysPerWeek, Contract contract) {
+    private double calculateHoursDue(LocalDate startDate, LocalDate endDate, double hoursPerWeek,
+            int workingDaysPerWeek, Contract contract) {
         if (contract == null) {
             throw new IllegalStateException("Timesheet must be linked to a contract");
         }
-
         if (workingDaysPerWeek <= 0) {
             throw new IllegalStateException("Contract workingDaysPerWeek must be greater than zero");
         }
 
         int workingDaysInPeriod = countWorkingDays(startDate, endDate);
-        int publicHolidaysInPeriod = 0; // TODO: Compute Public Holiday (CN4d/CN4e)
+
+        List<Holiday> holidays = checkForHolidays(startDate, endDate, contract.getState());
+        List<Holiday> holidaysInWeekdays = holidays.stream()
+                .filter(h -> isWorkingDay(h.getDate()))
+                .toList();
+
+        int publicHolidaysInPeriod = holidaysInWeekdays.size();
 
         return (workingDaysInPeriod - publicHolidaysInPeriod) * hoursPerWeek / workingDaysPerWeek;
     }
@@ -301,6 +297,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
         if (timesheet.getStatus() != TimesheetStatus.IN_PROGRESS) {
             throw new IllegalStateException("Entries can only be modified when Timesheet is IN_PROGRESS");
         }
+
         Contract contract = timesheet.getContract();
         if (contract == null || contract.getStatus() != ContractStatus.STARTED) {
             throw new IllegalStateException("Entries can only be modified when Contract is STARTED");
@@ -320,5 +317,4 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         throw new IllegalArgumentException("No entry found with id: " + entryId);
     }
-
 }

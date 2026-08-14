@@ -31,7 +31,7 @@ public class Contract extends AbstractEntity {
     private double hoursDue;
     private int workingDaysPerWeek;
     private int vacationDaysPerYear;
-    
+    private String state;
        
     @ManyToOne
     private Person person;
@@ -150,7 +150,12 @@ public class Contract extends AbstractEntity {
         this.vacationDaysPerYear = vacationDaysPerYear;
     }
     
-    
-    
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
     
 }
