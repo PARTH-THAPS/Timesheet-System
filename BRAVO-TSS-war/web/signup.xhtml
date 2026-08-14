@@ -21,7 +21,7 @@
                 <h:outputLabel for="firstName" value="${msg.signupFirstNameLabel}"
                                 styleClass="ui-outputlabel ui-widget col-2 ui-required"/>
                 <h:inputText id="firstName"
-                             value="#{personBean.personDto.firstName}"
+                             value="#{CreatePersonBean.personDto.firstName}"
                              required="true"
                              requiredMessage="#{msg.signupFirstNameRequired}"
                              styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1"
@@ -32,7 +32,7 @@
                 <h:outputLabel for="lastName" value="${msg.signupLastNameLabel}"
                                 styleClass="ui-outputlabel ui-widget col-2 ui-required"/>
                 <h:inputText id="lastName"
-                             value="#{personBean.personDto.lastName}"
+                             value="#{CreatePersonBean.personDto.lastName}"
                              required="true"
                              requiredMessage="#{msg.signupLastNameRequired}"
                              styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1"
@@ -43,7 +43,7 @@
                 <h:outputLabel for="emailAddress" value="${msg.signupEmailLabel}"
                                 styleClass="ui-outputlabel ui-widget col-2 ui-required"/>
                 <h:inputText id="emailAddress"
-                             value="#{personBean.personDto.emailAddress}"
+                             value="#{CreatePersonBean.personDto.emailAddress}"
                              required="true"
                              requiredMessage="#{msg.signupEmailRequired}"
                              styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1"
@@ -54,7 +54,7 @@
                 <h:outputLabel for="password" value="${msg.signupPasswordLabel}"
                                 styleClass="ui-outputlabel ui-widget col-2 ui-required"/>
                 <h:inputSecret id="password"
-                                value="#{personBean.personDto.password}"
+                                value="#{CreatePersonBean.personDto.password}"
                                 required="true"
                                 requiredMessage="#{msg.signupPasswordRequired}"
                                 styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1"
@@ -63,7 +63,7 @@
 
             <div class="field grid align-items-baseline">
                 <h:selectBooleanCheckbox id="consent"
-                                          value="#{personBean.personDto.consent}"
+                                          value="#{CreatePersonBean.personDto.consent}"
                                           styleClass="col-2"/>
                 <h:outputLabel for="consent" value="${msg.signupConsentLabel}" styleClass="col-4"/>
             </div>
@@ -71,7 +71,7 @@
 
             <h:commandButton id="signupButton"
                               value="${msg.signupButtonLabel}"
-                              action="#{personBean.createPerson}"
+                              action="#{CreatePersonBean.createPerson}"
                               styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left"/>
 
         </h:form>

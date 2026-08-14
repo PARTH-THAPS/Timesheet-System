@@ -2,6 +2,7 @@ package tss.logic.impl;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import java.util.List;
 import tss.dao.PersonDao;
 import tss.entity.Person;
 import tss.entity.Role;
@@ -51,5 +52,10 @@ public class PersonLogicImp implements PersonLogic {
     @Override
     public void deletePerson(Person person) {
         personDao.deletePerson(person);
+    }
+
+    @Override
+    public List<Person> findAllPersons() {
+        return personDao.findAllPersons();
     }
 }

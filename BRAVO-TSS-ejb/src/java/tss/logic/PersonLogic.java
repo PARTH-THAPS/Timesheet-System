@@ -1,6 +1,7 @@
 package tss.logic;
 
 import jakarta.ejb.Remote;
+import java.util.List;
 import tss.entity.Person;
 import tss.entity.Role;
 
@@ -10,4 +11,5 @@ public interface PersonLogic {
      Person findPerson(Long id);
      void deletePerson(Person person);
      Person updatePerson(Person person);
+     List<Person> findAllPersons();
 }
