@@ -10,9 +10,9 @@ import tss.entity.Person;
 import tss.entity.Role;
 import tss.logic.PersonLogic;
 
-@Named("personBean")
+@Named("CreatePersonBean")
 @RequestScoped
-public class PersonBean {
+public class CreatePersonBean {
 
     @EJB
     private PersonLogic personLogic;
