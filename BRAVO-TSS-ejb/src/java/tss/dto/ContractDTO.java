@@ -16,6 +16,15 @@ public class ContractDTO extends AbstractDTO {
     private int workingDaysPerWeek;
     private int vacationDaysPerYear;
     private Long personId;
+    private String state;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public ContractDTO() {
     }

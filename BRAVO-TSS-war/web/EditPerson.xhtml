@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+<f:metadata>
+    <f:viewParam name="id" value="#{EditPersonBean.id}" />
+    <f:viewAction action="#{EditPersonBean.init}" />
+</f:metadata>
+
+<h:head>
+    <title>Edit Person</title>
+</h:head>
+
+<h:body>
+    <h:form>
+        <h:messages globalOnly="true" />
+
+        <h:panelGrid columns="2">
+            <h:outputLabel value="First Name" for="firstName" />
+            <h:inputText id="firstName" value="#{EditPersonBean.personDto.firstName}" />
+
+            <h:outputLabel value="Last Name" for="lastName" />
+            <h:inputText id="lastName" value="#{EditPersonBean.personDto.lastName}" />
+
+            <h:outputLabel value="Email" for="email" />
+            <h:inputText id="email" value="#{EditPersonBean.personDto.emailAddress}" />
+
+            <h:outputLabel value="Role" for="role" />
+            <h:selectOneMenu id="role" value="#{EditPersonBean.personDto.role}">
+                <f:selectItem itemLabel="Admin" itemValue="ADMIN" />
+                <f:selectItem itemLabel="User" itemValue="USER" />
+            </h:selectOneMenu>
+        </h:panelGrid>
+
+        <h:commandButton value="Save" action="#{EditPersonBean.save}" />
+        <h:commandButton value="Delete" action="#{EditPersonBean.delete}" />
+        <h:commandButton value="Cancel" action="#{EditPersonBean.cancel}" immediate="true" />
+    </h:form>
+</h:body>
+</html>
