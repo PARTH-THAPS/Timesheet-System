@@ -18,6 +18,7 @@ public class ContractDTO extends AbstractDTO {
     private Long personId;
     private String state;
 
+
     public ContractDTO() {
     }
 
