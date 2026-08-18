@@ -86,5 +86,17 @@ public class TimesheetDao {
      return null;
      }
     }
-    
+
+    public List<Timesheet> findByEmployeeUsername(String emailAddress) {
+        return em.createQuery(
+                        "SELECT DISTINCT t FROM Timesheet t " +
+                                "LEFT JOIN FETCH t.entries " +
+                                "JOIN t.contract c " +
+                                "JOIN c.person p " +
+                                "WHERE p.emailAddress = :email " +
+                                "ORDER BY t.startDate",
+                        Timesheet.class)
+                .setParameter("email", emailAddress)
+                .getResultList();
+    }
 }
