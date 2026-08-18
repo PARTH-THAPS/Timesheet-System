@@ -5,7 +5,10 @@ import jakarta.ejb.Stateless;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
+
+import tss.dto.TimesheetDTO;
 import tss.entity.Contract;
 import tss.entity.Timesheet;
 import tss.entity.TimesheetEntry;
@@ -321,4 +324,24 @@ public class TimesheetLogicImp implements TimesheetLogic {
         throw new IllegalArgumentException("No entry found with id: " + entryId);
     }
 
+    @Override
+    public List<TimesheetDTO> findByEmployeeUsername(String emailAddress) {
+        List<Timesheet> entities = timesheetDAO.findByEmployeeUsername(emailAddress);
+
+        List<TimesheetDTO> dtos = new ArrayList<>();
+
+        for (Timesheet t : entities) {
+            TimesheetDTO dto = new TimesheetDTO();
+            dto.setStartDate(t.getStartDate());
+            dto.setEndDate(t.getEndDate());
+            dto.setStatus(t.getStatus().toString());
+            dto.setHoursDue(t.getHoursDue());
+            dto.setSignedByEmployee(t.getSignedByEmployee());
+            dto.setSignedBySupervisor(t.getSignedBySupervisor());
+
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
 }
