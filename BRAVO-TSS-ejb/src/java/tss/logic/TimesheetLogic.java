@@ -33,5 +33,9 @@ public interface TimesheetLogic {
 
     Timesheet requestChanges(Long timesheetId);
 
+    void archiveTimesheet(Long timesheetId);
+
     List<TimesheetDTO> findByEmployeeUsername(String emailAddress);
+
+    List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress);
 }
