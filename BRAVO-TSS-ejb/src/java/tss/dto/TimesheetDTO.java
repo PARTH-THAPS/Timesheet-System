@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class TimesheetDTO extends AbstractDTO {
+    private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
     private String status;
@@ -13,6 +14,14 @@ public class TimesheetDTO extends AbstractDTO {
     private double hoursDue;
     private Long contractId;
     private List<TimesheetEntryDTO> entries;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public TimesheetDTO() {
         this.entries = Collections.emptyList();

@@ -2,6 +2,7 @@ package tss.logic.impl;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -30,14 +31,13 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
     @EJB
     private ContractsDao contractsDao;
-    
+
     @EJB
     private TimeSheetEntriesDao timesheetEntriesDao;
-    
+
     @EJB
     HolidayLogic holidayLogic;
-    
-    
+
 
     @Override
     public void generateTimesheetsForContract(Contract contract) {
@@ -67,7 +67,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
             ts.setSignedBySupervisor(null);
 
             timesheetDAO.createTimesheet(ts);
-            
+
 
             startDate = periodEnd.plusDays(1);
         }
@@ -107,26 +107,25 @@ public class TimesheetLogicImp implements TimesheetLogic {
         timesheetDAO.updateTimesheet(timesheet);
         return timesheet;
     }
-    
+
     //Add Timesheet Entries
-    public void addTimesheet(Timesheet timeSheet)
-    {          
-    TimesheetEntry timesheetEntries= new TimesheetEntry();
-    List <Holiday>holidays=checkForHolidays(timeSheet,"RLP");
-    timesheetEntries.setTimesheet(timeSheet);
-    timesheetEntries.setType(null);
-    timesheetEntries.setDescription(null);
-    timesheetEntries.setEntryDate(null);
-    timesheetEntries.setStartTime(null);
-    timesheetEntries.setEndTime(null);
-    timesheetEntriesDao.addTimeSheetEntries(timesheetEntries);
+    public void addTimesheet(Timesheet timeSheet) {
+        TimesheetEntry timesheetEntries = new TimesheetEntry();
+        List<Holiday> holidays = checkForHolidays(timeSheet, "RLP");
+        timesheetEntries.setTimesheet(timeSheet);
+        timesheetEntries.setType(null);
+        timesheetEntries.setDescription(null);
+        timesheetEntries.setEntryDate(null);
+        timesheetEntries.setStartTime(null);
+        timesheetEntries.setEndTime(null);
+        timesheetEntriesDao.addTimeSheetEntries(timesheetEntries);
     }
+
     //holidays logic
-    public List<Holiday> checkForHolidays(Timesheet timeSheet,String State)
-    {  
-             LocalDate startDate=timeSheet.getStartDate();
-             LocalDate endDate=timeSheet.getEndDate();
-             return holidayLogic.findByStateAndRange(State, startDate, endDate);
+    public List<Holiday> checkForHolidays(Timesheet timeSheet, String State) {
+        LocalDate startDate = timeSheet.getStartDate();
+        LocalDate endDate = timeSheet.getEndDate();
+        return holidayLogic.findByStateAndRange(State, startDate, endDate);
     }
 
     @Override
@@ -344,4 +343,55 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         return dtos;
     }
+
+    @Override
+    public List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress) {
+        List<Timesheet> entities = timesheetDAO.findPendingArchivesForSecretary(emailAddress);
+
+        List<TimesheetDTO> dtos = new ArrayList<>();
+
+        for (Timesheet t : entities) {
+            TimesheetDTO dto = new TimesheetDTO();
+            dto.setId(t.getId());
+            dto.setStartDate(t.getStartDate());
+            dto.setEndDate(t.getEndDate());
+            dto.setStatus(t.getStatus().toString());
+            dto.setHoursDue(t.getHoursDue());
+            dto.setSignedByEmployee(t.getSignedByEmployee());
+            dto.setSignedBySupervisor(t.getSignedBySupervisor());
+
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
+    @Override
+    public void archiveTimesheet(Long timesheetId) {
+        Timesheet entity = timesheetDAO.findById(timesheetId);
+
+        if (entity != null) {
+            if (entity.getStatus() == TimesheetStatus.SIGNED_BY_SUPERVISOR) {
+                entity.setStatus(TimesheetStatus.ARCHIVED);
+                timesheetDAO.updateTimesheet(entity);
+
+                Contract contract = entity.getContract();
+                boolean allArchived = true;
+                for (Timesheet t : contract.getTimesheet()) {
+                    if (t.getStatus() != TimesheetStatus.ARCHIVED) {
+                        allArchived = false;
+                        break;
+                    }
+                }
+
+                if (allArchived) {
+                    contract.setStatus(ContractStatus.ARCHIVED);
+                    contractsDao.UpdateContract(contract);
+                }
+            } else {
+                throw new IllegalStateException("Timesheet must be SIGNED_BY_SUPERVISOR to be archived.");
+            }
+        }
+    }
+
 }
