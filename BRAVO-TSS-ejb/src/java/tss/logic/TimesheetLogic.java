@@ -1,34 +1,32 @@
 package tss.logic;
 
 import jakarta.ejb.Remote;
-import tss.entity.Contract;
 import java.util.List;
-import tss.entity.Timesheet;
-import tss.entity.TimesheetEntry;
-import tss.entity.TimesheetStatus;
+import tss.dto.TimesheetDTO;
+import tss.dto.TimesheetEntryDTO;
 
 @Remote
 public interface TimesheetLogic {
 
-    void generateTimesheetsForContract(Contract contract);
+    void generateTimesheetsForContract(Long contractId);
 
-    Timesheet addEntry(Long timesheetId, TimesheetEntry entry);
+    TimesheetDTO addEntry(Long timesheetId, TimesheetEntryDTO entry);
 
-    Timesheet updateEntry(Long timesheetId, Long entryId, TimesheetEntry entry);
+    TimesheetDTO updateEntry(Long timesheetId, Long entryId, TimesheetEntryDTO entry);
 
     void removeEntry(Long timesheetId, Long entryId);
 
-    void deleteInProgressTimesheets(Contract contract);
-    
-    List<Timesheet> getTimesheetsForContract(Long contractId);
+    void deleteInProgressTimesheets(Long contractId);
 
-    Timesheet getTimesheetById(Long timesheetId);
-    
-    Timesheet signByEmployee(Long timesheetId);
+    List<TimesheetDTO> getTimesheetsForContract(Long contractId);
 
-    Timesheet revokeEmployeeSignature(Long timesheetId);
+    TimesheetDTO getTimesheetById(Long timesheetId);
 
-    Timesheet signBySupervisor(Long timesheetId);
+    TimesheetDTO signByEmployee(Long timesheetId);
 
-    Timesheet requestChanges(Long timesheetId);
+    TimesheetDTO revokeEmployeeSignature(Long timesheetId);
+
+    TimesheetDTO signBySupervisor(Long timesheetId);
+
+    TimesheetDTO requestChanges(Long timesheetId);
 }
