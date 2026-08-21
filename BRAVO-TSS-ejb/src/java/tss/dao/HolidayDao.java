@@ -32,4 +32,10 @@ public class HolidayDao {
                  .setParameter("endDate", endDate)
                  .getResultList();
     }
+    
+    public List<Holiday> findAllHoliday()
+    {
+    return em.createQuery("SELECT h FROM Holiday h",Holiday.class).getResultList();
+    }
+    
 }
