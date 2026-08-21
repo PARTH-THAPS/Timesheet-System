@@ -26,25 +26,16 @@ public class PersonRestEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PersonDTO createPerson(PersonDTO request) {
-        Person person = personLogic.createPerson(
+        PersonDTO person = personLogic.createPerson(
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmailAddress(),
                 request.isConsent(),
                 request.getPassword(),
-                Role.valueOf(request.getRole())
+                request.getRole()
         );
-        return toDTO(person);
+        return person;
     }
 
-    private PersonDTO toDTO(Person person) {
-        PersonDTO dto = new PersonDTO();
-        dto.setUuid(person.getUuid());
-        dto.setJpaVersion(person.getJpaVersion());
-        dto.setFirstName(person.getFirstName());
-        dto.setLastName(person.getLastName());
-        dto.setEmailAddress(person.getEmailAddress());
-        dto.setRole(person.getRole().name());
-        return dto;
-    }
+    
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/WEB-INF/templates/page-layout.xhtml"
+                 xmlns="http://www.w3.org/1999/xhtml"
+                 xmlns:ui="jakarta.faces.facelets"
+                 xmlns:h="jakarta.faces.html"
+                 xmlns:f="jakarta.faces.core"
+                 xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">Holiday List</ui:define>
+
+    <ui:define name="content">
+        <h:form>
+            <h:messages globalOnly="true" />
+            <h:dataTable value="#{HolidayListBean.holiday}" var="holiday" border="1">
+                <h:column>
+                    <f:facet name="header">Holiday</f:facet>
+                    #{holiday.holiday}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">State</f:facet>
+                    #{holiday.state}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Year</f:facet>
+                    #{holiday.year}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Date</f:facet>
+                    #{holiday.date}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Day</f:facet>
+                    #{holiday.day}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Actions</f:facet>
+                    <h:link outcome="HolidayEdit" value="Edit">
+                        <f:param name="id" value="#{holiday.uuid}" />
+                    </h:link>
+                </h:column>
+            </h:dataTable>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

@@ -15,6 +15,7 @@ import tss.entity.ContractStatus;
 import tss.entity.TimesheetFrequency;
 import tss.entity.TimesheetStatus;
 import tss.dao.ContractsDao;
+import tss.dto.HolidayDTO;
 import tss.entity.Holiday;
 import tss.logic.HolidayLogic;
 
@@ -98,9 +99,9 @@ public class TimesheetLogicImp implements TimesheetLogic {
         return timesheet;
     }
 
-    // holidays logic
-    public List<Holiday> checkForHolidays(LocalDate startDate, LocalDate endDate, String State) {
-        return holidayLogic.findByStateAndRange(State, startDate, endDate);
+//     holidays logic
+    public List<HolidayDTO> checkForHolidays(LocalDate startDate, LocalDate endDate, String State) {
+       return holidayLogic.findByStateAndRange(State, startDate, endDate);
     }
 
     @Override
@@ -259,8 +260,8 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         int workingDaysInPeriod = countWorkingDays(startDate, endDate);
 
-        List<Holiday> holidays = checkForHolidays(startDate, endDate, contract.getState());
-        List<Holiday> holidaysInWeekdays = holidays.stream()
+        List<HolidayDTO> holidays = checkForHolidays(startDate, endDate, contract.getState());
+        List<HolidayDTO> holidaysInWeekdays = holidays.stream()
                 .filter(h -> isWorkingDay(h.getDate()))
                 .toList();
 

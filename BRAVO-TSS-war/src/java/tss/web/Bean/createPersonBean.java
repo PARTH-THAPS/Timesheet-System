@@ -6,7 +6,6 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import tss.dto.PersonDTO;
-import tss.entity.Person;
 import tss.entity.Role;
 import tss.logic.PersonLogic;
 
@@ -23,13 +22,13 @@ public class CreatePersonBean {
         try {
             //Role role = Role.valueOf(personDto.getRole().toUpperCase());
 
-            Person created = personLogic.createPerson(
+            PersonDTO created = personLogic.createPerson(
                     personDto.getFirstName(),
                     personDto.getLastName(),
                     personDto.getEmailAddress(),
                     personDto.isConsent(),
                     personDto.getPassword(),
-                    Role.ADMIN
+                    Role.GUEST
             );
 
             FacesContext.getCurrentInstance().addMessage(null,
