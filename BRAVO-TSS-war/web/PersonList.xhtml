@@ -1,40 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html"
-      xmlns:f="jakarta.faces.core">
-
-<h:head>
-    <title>All Persons</title>
-</h:head>
-
-<h:body>
-    <h:form>
-        <h:messages globalOnly="true" />
-
-        <h:dataTable value="#{PersonListBean.persons}" var="person" border="1">
-            <h:column>
-                <f:facet name="header">First Name</f:facet>
-                #{person.firstName}
-            </h:column>
-            <h:column>
-                <f:facet name="header">Last Name</f:facet>
-                #{person.lastName}
-            </h:column>
-            <h:column>
-                <f:facet name="header">Email</f:facet>
-                #{person.emailAddress}
-            </h:column>
-            <h:column>
-                <f:facet name="header">Role</f:facet>
-                #{person.role}
-            </h:column>
-            <h:column>
-                <f:facet name="header">Actions</f:facet>
-                <h:link outcome="EditPerson" value="Edit">
-                    <f:param name="id" value="#{person.id}" />
-                </h:link>
-            </h:column>
-        </h:dataTable>
-    </h:form>
-</h:body>
-</html>
+<ui:composition template="/WEB-INF/templates/page-layout.xhtml"
+                 xmlns="http://www.w3.org/1999/xhtml"
+                 xmlns:ui="jakarta.faces.facelets"
+                 xmlns:h="jakarta.faces.html"
+                 xmlns:f="jakarta.faces.core"
+                 xmlns:p="http://primefaces.org/ui">
+    <ui:param name="pageHeadline" value="All Persons"/>
+    <ui:define name="title">All Persons</ui:define>
+    <ui:define name="content">
+        <h:form id="personForm">
+            <h:messages globalOnly="true" />
+            <p:dataTable id="personTable"
+                         var="person"
+                         value="#{PersonListBean.persons}"
+                         emptyMessage="No persons found."
+                         paginator="true"
+                         rows="10">
+                <p:column headerText="First Name">
+                    <h:outputText value="#{person.firstName}" />
+                </p:column>
+                <p:column headerText="Last Name">
+                    <h:outputText value="#{person.lastName}" />
+                </p:column>
+                <p:column headerText="Email">
+                    <h:outputText value="#{person.emailAddress}" />
+                </p:column>
+                <p:column headerText="Role">
+                    <h:outputText value="#{person.role}" />
+                </p:column>
+                <p:column headerText="Actions">
+                    <h:link outcome="EditPerson" value="Edit">
+                        <f:param name="id" value="#{person.id}" />
+                    </h:link>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

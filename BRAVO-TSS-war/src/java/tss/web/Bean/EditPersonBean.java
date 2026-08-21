@@ -20,7 +20,6 @@ public class EditPersonBean implements Serializable {
     private Long id;
     private PersonDTO personDto;
 
-    @PostConstruct
     public void init() {
         if (id != null) {
             PersonDTO person = personLogic.findPerson(id);
