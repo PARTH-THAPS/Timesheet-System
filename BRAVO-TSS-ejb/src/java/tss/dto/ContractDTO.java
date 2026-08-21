@@ -6,6 +6,7 @@ import tss.entity.TimesheetFrequency;
 
 public class ContractDTO extends AbstractDTO {
 
+    private Long id;
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -19,6 +20,14 @@ public class ContractDTO extends AbstractDTO {
     private Long personId;
     private String state;
     private String personUuid;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getPersonUuid() {
         return personUuid;

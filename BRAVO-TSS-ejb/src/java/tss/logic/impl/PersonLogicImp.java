@@ -49,7 +49,9 @@ public class PersonLogicImp implements PersonLogic {
 
     @Override
     public PersonDTO updatePerson(PersonDTO dto) {
-    Person person = personDao.findPersonById(dto.getId());
+    Person person = personDao.findPersonById(dto.getId());  
+    
+    
     if (person == null) {
         throw new IllegalArgumentException("No Person found with id: " + dto.getId());
     }
