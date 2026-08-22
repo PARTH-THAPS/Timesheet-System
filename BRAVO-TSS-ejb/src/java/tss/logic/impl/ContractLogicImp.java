@@ -123,7 +123,7 @@ public class ContractLogicImp implements ContractLogic {
         ContractStatus currentStatus = contract.getStatus();
         if (currentStatus == ContractStatus.PREPARED && newStatus == ContractStatus.STARTED) {
             contract.setStatus(newStatus);
-            timesheetLogic.generateTimesheetsForContract(contract);
+            timesheetLogic.generateTimesheetsForContract(contractId);  
         } else if (currentStatus == ContractStatus.STARTED && newStatus == ContractStatus.TERMINATED) {
             List<Timesheet> timesheets = contract.getTimesheet();
             boolean hasInProgressTimesheet = timesheets.stream().anyMatch(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS && t.getEntries() != null && !t.getEntries().isEmpty());
@@ -133,6 +133,7 @@ public class ContractLogicImp implements ContractLogic {
             LocalDate date = terminationDate();
             contract.setTerminationDate(date);
             contract.setStatus(newStatus);
+            timesheetLogic.deleteInProgressTimesheets(contract.getId());
         } else if (currentStatus == ContractStatus.TERMINATED && newStatus == ContractStatus.ARCHIVED) {
             contract.setStatus(newStatus);
         } else {
