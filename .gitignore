@@ -2,8 +2,9 @@
 **/nbproject/private/
 
 # Build output
-**/build/
+BRAVO-TSS-ejb/build/
 **/dist/
+**/build/
 
 # GlassFish generated deployment
 **/gfdeploy/
