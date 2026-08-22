@@ -1,87 +1,74 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <ui:composition
     template="/WEB-INF/templates/page-layout.xhtml"
-    xmlns:b="http://bootsfaces.net/ui"
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:p="http://primefaces.org/ui"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
-
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
     <ui:param name="pageHeadline" value="${msg.signupPageHeadline}"/>
-
     <ui:define name="content">
-
-        <h:messages globalOnly="false" showDetail="true" showSummary="true" styleClass="ui-messages"/>
-
+        <h:messages globalOnly="false" showDetail="true" showSummary="false" styleClass="ui-messages"/>
         <h:form id="signupForm" class="form form-horizontal" role="form">
-
             <div class="field grid align-items-baseline">
-                <h:outputLabel for="firstName" value="${msg.signupFirstNameLabel}"
-                                styleClass="ui-outputlabel ui-widget col-2 ui-required"/>
-                <h:inputText id="firstName"
-                             value="#{personBean.personDto.firstName}"
+                <p:outputLabel for="firstName" value="${msg.signupFirstNameLabel}"
+                                styleClass="col-2 ui-required"/>
+                <p:inputText id="firstName"
+                             value="#{CreatePersonBean.personDto.firstName}"
                              required="true"
                              requiredMessage="#{msg.signupFirstNameRequired}"
-                             styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1"
-                             pt:placeholder="#{msg.signupFirstNamePlaceholder}"/>
+                             placeholder="#{msg.signupFirstNamePlaceholder}"
+                             styleClass="col-4"/>
             </div>
-
             <div class="field grid align-items-baseline">
-                <h:outputLabel for="lastName" value="${msg.signupLastNameLabel}"
-                                styleClass="ui-outputlabel ui-widget col-2 ui-required"/>
-                <h:inputText id="lastName"
-                             value="#{personBean.personDto.lastName}"
+                <p:outputLabel for="lastName" value="${msg.signupLastNameLabel}"
+                                styleClass="col-2 ui-required"/>
+                <p:inputText id="lastName"
+                             value="#{CreatePersonBean.personDto.lastName}"
                              required="true"
                              requiredMessage="#{msg.signupLastNameRequired}"
-                             styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1"
-                             pt:placeholder="#{msg.signupLastNamePlaceholder}"/>
+                             placeholder="#{msg.signupLastNamePlaceholder}"
+                             styleClass="col-4"/>
             </div>
-
             <div class="field grid align-items-baseline">
-                <h:outputLabel for="emailAddress" value="${msg.signupEmailLabel}"
-                                styleClass="ui-outputlabel ui-widget col-2 ui-required"/>
-                <h:inputText id="emailAddress"
-                             value="#{personBean.personDto.emailAddress}"
+                <p:outputLabel for="emailAddress" value="${msg.signupEmailLabel}"
+                                styleClass="col-2 ui-required"/>
+                <p:inputText id="emailAddress"
+                             value="#{CreatePersonBean.personDto.emailAddress}"
                              required="true"
                              requiredMessage="#{msg.signupEmailRequired}"
-                             styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1"
-                             pt:placeholder="#{msg.signupEmailPlaceholder}"/>
+                             placeholder="#{msg.signupEmailPlaceholder}"
+                             styleClass="col-4"/>
             </div>
-
             <div class="field grid align-items-baseline">
-                <h:outputLabel for="password" value="${msg.signupPasswordLabel}"
-                                styleClass="ui-outputlabel ui-widget col-2 ui-required"/>
-                <h:inputSecret id="password"
-                                value="#{personBean.personDto.password}"
-                                required="true"
-                                requiredMessage="#{msg.signupPasswordRequired}"
-                                styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1"
-                                pt:placeholder="#{msg.signupPasswordPlaceholder}"/>
+                <p:outputLabel for="password" value="${msg.signupPasswordLabel}"
+                                styleClass="col-2 ui-required"/>
+                <p:password id="password"
+                             value="#{CreatePersonBean.personDto.password}"
+                             required="true"
+                             requiredMessage="#{msg.signupPasswordRequired}"
+                             placeholder="#{msg.signupPasswordPlaceholder}"
+                             feedback="false"
+                             styleClass="col-4"/>
             </div>
-
             <div class="field grid align-items-baseline">
-                <h:selectBooleanCheckbox id="consent"
-                                          value="#{personBean.personDto.consent}"
+                <p:selectBooleanCheckbox id="consent"
+                                          value="#{CreatePersonBean.personDto.consent}"
+                                          required="true"
+                                          requiredMessage="#{msg.signupConsentRequired}"
                                           styleClass="col-2"/>
-                <h:outputLabel for="consent" value="${msg.signupConsentLabel}" styleClass="col-4"/>
+                <p:outputLabel for="consent" value="${msg.signupConsentLabel}" styleClass="col-4"/>
             </div>
-
-
-            <h:commandButton id="signupButton"
+            <p:commandButton id="signupButton"
                               value="${msg.signupButtonLabel}"
-                              action="#{personBean.createPerson}"
-                              styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left"/>
-
+                              action="#{CreatePersonBean.createPerson}"/>
         </h:form>
-
         <div class="field grid align-items-baseline">
             <p>
                 ${msg.signupLoginPrompt}
-                <a id="loginLink" href="">${msg.signupLoginLinkLabel}</a>
+                <!-- TODO: confirm the real outcome/filename for your login page -->
+                <h:link id="loginLink" outcome="login" value="${msg.signupLoginLinkLabel}" />
             </p>
         </div>
-
     </ui:define>
 </ui:composition>
