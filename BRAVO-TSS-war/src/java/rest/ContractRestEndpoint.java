@@ -14,6 +14,7 @@ import tss.entity.Contract;
 import tss.entity.Person;
 import java.util.logging.Logger;
 import tss.dto.ContractDTO;
+import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
 import tss.logic.PersonLogic;
 
@@ -36,8 +37,8 @@ public class ContractRestEndpoint {
 
     public ContractDTO createContract(ContractDTO contractDto) {
 
-        Person person = personLogic.findPerson(contractDto.getPersonId());
-        Contract contrcat = contractlogic.createContract(
+        PersonDTO persondto = personLogic.findPerson(contractDto.getPersonId());
+        return contractlogic.createContract(
                 contractDto.getName(),
                 contractDto.getStartDate(),
                 contractDto.getEndDate(),
@@ -46,10 +47,10 @@ public class ContractRestEndpoint {
                 contractDto.getHoursDue(),
                 contractDto.getWorkingDaysPerWeek(),
                 contractDto.getVacationDaysPerYear(),
-                person
+                persondto,
+                contractDto.getState()
         );
 
-        return toDTO(contrcat);
     }
 
     @POST
@@ -57,26 +58,8 @@ public class ContractRestEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public ContractDTO updateContractStatus(@PathParam("contractId") Long contractId) {
-        Contract updated = contractlogic.updateContractStatus(contractId, ContractStatus.STARTED);
-        return toDTO(updated);
-    }
+        return contractlogic.updateContractStatus(contractId, ContractStatus.STARTED);
 
-    private ContractDTO toDTO(Contract contract) {
-        ContractDTO dto = new ContractDTO();
-        dto.setUuid(contract.getUuid());
-        dto.setJpaVersion(contract.getJpaVersion());           //
-        dto.setName(contract.getName());
-        dto.setStartDate(contract.getStartDate());
-        dto.setEndDate(contract.getEndDate());
-        dto.setFrequency(contract.getFrequency());
-        dto.setTerminationDate(contract.getTerminationDate());
-        dto.setHoursPerWeek(contract.getHoursPerWeek());
-        dto.setVacationHours(contract.getVacationHours());
-        dto.setHoursDue(contract.getHoursDue());
-        dto.setWorkingDaysPerWeek(contract.getWorkingDaysPerWeek());
-        dto.setVacationDaysPerYear(contract.getVacationDaysPerYear());
-        dto.setPersonId(contract.getPerson().getId());
-        return dto;
     }
 
 }

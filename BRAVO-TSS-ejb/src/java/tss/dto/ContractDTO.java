@@ -1,10 +1,12 @@
 package tss.dto;
 
 import java.time.LocalDate;
+import tss.entity.ContractStatus;
 import tss.entity.TimesheetFrequency;
 
 public class ContractDTO extends AbstractDTO {
 
+    private Long id;
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -16,6 +18,34 @@ public class ContractDTO extends AbstractDTO {
     private int workingDaysPerWeek;
     private int vacationDaysPerYear;
     private Long personId;
+    private String state;
+    private String personUuid;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getPersonUuid() {
+        return personUuid;
+    }
+
+    public void setPersonUuid(String personUuid) {
+        this.personUuid = personUuid;
+    }
+
+    public ContractStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ContractStatus status) {
+        this.status = status;
+    }
+    private ContractStatus status;
+
 
     public ContractDTO() {
     }
@@ -107,4 +137,13 @@ public class ContractDTO extends AbstractDTO {
     public void setPersonId(Long personId) {
         this.personId = personId;
     }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+    
 }

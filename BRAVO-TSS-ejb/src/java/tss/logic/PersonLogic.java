@@ -1,13 +1,16 @@
 package tss.logic;
 
 import jakarta.ejb.Remote;
+import java.util.List;
+import tss.dto.PersonDTO;
 import tss.entity.Person;
 import tss.entity.Role;
 
 @Remote
 public interface PersonLogic {
-     Person createPerson(String firstName,String lastName, String emailAddress,boolean consent,String password,Role role);
-     Person findPerson(Long id);
-     void deletePerson(Person person);
-     Person updatePerson(Person person);
+     PersonDTO createPerson(String firstName,String lastName, String emailAddress,boolean consent,String password,Role role);
+     PersonDTO findPerson(Long id);
+     void deletePerson(PersonDTO person);
+     PersonDTO updatePerson(PersonDTO person);
+     List<PersonDTO> findAllPersons();
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/WEB-INF/templates/page-layout.xhtml"
+                 xmlns="http://www.w3.org/1999/xhtml"
+                 xmlns:ui="jakarta.faces.facelets"
+                 xmlns:h="jakarta.faces.html"
+                 xmlns:f="jakarta.faces.core"
+                 xmlns:p="http://primefaces.org/ui">
+    <f:metadata>
+        <f:viewParam name="id" value="#{EditPersonBean.id}" />
+        <f:viewAction action="#{EditPersonBean.init}" />
+    </f:metadata>
+    <ui:param name="pageHeadline" value="Edit Person"/>
+    <ui:define name="title">Edit Person</ui:define>
+    <ui:define name="content">
+        <h:form id="editPersonForm">
+            <h:messages globalOnly="true" />
+            <p:panelGrid columns="2" layout="grid">
+                <p:outputLabel value="First Name" for="firstName" />
+                <p:inputText id="firstName" value="#{EditPersonBean.personDto.firstName}" />
+
+                <p:outputLabel value="Last Name" for="lastName" />
+                <p:inputText id="lastName" value="#{EditPersonBean.personDto.lastName}" />
+
+                <p:outputLabel value="Email" for="email" />
+                <p:inputText id="email" value="#{EditPersonBean.personDto.emailAddress}" />
+
+                <p:outputLabel value="Role" for="role" />
+                <p:selectOneMenu id="role" value="#{EditPersonBean.personDto.role}">
+                    <f:selectItem itemLabel="Admin" itemValue="ADMIN" />
+                    <f:selectItem itemLabel="Assistant" itemValue="ASSISTANT" />
+                    <f:selectItem itemLabel="Employee" itemValue="EMPLOYEE" />
+                    <f:selectItem itemLabel="Secretary" itemValue="SECRETARY" />
+                    <f:selectItem itemLabel="Supervisor" itemValue="SUPERVISOR" />
+                    
+                </p:selectOneMenu>
+            </p:panelGrid>
+
+            <p:commandButton value="Save" action="#{EditPersonBean.save}" />
+            <p:commandButton value="Delete" action="#{EditPersonBean.delete}" />
+            <p:commandButton value="Cancel" action="#{EditPersonBean.cancel}" immediate="true" />
+        </h:form>
+    </ui:define>
+</ui:composition>

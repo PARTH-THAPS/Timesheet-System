@@ -4,6 +4,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 import tss.entity.Person;
 
 @Stateless
@@ -48,5 +49,10 @@ public class PersonDao {
         }
 
         return em.merge(person);
+    }
+
+    public List<Person> findAllPersons() {
+        return em.createQuery("SELECT p FROM Person p", Person.class)
+                .getResultList();
     }
 }

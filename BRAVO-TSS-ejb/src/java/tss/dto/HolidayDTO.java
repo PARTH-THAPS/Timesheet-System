@@ -9,6 +9,7 @@ public class HolidayDTO extends AbstractDTO {
     private String holiday;
     private String state;
     private int year;
+    private Long id;
 
     public HolidayDTO() {
     }
@@ -19,6 +20,14 @@ public class HolidayDTO extends AbstractDTO {
         this.holiday = holiday;
         this.state = state;
         this.year = year;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getDay() {
