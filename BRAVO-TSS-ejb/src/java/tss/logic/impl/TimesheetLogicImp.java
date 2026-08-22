@@ -2,10 +2,14 @@ package tss.logic.impl;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
+
+import tss.dto.TimesheetDTO;
 import tss.entity.Contract;
 import tss.entity.Timesheet;
 import tss.entity.TimesheetEntry;
@@ -15,6 +19,7 @@ import tss.entity.ContractStatus;
 import tss.entity.TimesheetFrequency;
 import tss.entity.TimesheetStatus;
 import tss.dao.ContractsDao;
+import tss.dao.TimeSheetEntriesDao;
 import tss.dto.HolidayDTO;
 import tss.entity.Holiday;
 import tss.logic.HolidayLogic;
@@ -27,6 +32,9 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
     @EJB
     private ContractsDao contractsDao;
+
+    @EJB
+    private TimeSheetEntriesDao timesheetEntriesDao;
 
     @EJB
     HolidayLogic holidayLogic;
@@ -103,6 +111,13 @@ public class TimesheetLogicImp implements TimesheetLogic {
     public List<HolidayDTO> checkForHolidays(LocalDate startDate, LocalDate endDate, String State) {
        return holidayLogic.findByStateAndRange(State, startDate, endDate);
     }
+
+    //holidays logic
+    /* public List<Holiday> checkForHolidays(Timesheet timeSheet, String State) {
+        LocalDate startDate = timeSheet.getStartDate();
+        LocalDate endDate = timeSheet.getEndDate();
+        return holidayLogic.findByStateAndRange(State, startDate, endDate);
+    } */
 
     @Override
     public Timesheet updateEntry(Long timesheetId, Long entryId, TimesheetEntry updatedEntry) {
@@ -318,4 +333,76 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         throw new IllegalArgumentException("No entry found with id: " + entryId);
     }
+
+    @Override
+    public List<TimesheetDTO> findByEmployeeUsername(String emailAddress) {
+        List<Timesheet> entities = timesheetDAO.findByEmployeeUsername(emailAddress);
+
+        List<TimesheetDTO> dtos = new ArrayList<>();
+
+        for (Timesheet t : entities) {
+            TimesheetDTO dto = new TimesheetDTO();
+            dto.setStartDate(t.getStartDate());
+            dto.setEndDate(t.getEndDate());
+            dto.setStatus(t.getStatus().toString());
+            dto.setHoursDue(t.getHoursDue());
+            dto.setSignedByEmployee(t.getSignedByEmployee());
+            dto.setSignedBySupervisor(t.getSignedBySupervisor());
+
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
+    @Override
+    public List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress) {
+        List<Timesheet> entities = timesheetDAO.findPendingArchivesForSecretary(emailAddress);
+
+        List<TimesheetDTO> dtos = new ArrayList<>();
+
+        for (Timesheet t : entities) {
+            TimesheetDTO dto = new TimesheetDTO();
+            dto.setId(t.getId());
+            dto.setStartDate(t.getStartDate());
+            dto.setEndDate(t.getEndDate());
+            dto.setStatus(t.getStatus().toString());
+            dto.setHoursDue(t.getHoursDue());
+            dto.setSignedByEmployee(t.getSignedByEmployee());
+            dto.setSignedBySupervisor(t.getSignedBySupervisor());
+
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
+    @Override
+    public void archiveTimesheet(Long timesheetId) {
+        Timesheet entity = timesheetDAO.findById(timesheetId);
+
+        if (entity != null) {
+            if (entity.getStatus() == TimesheetStatus.SIGNED_BY_SUPERVISOR) {
+                entity.setStatus(TimesheetStatus.ARCHIVED);
+                timesheetDAO.updateTimesheet(entity);
+
+                Contract contract = entity.getContract();
+                boolean allArchived = true;
+                for (Timesheet t : contract.getTimesheet()) {
+                    if (t.getStatus() != TimesheetStatus.ARCHIVED) {
+                        allArchived = false;
+                        break;
+                    }
+                }
+
+                if (allArchived) {
+                    contract.setStatus(ContractStatus.ARCHIVED);
+                    contractsDao.UpdateContract(contract);
+                }
+            } else {
+                throw new IllegalStateException("Timesheet must be SIGNED_BY_SUPERVISOR to be archived.");
+            }
+        }
+    }
+
 }

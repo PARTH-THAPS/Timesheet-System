@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class TimesheetDTO extends AbstractDTO {
+    private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
     private String status;
@@ -21,6 +22,14 @@ public class TimesheetDTO extends AbstractDTO {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public TimesheetDTO() {

@@ -1,6 +1,7 @@
 package tss.logic;
 
 import jakarta.ejb.Remote;
+import tss.dto.TimesheetDTO;
 import tss.entity.Contract;
 import java.util.List;
 import tss.entity.Timesheet;
@@ -31,4 +32,10 @@ public interface TimesheetLogic {
     Timesheet signBySupervisor(Long timesheetId);
 
     Timesheet requestChanges(Long timesheetId);
+
+    void archiveTimesheet(Long timesheetId);
+
+    List<TimesheetDTO> findByEmployeeUsername(String emailAddress);
+
+    List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress);
 }
