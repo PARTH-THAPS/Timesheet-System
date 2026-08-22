@@ -11,7 +11,7 @@ import tss.logic.PersonLogic;
 
 @Named("CreatePersonBean")
 @RequestScoped
-public class CreatePersonBean {
+public class createPersonBean {
 
     @EJB
     private PersonLogic personLogic;
