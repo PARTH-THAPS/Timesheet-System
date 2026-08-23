@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:ui="jakarta.faces.facelets">
+
+    <nav class="app-navigation">
+
+        <ul class="navigation-list">
+
+            <li>
+                <h:link
+                        outcome="/views/portal/home"
+                        styleClass="navigation-link">
+
+                    <i class="pi pi-home"></i>
+                    <span>Home</span>
+
+                </h:link>
+            </li>
+
+            <ui:fragment rendered="#{mockUserBean.hasRole('EMPLOYEE')}">
+
+                <li>
+                    <h:link
+                            outcome="/views/employee/timesheets"
+                            styleClass="navigation-link">
+
+                        <i class="pi pi-clock"></i>
+                        <span>Timesheets</span>
+
+                    </h:link>
+                </li>
+
+            </ui:fragment>
+            
+            <ui:fragment
+                    rendered="#{mockUserBean.hasRole('ASSISTANT')
+                            or mockUserBean.hasRole('SUPERVISOR')}">
+
+                <li>
+                    <h:link
+                            outcome="/views/assistant/contracts"
+                            styleClass="navigation-link">
+
+                        <i class="pi pi-file"></i>
+                        <span>Contracts</span>
+
+                    </h:link>
+                </li>
+
+            </ui:fragment>
+
+            <ui:fragment rendered="#{mockUserBean.hasRole('ADMIN')}">
+
+                <li>
+                    <h:link
+                            outcome="/views/admin/usersmgmt"
+                            styleClass="navigation-link">
+
+                        <i class="pi pi-users"></i>
+                        <span>Users</span>
+
+                    </h:link>
+                </li>
+
+            </ui:fragment>
+
+        </ul>
+
+    </nav>
+
+</ui:composition>

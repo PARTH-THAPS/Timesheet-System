@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="pageTitle">
+        Users
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        User Management
+    </ui:define>
+
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+    <ui:define name="headerActions">
+
+        <div class="user-info">
+
+            <span class="user-name">
+                #{mockUserBean.fullName}
+            </span>
+
+            <span class="user-role">
+                #{mockUserBean.role}
+            </span>
+
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <section class="page-section-header">
+
+            <div>
+                <h2>Users</h2>
+
+                <p class="text-muted">
+                    Manage registered users and their roles.
+                </p>
+            </div>
+
+            <p:button
+                    value="Add User"
+                    icon="pi pi-user-plus"
+                    outcome="/views/admin/edit-user"/>
+
+        </section>
+
+        <section class="card">
+
+            <h:form id="usersForm">
+
+                <p:dataTable
+                        id="usersTable"
+                        widgetVar="usersTable"
+                        value="#{PersonListBean.persons}"
+                        var="person"
+                        paginator="true"
+                        rows="10"
+                        stripedRows="true"
+                        sortMode="single"
+                        emptyMessage="No users found.">
+
+                    <p:column
+                            headerText="Name"
+                            sortBy="#{person.lastName}"
+                            filterBy="#{person.lastName}"
+                            filterMatchMode="contains">
+
+                        <h:outputText
+                                value="#{person.firstName} #{person.lastName}"/>
+
+                    </p:column>
+
+                    <p:column
+                            headerText="Email"
+                            sortBy="#{person.emailAddress}"
+                            filterBy="#{person.emailAddress}"
+                            filterMatchMode="contains">
+
+                        <h:outputText
+                                value="#{person.emailAddress}"/>
+
+                    </p:column>
+
+                    <p:column
+                            headerText="Role"
+                            sortBy="#{person.role}"
+                            filterBy="#{person.role}"
+                            filterMatchMode="exact">
+
+                        <f:facet name="filter">
+
+                            <p:selectOneMenu
+                                    onchange="PF('usersTable').filter()">
+
+                                <f:selectItem
+                                        itemLabel="All"
+                                        itemValue="#{null}"
+                                        noSelectionOption="true"/>
+
+                                <f:selectItems
+                                        value="#{PersonListBean.roles}"
+                                        var="role"
+                                        itemLabel="#{role}"
+                                        itemValue="#{role}"/>
+
+                            </p:selectOneMenu>
+
+                        </f:facet>
+
+                        <span class="role-badge">
+                            #{person.role}
+                        </span>
+
+                    </p:column>
+
+                    <p:column
+                            headerText="Consent"
+                            styleClass="table-small-column">
+
+                        <i class="#{person.consent
+                                ? 'pi pi-check text-success'
+                                : 'pi pi-times text-muted'}">
+                        </i>
+
+                    </p:column>
+
+                    <p:column
+                            headerText="Actions"
+                            styleClass="table-actions-column">
+
+                        <p:button
+                                icon="pi pi-pencil"
+                                title="Edit user"
+                                outcome="/views/admin/edit-user"
+                                styleClass="ui-button-secondary">
+
+                            <f:param
+                                    name="id"
+                                    value="#{person.id}"/>
+
+                        </p:button>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </h:form>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>

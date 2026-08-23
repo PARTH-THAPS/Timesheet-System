@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import tss.dto.HolidayDTO;
+import tss.entity.FederalState;
 import tss.entity.Holiday;
 import tss.logic.HolidayLogic;
 
@@ -48,7 +49,7 @@ public class HolidayRestEndpoint {
     @GET
     @Path("find/{state}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<HolidayDTO> getHolidayByYear(@PathParam("state") String state) {
+    public List<HolidayDTO> getHolidayByYear(@PathParam("state") FederalState state) {
         
         return holidayLogic.findByState(state);
     }
@@ -58,7 +59,7 @@ public class HolidayRestEndpoint {
     @GET
     @Path("find/{state}/range")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<HolidayDTO> getHolidaysByStateAndRange(@PathParam("state") String state,
+    public List<HolidayDTO> getHolidaysByStateAndRange(@PathParam("state") FederalState state,
             @QueryParam("startDate") String startDate,
             @QueryParam("endDate") String endDate) {
        
