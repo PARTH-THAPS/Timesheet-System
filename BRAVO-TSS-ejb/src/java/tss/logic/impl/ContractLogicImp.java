@@ -13,6 +13,7 @@ import tss.entity.ContractStatus;
 import tss.entity.TimesheetFrequency;
 import tss.logic.ContractLogic;
 import tss.entity.Contract;
+import tss.entity.FederalState;
 import tss.entity.Person;
 import tss.entity.Timesheet;
 import tss.entity.TimesheetStatus;
@@ -31,7 +32,7 @@ public class ContractLogicImp implements ContractLogic {
     TimesheetLogic timesheetLogic;
 
     @Override
-    public ContractDTO createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, PersonDTO person, String state) {
+    public ContractDTO createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, PersonDTO person, FederalState state) {
         validateContractDates(startDate, endDate);
         
         Person personEnt = personDao.findPersonById(person.getId());
@@ -52,7 +53,7 @@ public class ContractLogicImp implements ContractLogic {
         contract.setVacationDaysPerYear(vacationDaysPerYear);
         contract.setPerson(personEnt);
         if (state == null) {
-            contract.setState("Deutschland");
+            contract.setState(FederalState.RLP);
         } else {
             contract.setState(state);
         }
@@ -61,23 +62,63 @@ public class ContractLogicImp implements ContractLogic {
     }
 
     @Override
-    public ContractDTO updateContract(Contract updatedContract) {
+    public ContractDTO updateContract(ContractDTO updatedContract) {
         Contract contract = contractsDao.findContract(updatedContract.getId());
+
         if (contract == null) {
-            throw new IllegalArgumentException("No contract found with id: " + updatedContract.getId());
+            throw new IllegalArgumentException(
+                    "No contract found with id: " + updatedContract.getId()
+            );
         }
+
         if (contract.getStatus() != ContractStatus.PREPARED) {
-            throw new IllegalStateException("Contract can only be updated when status is PREPARED");
+            throw new IllegalStateException(
+                    "Contract can only be updated when status is PREPARED"
+            );
         }
+
+        validateContractDates(
+                updatedContract.getStartDate(),
+                updatedContract.getEndDate()
+        );
+
+        Person person = personDao.findPersonById(
+                updatedContract.getPersonId()
+        );
+
+        if (person == null) {
+            throw new IllegalArgumentException(
+                    "No person found with id: "
+                            + updatedContract.getPersonId()
+            );
+        }
+
+        contract.setName(updatedContract.getName());
         contract.setStartDate(updatedContract.getStartDate());
         contract.setEndDate(updatedContract.getEndDate());
         contract.setFrequency(updatedContract.getFrequency());
         contract.setHoursPerWeek(updatedContract.getHoursPerWeek());
-        contract.setVacationHours(updatedContract.getVacationHours());
-        contract.setHoursDue(updatedContract.getHoursDue());
-        contract.setWorkingDaysPerWeek(updatedContract.getWorkingDaysPerWeek());
-        contract.setVacationDaysPerYear(updatedContract.getVacationDaysPerYear());
+        contract.setWorkingDaysPerWeek(
+                updatedContract.getWorkingDaysPerWeek()
+        );
+        contract.setVacationDaysPerYear(
+                updatedContract.getVacationDaysPerYear()
+        );
+        contract.setState(updatedContract.getState());
+        contract.setPerson(person);
+
+        contract.setVacationHours(
+                vacationHours(
+                        updatedContract.getStartDate(),
+                        updatedContract.getEndDate(),
+                        updatedContract.getWorkingDaysPerWeek(),
+                        updatedContract.getVacationDaysPerYear(),
+                        updatedContract.getHoursPerWeek()
+                )
+        );
+
         contractsDao.UpdateContract(contract);
+
         return toDTO(contract);
     }
 
@@ -100,6 +141,14 @@ public class ContractLogicImp implements ContractLogic {
             throw new IllegalArgumentException("No contract found with id: " + contractId);
         }
         return toDTO(contract);
+    }
+    
+    @Override
+    public List<ContractDTO> findAllContracts() {
+        return contractsDao.findAllContracts()
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     public void CheckForArchivedTimesheet(Contract contract) {
@@ -165,23 +214,33 @@ public class ContractLogicImp implements ContractLogic {
     
     private ContractDTO toDTO(Contract c) {
         ContractDTO dto = new ContractDTO();
+
+        dto.setId(c.getId());
+
         dto.setUuid(c.getUuid());
         dto.setJpaVersion(c.getJpaVersion());
+
         dto.setName(c.getName());
         dto.setStartDate(c.getStartDate());
         dto.setEndDate(c.getEndDate());
         dto.setFrequency(c.getFrequency());
+
         dto.setHoursPerWeek(c.getHoursPerWeek());
         dto.setHoursDue(c.getHoursDue());
         dto.setVacationHours(c.getVacationHours());
+
         dto.setWorkingDaysPerWeek(c.getWorkingDaysPerWeek());
         dto.setVacationDaysPerYear(c.getVacationDaysPerYear());
+
         dto.setState(c.getState());
         dto.setStatus(c.getStatus());
         dto.setTerminationDate(c.getTerminationDate());
-        dto.setPersonUuid(c.getPerson() != null ? c.getPerson().getUuid() : null);
+
+        if (c.getPerson() != null) {
+            dto.setPersonId(c.getPerson().getId());
+            dto.setPersonUuid(c.getPerson().getUuid());
+        }
+
         return dto;
     }
-    
-    
 }

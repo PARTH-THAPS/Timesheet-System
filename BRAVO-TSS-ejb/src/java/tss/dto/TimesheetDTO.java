@@ -3,12 +3,13 @@ package tss.dto;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import tss.entity.TimesheetStatus;
 
 public class TimesheetDTO extends AbstractDTO {
     private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String status;
+    private TimesheetStatus status;
     private LocalDate signedByEmployee;
     private LocalDate signedBySupervisor;
     private double hoursDue;
@@ -52,11 +53,11 @@ public class TimesheetDTO extends AbstractDTO {
         this.endDate = endDate;
     }
 
-    public String getStatus() {
+    public TimesheetStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TimesheetStatus status) {
         this.status = status;
     }
 

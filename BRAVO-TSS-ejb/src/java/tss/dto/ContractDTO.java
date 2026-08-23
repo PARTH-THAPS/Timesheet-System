@@ -2,6 +2,7 @@ package tss.dto;
 
 import java.time.LocalDate;
 import tss.entity.ContractStatus;
+import tss.entity.FederalState;
 import tss.entity.TimesheetFrequency;
 
 public class ContractDTO extends AbstractDTO {
@@ -18,7 +19,7 @@ public class ContractDTO extends AbstractDTO {
     private int workingDaysPerWeek;
     private int vacationDaysPerYear;
     private Long personId;
-    private String state;
+    private FederalState state;
     private String personUuid;
 
     public Long getId() {
@@ -138,11 +139,11 @@ public class ContractDTO extends AbstractDTO {
         this.personId = personId;
     }
 
-    public String getState() {
+    public FederalState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(FederalState state) {
         this.state = state;
     }
     

@@ -1,6 +1,8 @@
 package tss.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import java.time.LocalDate;
@@ -17,7 +19,8 @@ public class Holiday extends AbstractEntity {
     private String Day;
     private LocalDate Date;
     private String Holiday;
-    private String State;
+    @Enumerated(EnumType.STRING)
+    private FederalState State;
     private int Year;
 
     public Holiday() {
@@ -55,11 +58,11 @@ public class Holiday extends AbstractEntity {
         this.Holiday = Holiday;
     }
 
-    public String getState() {
+    public FederalState getState() {
         return State;
     }
 
-    public void setState(String State) {
+    public void setState(FederalState State) {
         this.State = State;
     }
 }

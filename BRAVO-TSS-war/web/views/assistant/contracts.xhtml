@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="pageTitle">
+        Contracts
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        Contract Management
+    </ui:define>
+
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+    <ui:define name="headerActions">
+
+        <div class="user-info">
+            <span class="user-name">
+                #{mockUserBean.fullName}
+            </span>
+
+            <span class="user-role">
+                #{mockUserBean.role}
+            </span>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <section class="page-section-header">
+
+            <div>
+                <h2>Contracts</h2>
+
+                <p class="text-muted">
+                    Manage employment contracts.
+                </p>
+            </div>
+
+            <p:button
+                    value="Add Contract"
+                    icon="pi pi-plus"
+                    outcome="/views/assistant/edit-contract"/>
+
+        </section>
+
+        <section class="card">
+
+            <h:form id="contractsForm">
+
+                <p:dataTable
+                        id="contractsTable"
+                        widgetVar="contractsTable"
+                        value="#{contractListBean.contracts}"
+                        var="contract"
+                        paginator="true"
+                        rows="10"
+                        stripedRows="true"
+                        sortMode="single"
+                        emptyMessage="No contracts found.">
+
+                    <p:column
+                            headerText="Name"
+                            sortBy="#{contract.name}"
+                            filterBy="#{contract.name}"
+                            filterMatchMode="contains">
+
+                        <h:outputText value="#{contract.name}"/>
+
+                    </p:column>
+
+                    <p:column
+                            headerText="Employee"
+                            sortBy="#{contractListBean.getPersonName(contract.personId)}"
+                            filterBy="#{contractListBean.getPersonName(contract.personId)}"
+                            filterMatchMode="contains">
+
+                        <h:outputText
+                                value="#{contractListBean.getPersonName(contract.personId)}"/>
+
+                    </p:column>
+
+                    <p:column
+                            headerText="Start"
+                            sortBy="#{contract.startDate}">
+
+                        <h:outputText value="#{contract.startDate}">
+                            <f:convertDateTime
+                                    type="localDate"
+                                    pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+
+                    </p:column>
+
+                    <p:column
+                            headerText="End"
+                            sortBy="#{contract.endDate}">
+
+                        <h:outputText value="#{contract.endDate}">
+                            <f:convertDateTime
+                                    type="localDate"
+                                    pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+
+                    </p:column>
+
+                    <p:column
+                            headerText="Frequency"
+                            sortBy="#{contract.frequency}">
+
+                        <h:outputText value="#{contract.frequency}"/>
+
+                    </p:column>
+
+                    <p:column
+                            headerText="Hours / Week"
+                            sortBy="#{contract.hoursPerWeek}">
+
+                        <h:outputText value="#{contract.hoursPerWeek}"/>
+                    </p:column>
+
+                    <p:column
+                            headerText="Status"
+                            sortBy="#{contract.status}"
+                            filterBy="#{contract.status}"
+                            filterMatchMode="exact">
+
+                        <f:facet name="filter">
+
+                            <p:selectOneMenu
+                                    onchange="PF('contractsTable').filter()">
+
+                                <f:selectItem
+                                        itemLabel="All"
+                                        itemValue="#{null}"
+                                        noSelectionOption="true"/>
+
+                                <f:selectItems
+                                        value="#{contractListBean.statuses}"
+                                        var="status"
+                                        itemLabel="#{status}"
+                                        itemValue="#{status}"/>
+
+                            </p:selectOneMenu>
+
+                        </f:facet>
+
+                        <span class="status-badge">
+                            #{contract.status}
+                        </span>
+
+                    </p:column>
+
+                    <p:column
+                            headerText="Actions"
+                            styleClass="table-actions-column">
+
+                        <p:button
+                                icon="pi pi-eye"
+                                title="View contract"
+                                outcome="/views/assistant/edit-contract"
+                                styleClass="ui-button-secondary">
+
+                            <f:param
+                                    name="id"
+                                    value="#{contract.id}"/>
+
+                        </p:button>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </h:form>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>
