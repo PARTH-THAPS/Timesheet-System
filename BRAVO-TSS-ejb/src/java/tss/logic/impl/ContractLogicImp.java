@@ -50,7 +50,7 @@ public class ContractLogicImp implements ContractLogic {
         contract.setHoursDue(hoursDue);
         contract.setWorkingDaysPerWeek(workingDaysPerWeek);
         contract.setVacationDaysPerYear(vacationDaysPerYear);
-        contract.setPerson(personEnt);
+        contract.setEmployee(personEnt);
         if (state == null) {
             contract.setState("Deutschland");
         } else {
@@ -179,7 +179,7 @@ public class ContractLogicImp implements ContractLogic {
         dto.setState(c.getState());
         dto.setStatus(c.getStatus());
         dto.setTerminationDate(c.getTerminationDate());
-        dto.setPersonUuid(c.getPerson() != null ? c.getPerson().getUuid() : null);
+        dto.setPersonUuid(c.getEmployee() != null ? c.getEmployee().getUuid() : null);
         return dto;
     }
     

@@ -9,6 +9,9 @@ import tss.dto.PersonDTO;
 import tss.entity.Role;
 import tss.logic.PersonLogic;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Named("CreatePersonBean")
 @RequestScoped
 public class createPersonBean {
@@ -22,13 +25,15 @@ public class createPersonBean {
         try {
             //Role role = Role.valueOf(personDto.getRole().toUpperCase());
 
+            Set<Role> roles = new HashSet<>();
+            roles.add(Role.GUEST);
             PersonDTO created = personLogic.createPerson(
                     personDto.getFirstName(),
                     personDto.getLastName(),
                     personDto.getEmailAddress(),
                     personDto.isConsent(),
                     personDto.getPassword(),
-                    Role.GUEST
+                    roles
             );
 
             FacesContext.getCurrentInstance().addMessage(null,

@@ -2,10 +2,12 @@ package tss.logic.impl;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import tss.dao.PersonDao;
-import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
 import tss.entity.Person;
 import tss.entity.Role;
@@ -19,14 +21,14 @@ public class PersonLogicImp implements PersonLogic {
     private PersonDao personDao;
 
     @Override
-    public PersonDTO createPerson(String firstName, String lastName, String emailAddress, boolean consent, String password, Role role) {
+    public PersonDTO createPerson(String firstName, String lastName, String emailAddress, boolean consent, String password, Set<Role> role) {
         Person person = new Person();
         person.setFirstName(firstName);
         person.setLastName(lastName);
         person.setEmailAddress(emailAddress);
         person.setPassword(PasswordHash.hashPassword(password));
         person.setConsent(consent);
-        person.setRole(role);
+        person.setRoles(role);
 
         personDao.createPerson(person);
 
@@ -59,7 +61,7 @@ public class PersonLogicImp implements PersonLogic {
     person.setLastName(dto.getLastName());
     person.setEmailAddress(dto.getEmailAddress());
     person.setConsent(dto.isConsent());
-    person.setRole(dto.getRole());
+    person.setRoles(dto.getRole());
     return personDto(personDao.updatePerson(person));
     }
 
