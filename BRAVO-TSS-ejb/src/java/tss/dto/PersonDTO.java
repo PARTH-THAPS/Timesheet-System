@@ -2,6 +2,8 @@ package tss.dto;
 
 import tss.entity.Role;
 
+import java.util.Set;
+
 
 public class PersonDTO extends AbstractDTO {
     private String firstName;
@@ -9,7 +11,7 @@ public class PersonDTO extends AbstractDTO {
     private String emailAddress;
     private boolean consent;
     private String password;
-    private Role role;
+    private Set<Role> role;
     private Long id;
 
     public Long getId() {
@@ -63,11 +65,11 @@ public class PersonDTO extends AbstractDTO {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
+    public Set<Role> getRole() {
+        return this.role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(Set<Role> role) {
         this.role = role;
     }
 }

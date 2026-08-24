@@ -1,93 +1,127 @@
 package tss.entity;
-import jakarta.json.bind.annotation.JsonbTransient;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
+
+import jakarta.persistence.*;
+
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
-@NamedQueries({@NamedQuery( name ="getUserByEmail",query="SELECT p from Person p WHERE p.emailAddress=:emailAddress ")})
+@NamedQueries({@NamedQuery(name = "getUserByEmail", query = "SELECT p from Person p WHERE p.emailAddress=:emailAddress ")})
 @Entity
-public class Person extends AbstractEntity  implements Serializable  {
+public class Person extends AbstractEntity implements Serializable {
     private String firstName;
     private String lastName;
     @Column(unique = true)
     private String emailAddress;
     private boolean consent;
-    
-    @Column(nullable=false)
-    private String password; 
+
+    @Column(nullable = false)
+    private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
-    
-    @OneToMany(mappedBy="person")
-//    @JsonbTransient
-    private List<Contract> contract ;
+    private Set<Role> roles;
 
-  
+    @OneToMany(mappedBy = "employee")
+    private Set<Contract> employeeContract;
+
+    @OneToMany(mappedBy = "supervisor")
+    private Set<Contract> supervisorContract;
+
+    @ManyToMany(mappedBy = "secretaries")
+    private Set<Contract> secretaryContract;
+
+    @ManyToMany(mappedBy = "assistants")
+    private Set<Contract> assistantContract;
+
     public Person() {
-     
+        this.roles = new HashSet<>();
+        this.employeeContract = new HashSet<>();
+        this.supervisorContract = new HashSet<>();
+        this.secretaryContract = new HashSet<>();
+        this.assistantContract = new HashSet<>();
     }
 
     public String getFirstName() {
         return firstName;
     }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+
     public String getLastName() {
         return lastName;
     }
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
     public String getEmailAddress() {
         return emailAddress;
     }
+
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
+
     public boolean isConsent() {
         return consent;
     }
+
     public void setConsent(boolean consent) {
         this.consent = consent;
     }
-   
-    public Role getRole() {
-        return role;
-    }
-    public void setRole(Role role) {
-        this.role = role;
-    }
-    
-    public String getPassword(){
-    return password;
-    
-    
-}
-    public List<Contract> getContract() {
-        return contract;
+
+    public Set<Role> getRole() {
+        return roles;
     }
 
-    public void setContract(List<Contract> contract) {
-        this.contract = contract;
+    public void setRoles(Role... role) {
+        this.roles.addAll(Arrays.asList(role));
     }
 
-public void setPassword(String password){
-    this.password = password;
+    public void setRoles(Set<Role> role) {
+        this.roles.addAll(role);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Set<Contract> getEmployeeContract() {
+        return this.employeeContract;
+    }
+
+    public void setEmployeeContract(Set<Contract> contract) {
+        this.employeeContract = contract;
+    }
+
+    public Set<Contract> getSupervisorContract() {
+        return this.supervisorContract;
+    }
+
+    public void setSupervisorContract(Set<Contract> contract) {
+        this.supervisorContract = contract;
+    }
+
+    public Set<Contract> getSecretaryContract() {
+        return secretaryContract;
+    }
+
+    public void setSecretaryContract(Set<Contract> secretaryContract) {
+        this.secretaryContract = secretaryContract;
+    }
+
+    public Set<Contract> getAssistantContract() {
+        return assistantContract;
+    }
+
+    public void setAssistantContract(Set<Contract> assistantContract) {
+        this.assistantContract = assistantContract;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
