@@ -4,12 +4,21 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class TimesheetEntryDTO extends AbstractDTO {
+    private Long id;
     private LocalDate entryDate;
     private LocalTime startTime;
     private LocalTime endTime;
     private double hours;
     private String description;
     private String type;
+    
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
     
     public LocalDate getEntryDate() {
         return entryDate;

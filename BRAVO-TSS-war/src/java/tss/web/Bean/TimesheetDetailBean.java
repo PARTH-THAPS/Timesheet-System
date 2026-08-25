@@ -8,119 +8,169 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import tss.dto.TimesheetDTO;
 import tss.dto.TimesheetEntryDTO;
+import tss.entity.ReportType;
+import tss.entity.TimesheetStatus;
 import tss.logic.TimesheetLogic;
 
-@Named("timesheetDetailBean")
+@Named
 @ViewScoped
 public class TimesheetDetailBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @EJB
-    private TimesheetLogic tl;
-    
-    private Long timesheetId;
+    private TimesheetLogic timesheetLogic;
+
+    private Long id;
 
     private TimesheetDTO timesheet;
 
-    private TimesheetEntryDTO newEntry = new TimesheetEntryDTO();
+    private TimesheetEntryDTO entry;
+    
+    
 
     public void init() {
-        if (timesheetId != null && timesheet == null) {
-            loadTimesheet();
+        if (timesheet != null) {
+            return;
+        }
+
+        if (id == null) {
+            throw new IllegalArgumentException(
+                    "No timesheet id provided."
+            );
+        }
+
+        timesheet = timesheetLogic.getTimesheetById(id);
+
+        if (timesheet == null) {
+            throw new IllegalArgumentException(
+                    "No timesheet found with id: " + id
+            );
         }
     }
 
-    private void loadTimesheet() {
-        timesheet = tl.getTimesheetById(timesheetId);
+    public void prepareNewEntry() {
+        entry = new TimesheetEntryDTO();
     }
 
-
-    public String addEntry() {
+    public void saveEntry() {
         try {
-            timesheet = tl.addEntry(timesheetId, newEntry);
-            newEntry = new TimesheetEntryDTO(); 
-            addMessage(FacesMessage.SEVERITY_INFO, "Entry added", "The entry was added successfully.");
-            return null; 
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Could not add entry", e.getMessage());
-            return null;
+            timesheetLogic.addEntry(timesheet.getId(),entry);
+            showInfo("Entry added", "The entry was added successfully.");;
+
+            reload();
+            prepareNewEntry();
+
+        } catch (Exception e) {
+            showError(
+                    "Could not save entry",
+                    e.getMessage()
+            );
         }
     }
 
-    public String updateEntry(Long entryId, TimesheetEntryDTO updatedEntry) {
+    public void deleteEntry(TimesheetEntryDTO entry) {
         try {
-            timesheet = tl.updateEntry(timesheetId, entryId, updatedEntry);
-            addMessage(FacesMessage.SEVERITY_INFO, "Entry updated", "The entry was updated successfully.");
-            return null;
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Could not update entry", e.getMessage());
-            return null;
+            timesheetLogic.removeEntry(timesheet.getId(),entry.getId());
+
+            reload();
+            showInfo("Entry removed", "The entry was removed successfully.");
+
+        } catch (Exception e) {
+            showError(
+                    "Could not delete entry",
+                    e.getMessage()
+            );
         }
     }
-
-    public String removeEntry(Long entryId) {
-        try {
-            tl.removeEntry(timesheetId, entryId);
-            loadTimesheet(); 
-            addMessage(FacesMessage.SEVERITY_INFO, "Entry removed", "The entry was removed successfully.");
-            return null;
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Could not remove entry", e.getMessage());
-            return null;
-        }
-    }
-
-
-    public String signByEmployee() {
-        return doTransition(() -> tl.signByEmployee(timesheetId), "Timesheet signed", "You signed this timesheet.");
-    }
-
-    public String revokeEmployeeSignature() {
-        return doTransition(() -> tl.revokeEmployeeSignature(timesheetId), "Signature revoked", "Your signature was revoked.");
-    }
-
-    public String signBySupervisor() {
-        return doTransition(() -> tl.signBySupervisor(timesheetId), "Timesheet approved", "You signed this timesheet as supervisor.");
-    }
-
-    public String requestChanges() {
-        return doTransition(() -> tl.requestChanges(timesheetId), "Changes requested", "The employee can now edit this timesheet again.");
-    }
-
     
-    private String doTransition(java.util.function.Supplier<TimesheetDTO> action, String summary, String detail) {
+    public void signByEmployee() {
         try {
-            timesheet = action.get();
-            addMessage(FacesMessage.SEVERITY_INFO, summary, detail);
-            return null;
+            timesheetLogic.signByEmployee(timesheet.getId());
+            reload();
+            showInfo("Timesheet signed", "You signed this timesheet.");
         } catch (IllegalArgumentException | IllegalStateException e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Action failed", e.getMessage());
-            return null;
+            showError("Could not sign", e.getMessage());
         }
     }
 
-    private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, detail));
+    public void revokeEmployeeSignature() {
+        try {
+            timesheetLogic.revokeEmployeeSignature(timesheet.getId());
+            reload();
+            showInfo("Signature revoked", "Your signature was revoked.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            showError("Could not revoke signature", e.getMessage());
+        }
     }
 
-    public Long getTimesheetId() {
-        return timesheetId;
+    private void reload() {
+        timesheet = timesheetLogic.getTimesheetById(id);
     }
 
-    public void setTimesheetId(Long timesheetId) {
-        this.timesheetId = timesheetId;
+   
+    public double getReportedHours() {
+        if (timesheet == null || timesheet.getEntries() == null) {
+            return 0;
+        }
+
+        return timesheet.getEntries()
+                .stream()
+                .mapToDouble(TimesheetEntryDTO::getHours)
+                .sum();
+    }
+
+    public double getBalance() {
+        if (timesheet == null) {
+            return 0;
+        }
+
+        return getReportedHours() - timesheet.getHoursDue();
+    }
+
+    public boolean isEditable() {
+        return timesheet != null
+                && timesheet.getStatus()
+                == TimesheetStatus.IN_PROGRESS;
+    }
+
+    public ReportType[] getReportTypes() {
+        return ReportType.values();
+    }
+    
+    private void showInfo(String summary, String detail) {
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
+    }
+
+    private void showError(
+            String summary,
+            String detail) {
+
+        FacesContext.getCurrentInstance()
+                .addMessage(
+                        null,
+                        new FacesMessage(
+                                FacesMessage.SEVERITY_ERROR,
+                                summary,
+                                detail
+                        )
+                );
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public TimesheetDTO getTimesheet() {
         return timesheet;
     }
 
-    public TimesheetEntryDTO getNewEntry() {
-        return newEntry;
-    }
-
-    public void setNewEntry(TimesheetEntryDTO newEntry) {
-        this.newEntry = newEntry;
+    public TimesheetEntryDTO getEntry() {
+        return entry;
     }
 }
