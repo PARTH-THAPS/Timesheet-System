@@ -21,6 +21,7 @@ import tss.entity.TimesheetStatus;
 import tss.dao.ContractsDao;
 import tss.dao.TimeSheetEntriesDao;
 import tss.dto.HolidayDTO;
+import tss.entity.FederalState;
 import tss.entity.Holiday;
 import tss.entity.ReportType;
 import tss.logic.HolidayLogic;
@@ -116,7 +117,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
     }
 
 //     holidays logic
-    public List<HolidayDTO> checkForHolidays(LocalDate startDate, LocalDate endDate, String State) {
+    public List<HolidayDTO> checkForHolidays(LocalDate startDate, LocalDate endDate, FederalState State) {
        return holidayLogic.findByStateAndRange(State, startDate, endDate);
     }
 
@@ -422,7 +423,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
             TimesheetDTO dto = new TimesheetDTO();
             dto.setStartDate(t.getStartDate());
             dto.setEndDate(t.getEndDate());
-            dto.setStatus(t.getStatus().toString());
+            dto.setStatus(t.getStatus());
             dto.setHoursDue(t.getHoursDue());
             dto.setSignedByEmployee(t.getSignedByEmployee());
             dto.setSignedBySupervisor(t.getSignedBySupervisor());
@@ -444,7 +445,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
             dto.setId(t.getId());
             dto.setStartDate(t.getStartDate());
             dto.setEndDate(t.getEndDate());
-            dto.setStatus(t.getStatus().toString());
+            dto.setStatus(t.getStatus());
             dto.setHoursDue(t.getHoursDue());
             dto.setSignedByEmployee(t.getSignedByEmployee());
             dto.setSignedBySupervisor(t.getSignedBySupervisor());
@@ -490,7 +491,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
         dto.setJpaVersion(ts.getJpaVersion());
         dto.setStartDate(ts.getStartDate());
         dto.setEndDate(ts.getEndDate());
-        dto.setStatus(ts.getStatus() != null ? ts.getStatus().name() : null);
+        dto.setStatus(ts.getStatus() != null ? ts.getStatus() : null);
         dto.setSignedByEmployee(ts.getSignedByEmployee());
         dto.setSignedBySupervisor(ts.getSignedBySupervisor());
         dto.setHoursDue(ts.getHoursDue());

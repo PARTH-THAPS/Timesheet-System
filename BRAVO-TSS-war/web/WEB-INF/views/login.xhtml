@@ -1,53 +1,83 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<ui:composition
-    template="/WEB-INF/templates/page-layout.xhtml"
-    xmlns:b="http://bootsfaces.net/ui"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:p="http://primefaces.org/ui">
+<?xml version="1.0" encoding="UTF-8"?>
 
-    <ui:param name="pageHeadline" value="${msg.loginPageHeadline}"/>
+<ui:composition
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="pageTitle">
+        Login
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        Login
+    </ui:define>
 
     <ui:define name="content">
 
-        <form class="form form-horizontal" role="form" method="post" action="j_security_check" name="loginForm">
-            <div class="field grid align-items-baseline">
-                <label class="ui-outputlabel ui-widget col-2 ui-required" for="username">
-                    <span class="ui-outputlabel-label">${msg.loginUsernameLabel}</span>
-                    <span class="ui-outputlabel-rfi">*</span>
-                </label>
-                <input id="username" name="j_username" type="text"
-                       class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1 ui-state-filled" aria-required="true"
-                       placeholder="${msg.loginUsernamePlaceholder}"/>
+        <section class="auth-container">
+
+            <div class="card auth-card">
+
+                <p class="text-muted auth-description">
+                    Sign in to access BRAVO-TSS.
+                </p>
+
+                <form>
+
+                    <div class="form-field">
+
+                        <label for="username">
+                            Email
+                        </label>
+
+                        <input
+                                id="username"
+                                type="email"
+                                class="form-input"
+                                placeholder="name@example.com"/>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <input
+                                id="password"
+                                type="password"
+                                class="form-input"
+                                placeholder="Password"/>
+
+                    </div>
+
+                    <div class="form-actions auth-actions">
+
+                        <button
+                                type="button"
+                                class="button button-primary">
+                            Log In
+                        </button>
+
+                    </div>
+
+                </form>
+
+                <p class="auth-footer">
+                    No account yet?
+                    <h:link
+                            outcome="/signup"
+                            value="Create an account"/>
+                </p>
+
             </div>
 
-            <div class="field grid align-items-baseline">
-                <label class="ui-outputlabel ui-widget col-2 ui-required" for="password">
-                    <span class="ui-outputlabel-label">${msg.loginPasswordLabel}</span>
-                    <span class="ui-outputlabel-rfi">*</span>
-                </label>
-                <input id="password" name="j_password" type="password"
-                       class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all col-4 p-1 ui-state-filled" aria-required="true"
-                       placeholder="${msg.loginPasswordPlaceholder}"/>
-            </div>
-
-            <button id="loginButton"
-                    class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left"
-                    type="submit">
-                <span class="ui-button-icon-left ui-icon ui-c pi pi-sign-in"></span>
-                <span class="ui-button-text ui-c">${msg.loginButtonLabel}</span>
-            </button>
-        </form>
-
-
-        <div class="field grid align-items-baseline">
-            <p>
-                ${msg.loginSignupPrompt}
-                <a id="signupLink" href="signup.xhtml">${msg.loginSignupLinkLabel}</a>
-            </p>
-        </div>
+        </section>
 
     </ui:define>
+
 </ui:composition>

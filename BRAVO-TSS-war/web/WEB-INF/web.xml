@@ -38,7 +38,7 @@
         <mime-type>application/ttf</mime-type>
     </mime-mapping>
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
     <security-constraint>
         <display-name>Enforce HTTPS</display-name>
@@ -52,6 +52,7 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
+    <!--
     <security-constraint>
         <display-name>Authenticated access to employee pages</display-name>
         <web-resource-collection>
@@ -112,6 +113,23 @@
             <role-name>ADMIN</role-name>
         </auth-constraint>
     </security-constraint>
+    <security-constraint>
+        <display-name>Protected Pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Protected Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/portal/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description/>
+            <role-name>EMPLOYEE</role-name>
+            <role-name>SUPERVISOR</role-name>
+            <role-name>ASSISTANT</role-name>
+            <role-name>SECRETARY</role-name>
+            <role-name>ADMIN</role-name>
+        </auth-constraint>
+    </security-constraint>
+    -->
     <login-config>
         <auth-method>FORM</auth-method>
         <realm-name>bravo-tss</realm-name>

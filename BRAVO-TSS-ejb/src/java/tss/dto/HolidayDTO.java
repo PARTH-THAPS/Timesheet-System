@@ -1,20 +1,21 @@
 package tss.dto;
 
 import java.time.LocalDate;
+import tss.entity.FederalState;
 
 public class HolidayDTO extends AbstractDTO {
 
     private String day;
     private LocalDate date;
     private String holiday;
-    private String state;
+    private FederalState state;
     private int year;
     private Long id;
 
     public HolidayDTO() {
     }
 
-    public HolidayDTO(String day, LocalDate date, String holiday, String state, int year) {
+    public HolidayDTO(String day, LocalDate date, String holiday, FederalState state, int year) {
         this.day = day;
         this.date = date;
         this.holiday = holiday;
@@ -54,11 +55,11 @@ public class HolidayDTO extends AbstractDTO {
         this.holiday = holiday;
     }
 
-    public String getState() {
+    public FederalState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(FederalState state) {
         this.state = state;
     }
 

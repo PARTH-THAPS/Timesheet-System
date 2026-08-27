@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <f:metadata>
+
+        <f:viewParam
+                name="id"
+                value="#{contractEditBean.id}"/>
+
+        <f:viewAction
+                action="#{contractEditBean.init}"/>
+
+    </f:metadata>
+
+    <ui:define name="pageTitle">
+        #{contractEditBean.newContract
+                ? 'Add Contract'
+                : 'Contract'}
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        #{contractEditBean.newContract
+                ? 'Add Contract'
+                : 'Contract'}
+    </ui:define>
+
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+    <ui:define name="headerActions">
+
+        <div class="user-info">
+            <span class="user-name">
+                #{mockUserBean.fullName}
+            </span>
+
+            <span class="user-role">
+                #{mockUserBean.role}
+            </span>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <section class="card contract-form-card">
+
+            <h:form id="contractForm">
+
+                <p:messages
+                        showDetail="true"
+                        closable="true"/>
+
+                <ui:fragment rendered="#{not contractEditBean.newContract}">
+
+                    <div class="contract-header">
+
+                        <div>
+                            <span class="text-muted">
+                                Contract status
+                            </span>
+
+                            <span class="status-badge">
+                                #{contractEditBean.contract.status}
+                            </span>
+                        </div>
+
+                    </div>
+
+                </ui:fragment>
+
+                <div class="form-grid">
+
+                    <div class="form-field form-field-wide">
+
+                        <p:outputLabel
+                                for="name"
+                                value="Contract name"/>
+
+                        <p:inputText
+                                id="name"
+                                value="#{contractEditBean.contract.name}"
+                                required="true"
+                                disabled="#{not contractEditBean.editable}"
+                                styleClass="form-input"/>
+
+                    </div>
+
+                    <div class="form-field form-field-wide">
+
+                        <p:outputLabel
+                                for="person"
+                                value="Employee"/>
+
+                        <p:selectOneMenu
+                                id="person"
+                                value="#{contractEditBean.contract.personId}"
+                                required="true"
+                                disabled="#{not contractEditBean.editable}"
+                                styleClass="form-input">
+
+                            <f:selectItem
+                                    itemLabel="Select employee"
+                                    itemValue="#{null}"
+                                    noSelectionOption="true"/>
+
+                            <f:selectItems
+                                    value="#{contractEditBean.persons}"
+                                    var="person"
+                                    itemValue="#{person.id}"
+                                    itemLabel="#{person.firstName} #{person.lastName}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <p:outputLabel
+                                for="startDate"
+                                value="Start date"/>
+
+                        <p:datePicker
+                                id="startDate"
+                                value="#{contractEditBean.contract.startDate}"
+                                pattern="dd.MM.yyyy"
+                                required="true"
+                                disabled="#{not contractEditBean.editable}"
+                                showIcon="true"/>
+
+                        <small class="text-muted">
+                            Must be the first day of a month.
+                        </small>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <p:outputLabel
+                                for="endDate"
+                                value="End date"/>
+
+                        <p:datePicker
+                                id="endDate"
+                                value="#{contractEditBean.contract.endDate}"
+                                pattern="dd.MM.yyyy"
+                                required="true"
+                                disabled="#{not contractEditBean.editable}"
+                                showIcon="true"/>
+
+                        <small class="text-muted">
+                            Must be the last day of a month.
+                        </small>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <p:outputLabel
+                                for="frequency"
+                                value="Timesheet frequency"/>
+
+                        <p:selectOneMenu
+                                id="frequency"
+                                value="#{contractEditBean.contract.frequency}"
+                                required="true"
+                                disabled="#{not contractEditBean.editable}"
+                                styleClass="form-input">
+
+                            <f:selectItems
+                                    value="#{contractEditBean.frequencies}"
+                                    var="frequency"
+                                    itemLabel="#{frequency}"
+                                    itemValue="#{frequency}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <p:outputLabel
+                                for="hoursPerWeek"
+                                value="Hours per week"/>
+
+                        <p:inputNumber
+                                id="hoursPerWeek"
+                                value="#{contractEditBean.contract.hoursPerWeek}"
+                                minValue="0"
+                                decimalPlaces="2"
+                                required="true"
+                                disabled="#{not contractEditBean.editable}"/>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <p:outputLabel
+                                for="workingDays"
+                                value="Working days per week"/>
+
+                        <p:inputNumber
+                                id="workingDays"
+                                value="#{contractEditBean.contract.workingDaysPerWeek}"
+                                minValue="1"
+                                maxValue="7"
+                                decimalPlaces="0"
+                                required="true"
+                                disabled="#{not contractEditBean.editable}"/>
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <p:outputLabel
+                                for="vacationDays"
+                                value="Vacation days per year"/>
+
+                        <p:inputNumber
+                                id="vacationDays"
+                                value="#{contractEditBean.contract.vacationDaysPerYear}"
+                                minValue="0"
+                                decimalPlaces="0"
+                                required="true"
+                                disabled="#{not contractEditBean.editable}"/>
+
+                    </div>
+
+                    <div class="form-field form-field-wide">
+
+                        <p:outputLabel
+                                for="state"
+                                value="Federal state"/>
+
+                        <p:selectOneMenu
+                                id="state"
+                                value="#{contractEditBean.contract.state}"
+                                required="true"
+                                disabled="#{not contractEditBean.editable}"
+                                styleClass="form-input">
+
+                            <f:selectItems
+                                    value="#{contractEditBean.states}"
+                                    var="state"
+                                    itemValue="#{state}"
+                                    itemLabel="#{state.name()}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                </div>
+
+                <ui:fragment rendered="#{not contractEditBean.newContract}">
+
+                    <section class="contract-statistics">
+
+                        <h3>Contract Overview</h3>
+
+                        <div class="statistics-grid">
+
+                            <div class="statistic">
+
+                                <span class="statistic-label">
+                                    Hours due
+                                </span>
+
+                                <strong class="statistic-value">
+                                    #{contractEditBean.contract.hoursDue} h
+                                </strong>
+
+                            </div>
+
+                            <div class="statistic">
+
+                                <span class="statistic-label">
+                                    Vacation hours
+                                </span>
+
+                                <strong class="statistic-value">
+                                    #{contractEditBean.contract.vacationHours} h
+                                </strong>
+
+                            </div>
+
+                            <ui:fragment
+                                    rendered="#{not empty contractEditBean.contract.terminationDate}">
+
+                                <div class="statistic">
+
+                                    <span class="statistic-label">
+                                        Termination date
+                                    </span>
+
+                                    <strong class="statistic-value">
+
+                                        <h:outputText
+                                                value="#{contractEditBean.contract.terminationDate}">
+
+                                            <f:convertDateTime
+                                                    type="localDate"
+                                                    pattern="dd.MM.yyyy"/>
+
+                                        </h:outputText>
+
+                                    </strong>
+
+                                </div>
+
+                            </ui:fragment>
+
+                        </div>
+
+                    </section>
+
+                </ui:fragment>
+
+                <div class="form-actions">
+
+                    <p:commandButton
+                            value="Save"
+                            icon="pi pi-save"
+                            action="#{contractEditBean.save}"
+                            ajax="false"
+                            rendered="#{contractEditBean.editable}"/>
+
+                    <p:commandButton
+                            value="Start Contract"
+                            icon="pi pi-play"
+                            action="#{contractEditBean.start}"
+                            ajax="false"
+                            rendered="#{not contractEditBean.newContract
+                                    and contractEditBean.prepared}"
+                            styleClass="ui-button-success">
+
+                        <p:confirm
+                                header="Start Contract"
+                                message="Starting the contract will create its timesheets. Continue?"
+                                icon="pi pi-exclamation-triangle"/>
+
+                    </p:commandButton>
+
+                    <p:commandButton
+                            value="Terminate Contract"
+                            icon="pi pi-stop"
+                            action="#{contractEditBean.terminate}"
+                            ajax="false"
+                            rendered="#{contractEditBean.started}"
+                            styleClass="ui-button-warning">
+
+                        <p:confirm
+                                header="Terminate Contract"
+                                message="Do you really want to terminate this contract?"
+                                icon="pi pi-exclamation-triangle"/>
+
+                    </p:commandButton>
+
+                    <p:commandButton
+                            value="Delete"
+                            icon="pi pi-trash"
+                            action="#{contractEditBean.delete}"
+                            ajax="false"
+                            rendered="#{not contractEditBean.newContract
+                                    and contractEditBean.prepared}"
+                            styleClass="ui-button-danger">
+
+                        <p:confirm
+                                header="Delete Contract"
+                                message="Do you really want to delete this contract?"
+                                icon="pi pi-exclamation-triangle"/>
+
+                    </p:commandButton>
+
+                    <p:commandButton
+                            value="Back"
+                            icon="pi pi-arrow-left"
+                            action="#{contractEditBean.cancel}"
+                            immediate="true"
+                            ajax="false"
+                            styleClass="ui-button-secondary"/>
+
+                    <p:confirmDialog global="true">
+
+                        <p:commandButton
+                                value="Yes"
+                                type="button"
+                                styleClass="ui-confirmdialog-yes"
+                                icon="pi pi-check"/>
+
+                        <p:commandButton
+                                value="No"
+                                type="button"
+                                styleClass="ui-confirmdialog-no ui-button-secondary"
+                                icon="pi pi-times"/>
+
+                    </p:confirmDialog>
+
+                </div>
+
+            </h:form>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>
