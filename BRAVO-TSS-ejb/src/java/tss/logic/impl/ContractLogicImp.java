@@ -51,7 +51,7 @@ public class ContractLogicImp implements ContractLogic {
         contract.setHoursDue(hoursDue);
         contract.setWorkingDaysPerWeek(workingDaysPerWeek);
         contract.setVacationDaysPerYear(vacationDaysPerYear);
-        contract.setPerson(personEnt);
+        contract.setEmployee(personEnt);
         if (state == null) {
             contract.setState(FederalState.RLP);
         } else {
