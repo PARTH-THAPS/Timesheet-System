@@ -3,6 +3,7 @@ package tss.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 import java.time.Duration;
@@ -20,6 +21,7 @@ public class TimesheetEntry extends AbstractEntity {
     private LocalDate entryDate;
     
     @ManyToOne
+    @JoinColumn(name = "TIMESHEET_ID", nullable = false)
     private Timesheet timesheet;
     
     public TimesheetEntry() {

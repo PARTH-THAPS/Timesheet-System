@@ -4,6 +4,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ public class Timesheet extends AbstractEntity {
     private List<TimesheetEntry> entries;
     
     @ManyToOne
+    @JoinColumn(name = "CONTRACT_ID", nullable = false)
     private Contract contract;
     
     public Timesheet() {

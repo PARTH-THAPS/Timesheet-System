@@ -22,8 +22,9 @@ public class Contract extends AbstractEntity {
     private double hoursDue;
     private int workingDaysPerWeek;
     private int vacationDaysPerYear;
-    private String state;
-
+    @Enumerated(EnumType.STRING)
+    private FederalState state;
+       
     @ManyToOne
     @JoinColumn(name = "EMPLOYEE_ID")
     private Person employee;
@@ -179,11 +180,11 @@ public class Contract extends AbstractEntity {
         this.vacationDaysPerYear = vacationDaysPerYear;
     }
     
-    public String getState() {
+    public FederalState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(FederalState state) {
         this.state = state;
     }
     

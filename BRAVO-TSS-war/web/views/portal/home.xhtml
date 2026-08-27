@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="pageTitle">
+        Home
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        Home
+    </ui:define>
+    
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+    <ui:define name="headerActions">
+
+        <div class="user-info">
+            <span class="user-name">
+                #{mockUserBean.fullName}
+            </span>
+
+            <span class="user-role">
+                #{mockUserBean.role}
+            </span>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <section class="home-welcome">
+
+            <h2>
+                Welcome, #{mockUserBean.firstName}
+            </h2>
+
+            <p class="text-muted">
+                Select one of the available areas to continue.
+            </p>
+
+        </section>
+
+
+        <section class="dashboard-grid">
+
+            <ui:fragment rendered="#{mockUserBean.hasRole('EMPLOYEE')}">
+
+                <div class="dashboard-card">
+
+                    <i class="pi pi-clock dashboard-icon"></i>
+
+                    <div>
+                        <h3>My Timesheets</h3>
+
+                        <p>
+                            View and manage your working time and timesheets.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="dashboard-card">
+
+                    <i class="pi pi-calendar dashboard-icon"></i>
+
+                    <div>
+                        <h3>Holidays</h3>
+
+                        <p>
+                            View holidays and absences.
+                        </p>
+                    </div>
+
+                </div>
+
+            </ui:fragment>
+
+
+            <ui:fragment rendered="#{mockUserBean.hasRole('SUPERVISOR')}">
+
+                <div class="dashboard-card">
+
+                    <i class="pi pi-check-circle dashboard-icon"></i>
+
+                    <div>
+                        <h3>Timesheet Approval</h3>
+
+                        <p>
+                            Review and sign submitted timesheets.
+                        </p>
+                    </div>
+
+                </div>
+
+            </ui:fragment>
+
+
+            <ui:fragment rendered="#{mockUserBean.hasRole('ASSISTANT')}">
+
+                <div class="dashboard-card">
+
+                    <i class="pi pi-users dashboard-icon"></i>
+
+                    <div>
+                        <h3>Employees</h3>
+
+                        <p>
+                            Manage employees, contracts and assignments.
+                        </p>
+                    </div>
+
+                </div>
+
+            </ui:fragment>
+
+
+            <ui:fragment rendered="#{mockUserBean.hasRole('SECRETARY')}">
+
+                <div class="dashboard-card">
+
+                    <i class="pi pi-folder dashboard-icon"></i>
+
+                    <div>
+                        <h3>Timesheet Archive</h3>
+
+                        <p>
+                            Process and archive completed timesheets.
+                        </p>
+                    </div>
+
+                </div>
+
+            </ui:fragment>
+
+
+            <ui:fragment rendered="#{mockUserBean.hasRole('ADMIN')}">
+
+                <div class="dashboard-card">
+
+                    <i class="pi pi-cog dashboard-icon"></i>
+
+                    <div>
+                        <h3>Administration</h3>
+
+                        <p>
+                            Manage users and application settings.
+                        </p>
+                    </div>
+
+                </div>
+
+            </ui:fragment>
+
+        </section>
+
+
+        <section class="development-panel">
+
+            <h3>Development</h3>
+
+            <p class="text-muted">
+                Switch the mocked user role to preview the application
+                for different users.
+            </p>
+
+            <h:form>
+
+                <div class="development-actions">
+
+                    <p:selectOneMenu
+                            value="#{mockUserBean.role}">
+
+                        <f:selectItems
+                                value="#{mockUserBean.roles}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:commandButton
+                            value="Switch Role"
+                            icon="pi pi-refresh"
+                            ajax="false"/>
+
+                </div>
+
+            </h:form>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>

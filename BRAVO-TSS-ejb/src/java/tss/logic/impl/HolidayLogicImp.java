@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import tss.dao.HolidayDao;
 import tss.dto.HolidayDTO;
+import tss.entity.FederalState;
 import tss.entity.Holiday;
 import tss.logic.HolidayLogic;
 
@@ -22,12 +23,12 @@ public class HolidayLogicImp implements HolidayLogic {
     }
 
     @Override
-    public List<HolidayDTO> findByState(String state) {
+    public List<HolidayDTO> findByState(FederalState state) {
         return toDtoList(holidayDao.findByState(state));
     }
 
     @Override
-    public List<HolidayDTO> findByStateAndRange(String state, LocalDate startDate, LocalDate endDate) {
+    public List<HolidayDTO> findByStateAndRange(FederalState state, LocalDate startDate, LocalDate endDate) {
         return toDtoList(holidayDao.findByStateAndDateRange(state, startDate, endDate));
     }
 

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="pageTitle">
+        My Timesheets
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        My Timesheets
+    </ui:define>
+
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+    <ui:define name="headerActions">
+
+        <div class="user-info">
+
+            <span class="user-name">
+                #{mockUserBean.fullName}
+            </span>
+
+            <span class="user-role">
+                #{mockUserBean.role}
+            </span>
+
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <section class="page-section-header">
+
+            <div>
+                <h2>My Timesheets</h2>
+
+                <p class="text-muted">
+                    View and manage your generated timesheets.
+                </p>
+            </div>
+
+        </section>
+
+
+        <section class="card">
+
+            <p:dataTable
+                    id="timesheetsTable"
+                    value="#{timesheetBean.timesheetList}"
+                    var="timesheet"
+                    paginator="true"
+                    rows="12"
+                    stripedRows="true"
+                    emptyMessage="No timesheets found."
+                    sortMode="single">
+
+                <p:column
+                        headerText="Period"
+                        sortBy="#{timesheet.startDate}">
+
+                    <h:outputText
+                            value="#{timesheet.startDate}">
+                        <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+
+                    <span class="timesheet-period-separator">
+                        –
+                    </span>
+
+                    <h:outputText
+                            value="#{timesheet.endDate}">
+                        <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+
+                </p:column>
+
+
+                <p:column
+                        headerText="Hours Due"
+                        sortBy="#{timesheet.hoursDue}"
+                        styleClass="table-small-column">
+
+                    <h:outputText
+                            value="#{timesheet.hoursDue}">
+                        <f:convertNumber
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
+                    </h:outputText>
+
+                    <span> h</span>
+
+                </p:column>
+
+
+                <p:column
+                        headerText="Status"
+                        sortBy="#{timesheet.status}">
+
+                    <span class="status-badge status-#{timesheet.status.toLowerCase()}">
+                        #{timesheet.status}
+                    </span>
+
+                </p:column>
+
+
+                <p:column
+                        headerText="Employee Signed"
+                        styleClass="table-small-column">
+
+                    <ui:fragment
+                            rendered="#{not empty timesheet.signedByEmployee}">
+
+                        <i class="pi pi-check text-success"></i>
+
+                        <h:outputText
+                                value="#{timesheet.signedByEmployee}">
+                            <f:convertDateTime
+                                    type="localDate"
+                                    pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+
+                    </ui:fragment>
+
+                    <ui:fragment
+                            rendered="#{empty timesheet.signedByEmployee}">
+
+                        <i class="pi pi-minus text-muted"></i>
+
+                    </ui:fragment>
+
+                </p:column>
+
+
+                <p:column
+                        headerText="Supervisor Signed"
+                        styleClass="table-small-column">
+
+                    <ui:fragment
+                            rendered="#{not empty timesheet.signedBySupervisor}">
+
+                        <i class="pi pi-check text-success"></i>
+
+                        <h:outputText
+                                value="#{timesheet.signedBySupervisor}">
+                            <f:convertDateTime
+                                    type="localDate"
+                                    pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+
+                    </ui:fragment>
+
+                    <ui:fragment
+                            rendered="#{empty timesheet.signedBySupervisor}">
+
+                        <i class="pi pi-minus text-muted"></i>
+
+                    </ui:fragment>
+
+                </p:column>
+
+
+                <p:column
+                        headerText="Actions"
+                        styleClass="table-actions-column">
+
+                    <p:button
+                            value="Open"
+                            icon="pi pi-folder-open"
+                            outcome="/views/employee/timesheet"
+                            styleClass="ui-button-secondary">
+
+                        <f:param
+                                name="id"
+                                value="#{timesheet.id}"/>
+
+                    </p:button>
+
+                </p:column>
+
+            </p:dataTable>
+
+        </section>
+        
+        <section class="development-panel">
+
+            <h3>Development</h3>
+
+            <p class="text-muted">
+                Load timesheets for a specific employee while authentication is disabled.
+            </p>
+
+            <h:form id="developmentForm">
+
+                <div class="development-actions">
+
+                    <p:selectOneMenu
+                            value="#{timesheetBean.selectedEmployeeId}"
+                            styleClass="form-input">
+
+                        <f:selectItem
+                                itemLabel="Select employee"
+                                itemValue="#{null}"
+                                noSelectionOption="true"/>
+
+                        <f:selectItems
+                                value="#{timesheetBean.persons}"
+                                var="person"
+                                itemValue="#{person.id}"
+                                itemLabel="#{person.firstName} #{person.lastName}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:commandButton
+                            value="Load"
+                            icon="pi pi-refresh"
+                            action="#{timesheetBean.loadSelectedEmployee}"
+                            ajax="false"/>
+
+                </div>
+
+            </h:form>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>

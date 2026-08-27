@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <f:metadata>
+
+        <f:viewParam
+                name="id"
+                value="#{timesheetDetailBean.id}"/>
+
+        <f:viewAction
+                action="#{timesheetDetailBean.init}"/>
+
+    </f:metadata>
+
+
+    <ui:define name="pageTitle">
+        Timesheet
+    </ui:define>
+
+
+    <ui:define name="pageHeadline">
+        Timesheet
+    </ui:define>
+
+
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+
+    <ui:define name="headerActions">
+
+        <div class="user-info">
+
+            <span class="user-name">
+                #{mockUserBean.fullName}
+            </span>
+
+            <span class="user-role">
+                #{mockUserBean.role}
+            </span>
+
+        </div>
+
+    </ui:define>
+
+
+    <ui:define name="content">
+
+        <h:form id="timesheetForm">
+
+            <p:messages
+                    showDetail="true"
+                    closable="true"/>
+
+
+            <section class="page-section-header">
+
+                <div>
+
+                    <h2>
+                        <h:outputText
+                                value="#{timesheetDetailBean.timesheet.startDate}">
+
+                            <f:convertDateTime
+                                    type="localDate"
+                                    pattern="dd.MM.yyyy"/>
+
+                        </h:outputText>
+
+                        –
+
+                        <h:outputText
+                                value="#{timesheetDetailBean.timesheet.endDate}">
+
+                            <f:convertDateTime
+                                    type="localDate"
+                                    pattern="dd.MM.yyyy"/>
+
+                        </h:outputText>
+                    </h2>
+
+                    <p class="text-muted">
+                        Timesheet details and reported working time.
+                    </p>
+
+                </div>
+
+
+                <span class="status-badge">
+                    #{timesheetDetailBean.timesheet.status}
+                </span>
+
+            </section>
+
+
+            <section class="timesheet-summary">
+
+                <div class="statistic">
+
+                    <span class="statistic-label">
+                        Hours due
+                    </span>
+
+                    <strong class="statistic-value">
+
+                        <h:outputText
+                                value="#{timesheetDetailBean.timesheet.hoursDue}">
+
+                            <f:convertNumber
+                                    minFractionDigits="2"
+                                    maxFractionDigits="2"/>
+
+                        </h:outputText>
+
+                        h
+
+                    </strong>
+
+                </div>
+
+
+                <div class="statistic">
+
+                    <span class="statistic-label">
+                        Hours reported
+                    </span>
+
+                    <strong class="statistic-value">
+
+                        <h:outputText
+                                value="#{timesheetDetailBean.reportedHours}">
+
+                            <f:convertNumber
+                                    minFractionDigits="2"
+                                    maxFractionDigits="2"/>
+
+                        </h:outputText>
+
+                        h
+
+                    </strong>
+
+                </div>
+
+
+                <div class="statistic">
+
+                    <span class="statistic-label">
+                        Balance
+                    </span>
+
+                    <strong class="statistic-value">
+
+                        <h:outputText
+                                value="#{timesheetDetailBean.balance}">
+
+                            <f:convertNumber
+                                    minFractionDigits="2"
+                                    maxFractionDigits="2"/>
+
+                        </h:outputText>
+
+                        h
+
+                    </strong>
+
+                </div>
+
+            </section>
+
+
+            <section class="card">
+
+                <div class="page-section-header">
+
+                    <div>
+                        <h3>Entries</h3>
+
+                        <p class="text-muted">
+                            Reported work, vacation and other entries.
+                        </p>
+                    </div>
+
+
+                    <p:commandButton
+                            value="Add Entry"
+                            icon="pi pi-plus"
+                            action="#{timesheetDetailBean.prepareNewEntry}"
+                            update="entryDialog"
+                            oncomplete="PF('entryDialog').show()"
+                            rendered="#{timesheetDetailBean.editable}"/>
+
+                </div>
+
+
+                <p:dataTable
+                        id="entriesTable"
+                        value="#{timesheetDetailBean.timesheet.entries}"
+                        var="entry"
+                        stripedRows="true"
+                        emptyMessage="No entries reported yet.">
+
+                    <p:column
+                            headerText="Date"
+                            sortBy="#{entry.entryDate}">
+
+                        <h:outputText value="#{entry.entryDate}">
+                            <f:convertDateTime
+                                    type="localDate"
+                                    pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+
+                    </p:column>
+
+
+                    <p:column
+                            headerText="Start">
+
+                        <h:outputText value="#{entry.startTime}"/>
+
+                    </p:column>
+
+
+                    <p:column
+                            headerText="End">
+
+                        <h:outputText value="#{entry.endTime}"/>
+
+                    </p:column>
+
+
+                    <p:column
+                            headerText="Hours">
+
+                        <h:outputText
+                                value="#{timesheetDetailBean.calculateEntryHours(entry)}">
+
+                            <f:convertNumber
+                                    minFractionDigits="2"
+                                    maxFractionDigits="2"/>
+
+                        </h:outputText>
+
+                    </p:column>
+
+
+                    <p:column
+                            headerText="Type"
+                            sortBy="#{entry.type}">
+
+                        <h:outputText value="#{entry.type}"/>
+
+                    </p:column>
+
+
+                    <p:column
+                            headerText="Description">
+
+                        <h:outputText value="#{entry.description}"/>
+
+                    </p:column>
+
+
+                    <p:column
+                            headerText="Actions"
+                            rendered="#{timesheetDetailBean.editable}"
+                            styleClass="table-actions-column">
+
+                        <p:commandButton
+                                icon="pi pi-trash"
+                                title="Delete entry"
+                                action="#{timesheetDetailBean.deleteEntry(entry)}"
+                                update="@form"
+                                styleClass="ui-button-danger ui-button-outlined">
+
+                            <p:confirm
+                                    header="Delete Entry"
+                                    message="Do you really want to delete this entry?"
+                                    icon="pi pi-exclamation-triangle"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </section>
+
+
+            <div class="form-actions">
+
+                <p:button
+                        value="Back"
+                        icon="pi pi-arrow-left"
+                        outcome="/views/employee/timesheets.xhtml"
+                        styleClass="ui-button-secondary"/>
+
+            </div>
+
+
+            <p:confirmDialog global="true">
+
+                <p:commandButton
+                        value="Yes"
+                        type="button"
+                        styleClass="ui-confirmdialog-yes"
+                        icon="pi pi-check"/>
+
+                <p:commandButton
+                        value="No"
+                        type="button"
+                        styleClass="ui-confirmdialog-no ui-button-secondary"
+                        icon="pi pi-times"/>
+
+            </p:confirmDialog>
+
+
+            <p:dialog
+                    id="entryDialog"
+                    widgetVar="entryDialog"
+                    header="Add Timesheet Entry"
+                    modal="true"
+                    resizable="false"
+                    width="500">
+
+                <p:outputPanel id="entryDialogContent">
+
+                    <div class="form-grid">
+
+                        <div class="form-field form-field-wide">
+
+                            <p:outputLabel
+                                    for="entryDate"
+                                    value="Date"/>
+
+                            <p:datePicker
+                                    id="entryDate"
+                                    value="#{timesheetDetailBean.entry.entryDate}"
+                                    pattern="dd.MM.yyyy"
+                                    required="true"
+                                    showIcon="true"/>
+
+                        </div>
+
+
+                        <div class="form-field">
+
+                            <p:outputLabel
+                                    for="startTime"
+                                    value="Start time"/>
+
+                            <p:datePicker
+                                    id="startTime"
+                                    value="#{timesheetDetailBean.entry.startTime}"
+                                    timeOnly="true"
+                                    pattern="HH:mm"
+                                    required="true"/>
+
+                        </div>
+
+
+                        <div class="form-field">
+
+                            <p:outputLabel
+                                    for="endTime"
+                                    value="End time"/>
+
+                            <p:datePicker
+                                    id="endTime"
+                                    value="#{timesheetDetailBean.entry.endTime}"
+                                    timeOnly="true"
+                                    pattern="HH:mm"
+                                    required="true"/>
+
+                        </div>
+
+
+                        <div class="form-field form-field-wide">
+
+                            <p:outputLabel
+                                    for="entryType"
+                                    value="Type"/>
+
+                            <p:selectOneMenu
+                                    id="entryType"
+                                    value="#{timesheetDetailBean.entry.type}"
+                                    required="true">
+
+                                <f:selectItems
+                                        value="#{timesheetDetailBean.reportTypes}"
+                                        var="type"
+                                        itemValue="#{type}"
+                                        itemLabel="#{type.name()}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+
+                        <div class="form-field form-field-wide">
+
+                            <p:outputLabel
+                                    for="description"
+                                    value="Description"/>
+
+                            <p:inputTextarea
+                                    id="description"
+                                    value="#{timesheetDetailBean.entry.description}"
+                                    rows="4"
+                                    autoResize="false"/>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <p:commandButton
+                                value="Save Entry"
+                                icon="pi pi-save"
+                                action="#{timesheetDetailBean.saveEntry}"
+                                update="@form"
+                                oncomplete="if (!args.validationFailed) PF('entryDialog').hide()"/>
+
+                        <p:commandButton
+                                value="Cancel"
+                                type="button"
+                                icon="pi pi-times"
+                                onclick="PF('entryDialog').hide()"
+                                styleClass="ui-button-secondary"/>
+
+                    </div>
+
+                </p:outputPanel>
+
+            </p:dialog>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

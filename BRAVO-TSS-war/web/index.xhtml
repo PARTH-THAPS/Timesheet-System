@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="pageTitle">
+        BRAVO-TSS
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        Welcome to BRAVO-TSS
+    </ui:define>
+
+    <ui:define name="content">
+
+        <section class="card">
+
+            <h2>Bravo Time Sheet System</h2>
+
+            <p class="text-muted">
+                A simple way to track time
+            </p>
+
+            <div class="form-actions">
+
+                <p:button
+                        value="Log In"
+                        icon="pi pi-sign-in"
+                        outcome="/views/portal/home"/>
+
+                <p:button
+                        value="Create Account"
+                        icon="pi pi-user-plus"
+                        outcome="/signup"/>
+
+            </div>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>
