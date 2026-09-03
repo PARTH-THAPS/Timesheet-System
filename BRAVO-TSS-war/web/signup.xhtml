@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <ui:composition
-        template="/WEB-INF/templates/page-layout.xhtml"
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:h="jakarta.faces.html"
-        xmlns:ui="jakarta.faces.facelets"
-        xmlns:p="http://primefaces.org/ui">
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
         Create Account
@@ -16,117 +15,83 @@
     </ui:define>
 
     <ui:define name="content">
-
         <section class="auth-container">
-
             <div class="card auth-card">
 
                 <p class="text-muted auth-description">
                     Create your BRAVO-TSS account.
                 </p>
 
-                <h:messages
-                        globalOnly="false"
-                        showDetail="true"
-                        styleClass="form-messages"/>
+                <p:growl
+                    id="formMessages"
+                    showDetail="true"
+                    life="4000"/>
 
                 <h:form id="signupForm">
-
                     <div class="form-field">
-
-                        <p:outputLabel
-                                for="firstName"
-                                value="First name"/>
-
+                        <p:outputLabel for="firstName" value="First name"/>
                         <p:inputText
-                                id="firstName"
-                                value="#{CreatePersonBean.personDto.firstName}"
-                                required="true"
-                                styleClass="form-input"
-                                placeholder="First name"/>
-
+                            id="firstName"
+                            value="#{CreatePersonBean.personDto.firstName}"
+                            required="true"
+                            styleClass="form-input"
+                            placeholder="First name"/>
                     </div>
 
                     <div class="form-field">
-
-                        <p:outputLabel
-                                for="lastName"
-                                value="Last name"/>
-
+                        <p:outputLabel for="lastName" value="Last name"/>
                         <p:inputText
-                                id="lastName"
-                                value="#{CreatePersonBean.personDto.lastName}"
-                                required="true"
-                                styleClass="form-input"
-                                placeholder="Last name"/>
-
+                            id="lastName"
+                            value="#{CreatePersonBean.personDto.lastName}"
+                            required="true"
+                            styleClass="form-input"
+                            placeholder="Last name"/>
                     </div>
 
                     <div class="form-field">
-
-                        <p:outputLabel
-                                for="emailAddress"
-                                value="Email"/>
-
+                        <p:outputLabel for="emailAddress" value="Email"/>
                         <p:inputText
-                                id="emailAddress"
-                                value="#{CreatePersonBean.personDto.emailAddress}"
-                                required="true"
-                                styleClass="form-input"
-                                placeholder="name@example.com"/>
-
+                            id="emailAddress"
+                            value="#{CreatePersonBean.personDto.emailAddress}"
+                            required="true"
+                            styleClass="form-input"
+                            placeholder="name@example.com"/>
                     </div>
 
                     <div class="form-field">
-
-                        <p:outputLabel
-                                for="password"
-                                value="Password"/>
-
+                        <p:outputLabel for="password" value="Password"/>
                         <p:password
-                                id="password"
-                                value="#{CreatePersonBean.personDto.password}"
-                                required="true"
-                                feedback="false"
-                                styleClass="form-input"
-                                placeholder="Password"/>
-
+                            id="password"
+                            value="#{CreatePersonBean.personDto.password}"
+                            required="true"
+                            feedback="false"
+                            styleClass="form-input"
+                            placeholder="Password"/>
                     </div>
 
                     <div class="form-checkbox">
-
                         <p:selectBooleanCheckbox
-                                id="consent"
-                                value="#{CreatePersonBean.personDto.consent}"/>
-
-                        <p:outputLabel
-                                for="consent"
-                                value="I agree to the required data processing."/>
-
+                            id="consent"
+                            value="#{CreatePersonBean.personDto.consent}"/>
+                        <p:outputLabel for="consent" value="I agree to the required data processing."/>
                     </div>
 
                     <div class="form-actions auth-actions">
-
                         <p:commandButton
-                                value="Create Account"
-                                icon="pi pi-user-plus"
-                                action="#{CreatePersonBean.createPerson}"/>
-
+                            value="Create Account"
+                            icon="pi pi-user-plus"
+                            action="#{CreatePersonBean.createPerson}"
+                            update="signupForm formMessages"/>
                     </div>
-
                 </h:form>
 
                 <p class="auth-footer">
                     Already have an account?
-                    <h:link
-                            outcome="/index"
-                            value="Back to login"/>
+                    <h:link outcome="/index" value="Back to login"/>
                 </p>
 
             </div>
-
         </section>
-
     </ui:define>
 
 </ui:composition>

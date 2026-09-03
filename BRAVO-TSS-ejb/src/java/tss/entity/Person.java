@@ -5,10 +5,11 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
-
-@NamedQueries({@NamedQuery(name = "getUserByEmail", query = "SELECT p from Person p WHERE p.emailAddress=:emailAddress ")})
+@NamedQueries({
+    @NamedQuery(name = "getUserByEmail", query = "SELECT p from Person p WHERE p.emailAddress=:emailAddress ")})
 @Entity
 public class Person extends AbstractEntity implements Serializable {
+
     private String firstName;
     private String lastName;
     @Column(unique = true)
@@ -19,6 +20,9 @@ public class Person extends AbstractEntity implements Serializable {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "ROLE")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "PERSON_ROLE", joinColumns = @JoinColumn(name = "PERSON_ID"))
     private Set<Role> roles;
 
     @OneToMany(mappedBy = "employee")
@@ -83,6 +87,10 @@ public class Person extends AbstractEntity implements Serializable {
 
     public void setRoles(Set<Role> role) {
         this.roles.addAll(role);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
     }
 
     public String getPassword() {

@@ -4,11 +4,13 @@ import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import java.util.List;
 import tss.logic.ContractLogic;
 import tss.entity.Contract;
 import tss.entity.Person;
@@ -62,4 +64,44 @@ public class ContractRestEndpoint {
 
     }
 
+    @POST
+    @Path("{id}/secretaries")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void addSecretary(@PathParam("id") Long contractId, List<Long> personIds) {
+        contractlogic.addSecretary(contractId, personIds);
+    }
+
+    @POST
+    @Path("{id}/assistants")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void addAssistant(@PathParam("id") Long contractId, List<Long> personIds) {
+        contractlogic.addAssistant(contractId, personIds);
+    }
+
+    @POST
+    @Path("{id}/supervisor")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void addSupervisor(@PathParam("id") Long contractId, Long personId) {
+        contractlogic.addSupervisor(contractId, personId);
+    }
+
+    @DELETE
+    @Path("{id}/supervisor")
+    public void removeSupervisor(@PathParam("id") Long contractId) {
+        contractlogic.removeSupervisor(contractId);
+    }
+
+    @DELETE
+    @Path("{id}/secretaries")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void removeSecretary(@PathParam("id") Long contractId, List<Long> personIds) {
+        contractlogic.removeSecretary(contractId, personIds);
+    }
+
+    @DELETE
+    @Path("{id}/assistants")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void removeAssistant(@PathParam("id") Long contractId, List<Long> personIds) {
+        contractlogic.removeAssistant(contractId, personIds);
+    }
 }

@@ -54,7 +54,7 @@ public class loginBean implements Serializable {
                 .getExternalContext()
                 .getUserPrincipal();
         if (p != null) {
-            LOG.log(Level.INFO, "Contacts: LOGOUT user {0}", p.getName());
+            LOG.log(Level.INFO, "Person: LOGOUT user {0}", p.getName());
         }
         currentUser = null;
         oldPrincipal = null;
@@ -64,8 +64,25 @@ public class loginBean implements Serializable {
     }
 
     public void logout() {
-        invalidateSession();
-        FacesContext.getCurrentInstance().responseComplete();
-
+    invalidateSession();
+    try {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        String contextPath = ctx.getExternalContext().getRequestContextPath();
+        ctx.getExternalContext().redirect(contextPath + "/views/login.xhtml");
+    } catch (java.io.IOException e) {
+        LOG.log(Level.SEVERE, "Error redirecting after logout", e);
     }
+}
+    
+    public void redirectIfLoggedIn() {
+    if (isLoggedIn()) {
+        try {
+            FacesContext ctx = FacesContext.getCurrentInstance();
+            String contextPath = ctx.getExternalContext().getRequestContextPath();
+            ctx.getExternalContext().redirect(contextPath + "/views/portal/home.xhtml");
+        } catch (java.io.IOException e) {
+            LOG.log(Level.SEVERE, "Error redirecting from index", e);
+        }
+    }
+}
 }
