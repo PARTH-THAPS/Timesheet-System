@@ -52,7 +52,41 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
-    <!--
+    
+    
+<!--    <security-constraint>
+    <web-resource-collection>
+        <web-resource-name>Portal</web-resource-name>
+        <url-pattern>/views/portal/*</url-pattern>
+    </web-resource-collection>
+
+    <auth-constraint>
+        <role-name>EMPLOYEE</role-name>
+        <role-name>SUPERVISOR</role-name>
+        <role-name>ASSISTANT</role-name>
+        <role-name>SECRETARY</role-name>
+        <role-name>ADMIN</role-name>
+    </auth-constraint>
+</security-constraint>-->
+    
+    <security-constraint>
+        <display-name>Protected Pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Protected Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/portal/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description/>
+            <role-name>EMPLOYEE</role-name>
+            <role-name>SUPERVISOR</role-name>
+            <role-name>ASSISTANT</role-name>
+            <role-name>SECRETARY</role-name>
+            <role-name>ADMIN</role-name>
+        </auth-constraint>
+    </security-constraint>
+    
+    
     <security-constraint>
         <display-name>Authenticated access to employee pages</display-name>
         <web-resource-collection>
@@ -113,29 +147,14 @@
             <role-name>ADMIN</role-name>
         </auth-constraint>
     </security-constraint>
-    <security-constraint>
-        <display-name>Protected Pages</display-name>
-        <web-resource-collection>
-            <web-resource-name>Protected Pages</web-resource-name>
-            <description/>
-            <url-pattern>/views/portal/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <description/>
-            <role-name>EMPLOYEE</role-name>
-            <role-name>SUPERVISOR</role-name>
-            <role-name>ASSISTANT</role-name>
-            <role-name>SECRETARY</role-name>
-            <role-name>ADMIN</role-name>
-        </auth-constraint>
-    </security-constraint>
-    -->
+    
+    
     <login-config>
         <auth-method>FORM</auth-method>
         <realm-name>bravo-tss</realm-name>
         <form-login-config>
-            <form-login-page>/WEB-INF/views/login.xhtml</form-login-page>
-            <form-error-page>/WEB-INF/views/login.xhtml</form-error-page>
+            <form-login-page>/views/login.xhtml</form-login-page>
+            <form-error-page>/views/login.xhtml</form-error-page>
         </form-login-config>
     </login-config>
     <security-role>
