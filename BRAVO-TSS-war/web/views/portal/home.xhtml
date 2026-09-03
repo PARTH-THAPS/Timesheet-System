@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ui:composition
-        template="/WEB-INF/templates/page-layout.xhtml"
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:h="jakarta.faces.html"
-        xmlns:f="jakarta.faces.core"
-        xmlns:ui="jakarta.faces.facelets"
-        xmlns:p="http://primefaces.org/ui">
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
         Home
@@ -15,7 +15,7 @@
     <ui:define name="pageHeadline">
         Home
     </ui:define>
-    
+
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
@@ -24,13 +24,16 @@
 
         <div class="user-info">
             <span class="user-name">
-                #{mockUserBean.fullName}
+                #{loginBean.user.firstName}#{loginBean.user.lastName}
             </span>
 
-            <span class="user-role">
-                #{mockUserBean.role}
-            </span>
-        </div>
+            <ui:repeat value="#{loginBean.user.roles}" var="role">
+                <span class="badge">#{role}</span>
+            </ui:repeat>
+        </div> 
+        <h:form>
+      <h:commandButton value="Logout" action="#{loginBean.logout}"/>
+  </h:form>
 
     </ui:define>
 
@@ -39,7 +42,7 @@
         <section class="home-welcome">
 
             <h2>
-                Welcome, #{mockUserBean.firstName}
+                Welcome, #{loginBean.user.firstName}
             </h2>
 
             <p class="text-muted">
@@ -176,17 +179,17 @@
                 <div class="development-actions">
 
                     <p:selectOneMenu
-                            value="#{mockUserBean.role}">
+                        value="#{mockUserBean.role}">
 
                         <f:selectItems
-                                value="#{mockUserBean.roles}"/>
+                            value="#{mockUserBean.roles}"/>
 
                     </p:selectOneMenu>
 
                     <p:commandButton
-                            value="Switch Role"
-                            icon="pi pi-refresh"
-                            ajax="false"/>
+                        value="Switch Role"
+                        icon="pi pi-refresh"
+                        ajax="false"/>
 
                 </div>
 

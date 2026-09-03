@@ -585,3 +585,20 @@ body {
 
     margin-bottom: 1.5rem;
 }
+
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    margin-right: 6px;
+    border-radius: 12px;
+    background-color: #007bff;
+    color: white;
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+.logout
+{
+}
+

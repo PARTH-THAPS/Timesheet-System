@@ -20,20 +20,22 @@ public class PersonLogicImp implements PersonLogic {
     @EJB
     private PersonDao personDao;
 
-    @Override
-    public PersonDTO createPerson(String firstName, String lastName, String emailAddress, boolean consent, String password, Set<Role> role) {
-        Person person = new Person();
-        person.setFirstName(firstName);
-        person.setLastName(lastName);
-        person.setEmailAddress(emailAddress);
-        person.setPassword(PasswordHash.hashPassword(password));
-        person.setConsent(consent);
-        person.setRoles(role);
-
-        personDao.createPerson(person);
-
-        return personDto(person);
+    
+   @Override
+   public PersonDTO createPerson(String firstName, String lastName, String emailAddress, boolean consent, String password, Set<Role> role) {
+    if (role == null || role.isEmpty()) {
+        throw new IllegalArgumentException("At least one role must be provided");
     }
+    Person person = new Person();
+    person.setFirstName(firstName);
+    person.setLastName(lastName);
+    person.setEmailAddress(emailAddress);
+    person.setPassword(PasswordHash.hashPassword(password));
+    person.setConsent(consent);
+    person.setRoles(role);
+    personDao.createPerson(person);
+    return personDto(person);
+}
 
     @Override
     public PersonDTO findPerson(Long id) {
@@ -53,6 +55,9 @@ public class PersonLogicImp implements PersonLogic {
     public PersonDTO updatePerson(PersonDTO dto) {
     Person person = personDao.findPersonById(dto.getId());  
     
+    if (dto.getRole() == null || dto.getRole().isEmpty()) {
+    throw new IllegalArgumentException("At least one role must be provided");
+}
     
     if (person == null) {
         throw new IllegalArgumentException("No Person found with id: " + dto.getId());
