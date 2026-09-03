@@ -11,6 +11,7 @@ import java.io.Serializable;
 import tss.dto.PersonDTO;
 import tss.entity.Role;
 import tss.logic.PersonLogic;
+import java.util.Set;
 
 @Named
 @ViewScoped
@@ -32,7 +33,7 @@ public class AdminUserBean implements Serializable {
 
         if (id == null) {
             person = new PersonDTO();
-            person.setRole(Role.EMPLOYEE);
+            person.setRole(Set.of(Role.EMPLOYEE));
         } else {
             person = personLogic.findPerson(id);
         }

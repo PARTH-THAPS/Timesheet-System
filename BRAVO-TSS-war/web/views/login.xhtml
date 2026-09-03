@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ui:composition
-        template="/WEB-INF/templates/page-layout.xhtml"
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:h="jakarta.faces.html"
-        xmlns:ui="jakarta.faces.facelets"
-        xmlns:p="http://primefaces.org/ui">
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
         Login
     </ui:define>
 
     <ui:define name="pageHeadline">
-        Login
+     
     </ui:define>
 
     <ui:define name="content">
@@ -22,56 +22,46 @@
             <div class="card auth-card">
 
                 <p class="text-muted auth-description">
-                    Sign in to access BRAVO-TSS.
+                    Login to access BRAVO-TSS.
                 </p>
+             
 
-                <form>
-
+                <form action="j_security_check" method="POST">
                     <div class="form-field">
-
                         <label for="username">
                             Email
                         </label>
-
                         <input
-                                id="username"
-                                type="email"
-                                class="form-input"
-                                placeholder="name@example.com"/>
-
+                            id="username"
+                            name="j_username"
+                            type="email"
+                            class="form-input"
+                            placeholder="name@example.com"/>
                     </div>
-
                     <div class="form-field">
-
                         <label for="password">
                             Password
                         </label>
-
                         <input
-                                id="password"
-                                type="password"
-                                class="form-input"
-                                placeholder="Password"/>
-
+                            id="password"
+                            name="j_password"
+                            type="password"
+                            class="form-input"
+                            placeholder="Password"/>
                     </div>
-
                     <div class="form-actions auth-actions">
-
                         <button
-                                type="button"
-                                class="button button-primary">
+                            type="submit"
+                            class="button button-primary">
                             Log In
                         </button>
-
                     </div>
-
                 </form>
-
                 <p class="auth-footer">
                     No account yet?
                     <h:link
-                            outcome="/signup"
-                            value="Create an account"/>
+                        outcome="/signup"
+                        value="Create an account"/>
                 </p>
 
             </div>
