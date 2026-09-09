@@ -1,5 +1,8 @@
 package tss.dto;
 
+import java.util.Set;
+import tss.entity.Role;
+
 
 public class User extends AbstractDTO {
      private static final long serialVersionUID = 282980014285470000L;
@@ -8,18 +11,24 @@ public class User extends AbstractDTO {
     private String firstName;
 
     private String lastName;
+    private Set<Role> roles; 
 
-    private final boolean isInUserRole; // read only
+ 
 
-    private final boolean isInAdminRole; // read only
-
-    public User(String uuid, int jpaVersion, String email, String firstName, String lastName, boolean isInUserRole, boolean isInAdminRole) {
+    public User(String uuid, int jpaVersion, String email, String firstName, String lastName, Set<Role> roles) {
         super(uuid, jpaVersion);
         this.email=email;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.isInUserRole = isInUserRole;
-        this.isInAdminRole = isInAdminRole;
+        this.roles = roles;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public String getEmail() {
@@ -42,11 +51,4 @@ public class User extends AbstractDTO {
         this.lastName = lastName;
     }
 
-    public boolean isIsInUserRole() {
-        return isInUserRole;
-    }
-
-    public boolean isIsAdminRole() {
-        return isInAdminRole;
-    }
 }

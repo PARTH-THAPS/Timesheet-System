@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.List;
+import tss.entity.FederalState;
 import tss.entity.Holiday;
 
 @Stateless
@@ -19,13 +20,13 @@ public class HolidayDao {
         return holidays;
     }
 
-    public List<Holiday> findByState(String state) {
+    public List<Holiday> findByState(FederalState state) {
         return em.createNamedQuery("getHolidayByState", Holiday.class)
                  .setParameter("State", state)
                  .getResultList();
     }
 
-    public List<Holiday> findByStateAndDateRange(String state, LocalDate startDate, LocalDate endDate) {
+    public List<Holiday> findByStateAndDateRange(FederalState state, LocalDate startDate, LocalDate endDate) {
         return em.createNamedQuery("getHolidayByStateAndDateRange", Holiday.class)
                  .setParameter("State", state)
                  .setParameter("startDate", startDate)

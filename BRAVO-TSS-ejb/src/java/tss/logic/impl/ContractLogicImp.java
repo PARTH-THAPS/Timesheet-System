@@ -13,17 +13,19 @@ import tss.entity.ContractStatus;
 import tss.entity.TimesheetFrequency;
 import tss.logic.ContractLogic;
 import tss.entity.Contract;
+import tss.entity.FederalState;
 import tss.entity.Person;
 import tss.entity.Timesheet;
 import tss.entity.TimesheetStatus;
 import tss.logic.TimesheetLogic;
+import tss.entity.Role;
 
 @Stateless
 public class ContractLogicImp implements ContractLogic {
 
     @EJB
     private ContractsDao contractsDao;
-    
+
     @EJB
     private PersonDao personDao;
 
@@ -31,9 +33,9 @@ public class ContractLogicImp implements ContractLogic {
     TimesheetLogic timesheetLogic;
 
     @Override
-    public ContractDTO createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, PersonDTO person, String state) {
+    public ContractDTO createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, PersonDTO person, FederalState state) {
         validateContractDates(startDate, endDate);
-        
+
         Person personEnt = personDao.findPersonById(person.getId());
         if (personEnt == null) {
             throw new IllegalArgumentException("No Person found with id: " + person.getId());
@@ -50,9 +52,9 @@ public class ContractLogicImp implements ContractLogic {
         contract.setHoursDue(hoursDue);
         contract.setWorkingDaysPerWeek(workingDaysPerWeek);
         contract.setVacationDaysPerYear(vacationDaysPerYear);
-        contract.setPerson(personEnt);
+        contract.setEmployee(personEnt);
         if (state == null) {
-            contract.setState("Deutschland");
+            contract.setState(FederalState.RLP);
         } else {
             contract.setState(state);
         }
@@ -61,23 +63,63 @@ public class ContractLogicImp implements ContractLogic {
     }
 
     @Override
-    public ContractDTO updateContract(Contract updatedContract) {
+    public ContractDTO updateContract(ContractDTO updatedContract) {
         Contract contract = contractsDao.findContract(updatedContract.getId());
+
         if (contract == null) {
-            throw new IllegalArgumentException("No contract found with id: " + updatedContract.getId());
+            throw new IllegalArgumentException(
+                    "No contract found with id: " + updatedContract.getId()
+            );
         }
+
         if (contract.getStatus() != ContractStatus.PREPARED) {
-            throw new IllegalStateException("Contract can only be updated when status is PREPARED");
+            throw new IllegalStateException(
+                    "Contract can only be updated when status is PREPARED"
+            );
         }
+
+        validateContractDates(
+                updatedContract.getStartDate(),
+                updatedContract.getEndDate()
+        );
+
+        Person person = personDao.findPersonById(
+                updatedContract.getPersonId()
+        );
+
+        if (person == null) {
+            throw new IllegalArgumentException(
+                    "No person found with id: "
+                    + updatedContract.getPersonId()
+            );
+        }
+
+        contract.setName(updatedContract.getName());
         contract.setStartDate(updatedContract.getStartDate());
         contract.setEndDate(updatedContract.getEndDate());
         contract.setFrequency(updatedContract.getFrequency());
         contract.setHoursPerWeek(updatedContract.getHoursPerWeek());
-        contract.setVacationHours(updatedContract.getVacationHours());
-        contract.setHoursDue(updatedContract.getHoursDue());
-        contract.setWorkingDaysPerWeek(updatedContract.getWorkingDaysPerWeek());
-        contract.setVacationDaysPerYear(updatedContract.getVacationDaysPerYear());
+        contract.setWorkingDaysPerWeek(
+                updatedContract.getWorkingDaysPerWeek()
+        );
+        contract.setVacationDaysPerYear(
+                updatedContract.getVacationDaysPerYear()
+        );
+        contract.setState(updatedContract.getState());
+        contract.setEmployee(person);
+
+        contract.setVacationHours(
+                vacationHours(
+                        updatedContract.getStartDate(),
+                        updatedContract.getEndDate(),
+                        updatedContract.getWorkingDaysPerWeek(),
+                        updatedContract.getVacationDaysPerYear(),
+                        updatedContract.getHoursPerWeek()
+                )
+        );
+
         contractsDao.UpdateContract(contract);
+
         return toDTO(contract);
     }
 
@@ -102,6 +144,14 @@ public class ContractLogicImp implements ContractLogic {
         return toDTO(contract);
     }
 
+    @Override
+    public List<ContractDTO> findAllContracts() {
+        return contractsDao.findAllContracts()
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
     public void CheckForArchivedTimesheet(Contract contract) {
         boolean allArchivedTimesheet = contract.getTimesheet().stream().allMatch(ts -> ts.getStatus() == TimesheetStatus.ARCHIVED);
         if (allArchivedTimesheet) {
@@ -115,7 +165,7 @@ public class ContractLogicImp implements ContractLogic {
     }
 
     @Override
-    public ContractDTO  updateContractStatus(Long contractId, ContractStatus newStatus) {
+    public ContractDTO updateContractStatus(Long contractId, ContractStatus newStatus) {
         Contract contract = contractsDao.findContract(contractId);
         if (contract == null) {
             throw new IllegalArgumentException("No contract found with id: " + contractId);
@@ -123,7 +173,7 @@ public class ContractLogicImp implements ContractLogic {
         ContractStatus currentStatus = contract.getStatus();
         if (currentStatus == ContractStatus.PREPARED && newStatus == ContractStatus.STARTED) {
             contract.setStatus(newStatus);
-            timesheetLogic.generateTimesheetsForContract(contractId);  
+            timesheetLogic.generateTimesheetsForContract(contractId);
         } else if (currentStatus == ContractStatus.STARTED && newStatus == ContractStatus.TERMINATED) {
             List<Timesheet> timesheets = contract.getTimesheet();
             boolean hasInProgressTimesheet = timesheets.stream().anyMatch(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS && t.getEntries() != null && !t.getEntries().isEmpty());
@@ -162,26 +212,176 @@ public class ContractLogicImp implements ContractLogic {
             throw new IllegalArgumentException("Start date cannot be after end date");
         }
     }
-    
+
     private ContractDTO toDTO(Contract c) {
         ContractDTO dto = new ContractDTO();
+
+        dto.setId(c.getId());
         dto.setUuid(c.getUuid());
         dto.setJpaVersion(c.getJpaVersion());
+
         dto.setName(c.getName());
         dto.setStartDate(c.getStartDate());
         dto.setEndDate(c.getEndDate());
         dto.setFrequency(c.getFrequency());
+
         dto.setHoursPerWeek(c.getHoursPerWeek());
         dto.setHoursDue(c.getHoursDue());
         dto.setVacationHours(c.getVacationHours());
+
         dto.setWorkingDaysPerWeek(c.getWorkingDaysPerWeek());
         dto.setVacationDaysPerYear(c.getVacationDaysPerYear());
+
         dto.setState(c.getState());
         dto.setStatus(c.getStatus());
         dto.setTerminationDate(c.getTerminationDate());
-        dto.setPersonUuid(c.getPerson() != null ? c.getPerson().getUuid() : null);
+
+        if (c.getEmployee() != null) {
+            dto.setPersonId(c.getEmployee().getId());
+            dto.setPersonUuid(c.getEmployee().getUuid());
+        }
+
         return dto;
     }
-    
-    
+
+    @Override
+    public void addSecretary(Long contractId, List<Long> personIds) {
+        Contract contract = contractsDao.findContract(contractId);
+        if (contract == null) {
+            throw new IllegalArgumentException("No contract found with id: " + contractId);
+        }
+        List<Person> people = personIds.stream()
+                .map(id -> {
+                    Person p = personDao.findPersonById(id);
+                    if (p == null) {
+                        throw new IllegalArgumentException("No person found with id: " + id);
+                    }
+                    return p;
+                })
+                .toList();
+        contract.addSecretary(people);
+        contractsDao.UpdateContract(contract);
+
+        for (Person p : people) {
+            p.setRoles(Role.SECRETARY);
+            personDao.updatePerson(p);
+        }
+    }
+
+    @Override
+    public void removeSecretary(Long contractId, List<Long> personIds) {
+        Contract contract = contractsDao.findContract(contractId);
+        if (contract == null) {
+            throw new IllegalArgumentException("No contract found with id: " + contractId);
+        }
+        Person[] people = personIds.stream()
+                .map(id -> {
+                    Person p = personDao.findPersonById(id);
+                    if (p == null) {
+                        throw new IllegalArgumentException("No person found with id: " + id);
+                    }
+                    return p;
+                })
+                .toArray(Person[]::new);
+        contract.removeSecretary(people);
+        contractsDao.UpdateContract(contract);
+
+        for (Person p : people) {
+            boolean stillSecretaryElsewhere = p.getSecretaryContract().stream()
+                    .anyMatch(c -> !c.getId().equals(contractId));
+            if (!stillSecretaryElsewhere) {
+                p.removeRole(Role.SECRETARY);
+                personDao.updatePerson(p);
+            }
+        }
+    }
+
+    @Override
+    public void addAssistant(Long contractId, List<Long> personIds) {
+        Contract contract = contractsDao.findContract(contractId);
+        if (contract == null) {
+            throw new IllegalArgumentException("No contract found with id: " + contractId);
+        }
+        Person[] people = personIds.stream()
+                .map(id -> {
+                    Person p = personDao.findPersonById(id);
+                    if (p == null) {
+                        throw new IllegalArgumentException("No person found with id: " + id);
+                    }
+                    return p;
+                })
+                .toArray(Person[]::new);
+        contract.addAssistant(people);
+        contractsDao.UpdateContract(contract);
+
+        for (Person p : people) {
+            p.setRoles(Role.ASSISTANT);
+            personDao.updatePerson(p);
+        }
+    }
+
+    @Override
+    public void removeAssistant(Long contractId, List<Long> personIds) {
+        Contract contract = contractsDao.findContract(contractId);
+        if (contract == null) {
+            throw new IllegalArgumentException("No contract found with id: " + contractId);
+        }
+        Person[] people = personIds.stream()
+                .map(id -> {
+                    Person p = personDao.findPersonById(id);
+                    if (p == null) {
+                        throw new IllegalArgumentException("No person found with id: " + id);
+                    }
+                    return p;
+                })
+                .toArray(Person[]::new);
+        contract.removeAssistant(people);
+        contractsDao.UpdateContract(contract);
+
+        for (Person p : people) {
+            boolean stillAssistantElsewhere = p.getAssistantContract().stream()
+                    .anyMatch(c -> !c.getId().equals(contractId));
+            if (!stillAssistantElsewhere) {
+                p.removeRole(Role.ASSISTANT);
+                personDao.updatePerson(p);
+            }
+        }
+    }
+
+    @Override
+    public void addSupervisor(Long contractId, Long personId) {
+        Contract contract = contractsDao.findContract(contractId);
+        if (contract == null) {
+            throw new IllegalArgumentException("No contract found with id: " + contractId);
+        }
+        Person person = personDao.findPersonById(personId);
+        if (person == null) {
+            throw new IllegalArgumentException("No person found with id: " + personId);
+        }
+        contract.setSupervisor(person);
+        contractsDao.UpdateContract(contract);
+
+        person.setRoles(Role.SUPERVISOR);
+        personDao.updatePerson(person);
+    }
+
+    @Override
+    public void removeSupervisor(Long contractId) {
+        Contract contract = contractsDao.findContract(contractId);
+        if (contract == null) {
+            throw new IllegalArgumentException("No contract found with id: " + contractId);
+        }
+        Person previousSupervisor = contract.getSupervisor();
+        contract.removeSupervisor();
+        contractsDao.UpdateContract(contract);
+
+        if (previousSupervisor != null) {
+            boolean stillSupervisorElsewhere = previousSupervisor.getSupervisorContract().stream()
+                    .anyMatch(c -> !c.getId().equals(contractId));
+            if (!stillSupervisorElsewhere) {
+                previousSupervisor.removeRole(Role.SUPERVISOR);
+                personDao.updatePerson(previousSupervisor);
+            }
+        }
+    }
 }

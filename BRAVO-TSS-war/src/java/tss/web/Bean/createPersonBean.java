@@ -9,9 +9,16 @@ import tss.dto.PersonDTO;
 import tss.entity.Role;
 import tss.logic.PersonLogic;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Named("CreatePersonBean")
 @RequestScoped
 public class createPersonBean {
+
+    private static final Logger LOG = Logger.getLogger(createPersonBean.class.getName());
 
     @EJB
     private PersonLogic personLogic;
@@ -20,7 +27,8 @@ public class createPersonBean {
 
     public String createPerson() {
         try {
-            //Role role = Role.valueOf(personDto.getRole().toUpperCase());
+            Set<Role> roles = new HashSet<>();
+            roles.add(Role.GUEST);
 
             PersonDTO created = personLogic.createPerson(
                     personDto.getFirstName(),
@@ -28,18 +36,28 @@ public class createPersonBean {
                     personDto.getEmailAddress(),
                     personDto.isConsent(),
                     personDto.getPassword(),
-                    Role.GUEST
+                    roles
             );
 
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO,
                             "Account created", "Welcome, " + created.getFirstName()));
 
-            return "success?faces-redirect=true";
+            return "/views/login.xhtml?faces-redirect=true";
+
         } catch (IllegalArgumentException e) {
+            LOG.log(Level.WARNING, "Validation error creating person", e);
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR,
                             "Error creating person", e.getMessage()));
+            return null;
+
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unexpected error creating person", e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error creating person",
+                            "Could not create account. The email may already be in use."));
             return null;
         }
     }

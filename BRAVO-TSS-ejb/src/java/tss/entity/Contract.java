@@ -1,25 +1,17 @@
 package tss.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
-import java.util.List;
-import jakarta.persistence.OneToMany;
-import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Entity
-@NamedQueries({@NamedQuery( name ="getAllContracts",query="SELECT c FROM Contract c")})
+@NamedQueries({
+    @NamedQuery(name = "getAllContracts", query = "SELECT c FROM Contract c")})
 public class Contract extends AbstractEntity {
- 
+
     @Enumerated(EnumType.STRING)
-    private ContractStatus status; 
+    private ContractStatus status;
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -31,11 +23,33 @@ public class Contract extends AbstractEntity {
     private double hoursDue;
     private int workingDaysPerWeek;
     private int vacationDaysPerYear;
-    private String state;
-       
+    @Enumerated(EnumType.STRING)
+    private FederalState state;
+
     @ManyToOne
-    private Person person;
-    
+    @JoinColumn(name = "EMPLOYEE_ID")
+    private Person employee;
+
+    @ManyToOne
+    @JoinColumn(name = "SUPERVISOR_ID")
+    private Person supervisor;
+
+    @ManyToMany
+    @JoinTable(
+            name = "CONTRACT_SECRETARY",
+            joinColumns = @JoinColumn(name = "CONTRACT_ID"),
+            inverseJoinColumns = @JoinColumn(name = "PERSON_ID")
+    )
+    private Set<Person> secretaries;
+
+    @ManyToMany
+    @JoinTable(
+            name = "CONTRACT_ASSISTANT",
+            joinColumns = @JoinColumn(name = "CONTRACT_ID"),
+            inverseJoinColumns = @JoinColumn(name = "PERSON_ID")
+    )
+    private Set<Person> assistants;
+
     @OneToMany(mappedBy = "contract")
     private List<Timesheet> timesheet;
 
@@ -46,7 +60,6 @@ public class Contract extends AbstractEntity {
     public void setTimesheet(List<Timesheet> timesheet) {
         this.timesheet = timesheet;
     }
-    
 
     public double getVacationHours() {
         return vacationHours;
@@ -56,9 +69,10 @@ public class Contract extends AbstractEntity {
         this.vacationHours = vacationHours;
     }
 
-    public Contract()
-    {
-    
+    public Contract() {
+        this.secretaries = new HashSet<>();
+        this.assistants = new HashSet<>();
+        this.timesheet = new ArrayList<>();
     }
 
     public ContractStatus getStatus() {
@@ -69,14 +83,51 @@ public class Contract extends AbstractEntity {
         this.status = status;
     }
 
-    public Person getPerson() {
-        return person;
+    public Person getEmployee() {
+        return employee;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setEmployee(Person person) {
+        this.employee = person;
     }
-    
+
+    public Person getSupervisor() {
+        return supervisor;
+    }
+
+    public void setSupervisor(Person supervisor) {
+        this.supervisor = supervisor;
+    }
+
+    public void removeSupervisor() {
+        this.supervisor = null;
+    }
+
+    public void addSecretary(Collection<Person> persons) {
+        this.secretaries.addAll(persons);
+    }
+
+    public void removeSecretary(Person... persons) {
+        Set<Person> toRemove = new HashSet<>(Arrays.asList(persons));
+        this.secretaries.removeAll(toRemove);
+    }
+
+    public Set<Person> getSecretaries() {
+        return Collections.unmodifiableSet(this.secretaries);
+    }
+
+    public void addAssistant(Person... persons) {
+        this.assistants.addAll(Arrays.asList(persons));
+    }
+
+    public void removeAssistant(Person... persons) {
+        Set<Person> toRemove = new HashSet<>(Arrays.asList(persons));
+        this.assistants.removeAll(toRemove);
+    }
+
+    public Set<Person> getAssistants() {
+        return Collections.unmodifiableSet(this.assistants);
+    }
 
     public String getName() {
         return name;
@@ -149,13 +200,13 @@ public class Contract extends AbstractEntity {
     public void setVacationDaysPerYear(int vacationDaysPerYear) {
         this.vacationDaysPerYear = vacationDaysPerYear;
     }
-    
-    public String getState() {
+
+    public FederalState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(FederalState state) {
         this.state = state;
     }
-    
+
 }

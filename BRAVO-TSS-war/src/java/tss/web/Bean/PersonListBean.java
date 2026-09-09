@@ -7,7 +7,7 @@ import jakarta.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.List;
 import tss.dto.PersonDTO;
-import tss.entity.Person;
+import tss.entity.Role;
 import tss.logic.PersonLogic;
 
 @Named("PersonListBean")
@@ -29,4 +29,8 @@ public class PersonListBean implements Serializable {
     public List<PersonDTO> getPersons() {
         return persons;
     }
+    
+    public Role[] getRoles() {
+    return Role.values();
+}
 }
