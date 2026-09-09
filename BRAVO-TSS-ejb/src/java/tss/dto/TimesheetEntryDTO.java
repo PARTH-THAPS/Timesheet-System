@@ -11,7 +11,6 @@ public class TimesheetEntryDTO extends AbstractDTO {
     private double hours;
     private String description;
     private String type;
-    private Long id;
 
     public Long getId() {
         return id;
@@ -21,13 +20,6 @@ public class TimesheetEntryDTO extends AbstractDTO {
         this.id = id;
     }
     
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
     
     public LocalDate getEntryDate() {
         return entryDate;
