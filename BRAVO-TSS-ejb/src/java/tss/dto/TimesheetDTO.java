@@ -57,9 +57,11 @@ public class TimesheetDTO extends AbstractDTO {
         return status;
     }
 
+
     public void setStatus(TimesheetStatus status) {
         this.status = status;
     }
+
 
     public LocalDate getSignedByEmployee() {
         return signedByEmployee;

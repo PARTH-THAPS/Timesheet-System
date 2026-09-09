@@ -5,10 +5,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
-
 import java.io.Serializable;
-import java.time.Duration;
-
 import tss.dto.TimesheetDTO;
 import tss.dto.TimesheetEntryDTO;
 import tss.entity.ReportType;
@@ -29,6 +26,8 @@ public class TimesheetDetailBean implements Serializable {
     private TimesheetDTO timesheet;
 
     private TimesheetEntryDTO entry;
+    
+    
 
     public void init() {
         if (timesheet != null) {
@@ -56,12 +55,11 @@ public class TimesheetDetailBean implements Serializable {
 
     public void saveEntry() {
         try {
-            timesheetLogic.addEntry(
-                    timesheet.getId(),
-                    entry
-            );
+            timesheetLogic.addEntry(timesheet.getId(),entry);
+            showInfo("Entry added", "The entry was added successfully.");;
 
             reload();
+            prepareNewEntry();
 
         } catch (Exception e) {
             showError(
@@ -73,12 +71,10 @@ public class TimesheetDetailBean implements Serializable {
 
     public void deleteEntry(TimesheetEntryDTO entry) {
         try {
-            timesheetLogic.removeEntry(
-                    timesheet.getId(),
-                    entry.getId()
-            );
+            timesheetLogic.removeEntry(timesheet.getId(),entry.getId());
 
             reload();
+            showInfo("Entry removed", "The entry was removed successfully.");
 
         } catch (Exception e) {
             showError(
@@ -87,34 +83,40 @@ public class TimesheetDetailBean implements Serializable {
             );
         }
     }
+    
+    public void signByEmployee() {
+        try {
+            timesheetLogic.signByEmployee(timesheet.getId());
+            reload();
+            showInfo("Timesheet signed", "You signed this timesheet.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            showError("Could not sign", e.getMessage());
+        }
+    }
+
+    public void revokeEmployeeSignature() {
+        try {
+            timesheetLogic.revokeEmployeeSignature(timesheet.getId());
+            reload();
+            showInfo("Signature revoked", "Your signature was revoked.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            showError("Could not revoke signature", e.getMessage());
+        }
+    }
 
     private void reload() {
         timesheet = timesheetLogic.getTimesheetById(id);
     }
 
-    public double calculateEntryHours(TimesheetEntryDTO entry) {
-        if (entry.getStartTime() == null
-                || entry.getEndTime() == null) {
-
-            return 0;
-        }
-
-        return Duration.between(
-                entry.getStartTime(),
-                entry.getEndTime()
-        ).toMinutes() / 60.0;
-    }
-
+   
     public double getReportedHours() {
-        if (timesheet == null
-                || timesheet.getEntries() == null) {
-
+        if (timesheet == null || timesheet.getEntries() == null) {
             return 0;
         }
 
         return timesheet.getEntries()
                 .stream()
-                .mapToDouble(this::calculateEntryHours)
+                .mapToDouble(TimesheetEntryDTO::getHours)
                 .sum();
     }
 
@@ -123,8 +125,7 @@ public class TimesheetDetailBean implements Serializable {
             return 0;
         }
 
-        return getReportedHours()
-                - timesheet.getHoursDue();
+        return getReportedHours() - timesheet.getHoursDue();
     }
 
     public boolean isEditable() {
@@ -135,6 +136,11 @@ public class TimesheetDetailBean implements Serializable {
 
     public ReportType[] getReportTypes() {
         return ReportType.values();
+    }
+    
+    private void showInfo(String summary, String detail) {
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
     }
 
     private void showError(
