@@ -90,7 +90,7 @@ public class TimesheetDao {
                         "SELECT DISTINCT t FROM Timesheet t " +
                                 "LEFT JOIN FETCH t.entries " +
                                 "JOIN t.contract c " +
-                                "JOIN c.person p " +
+                                "JOIN c.employee p " +
                                 "WHERE p.emailAddress = :email " +
                                 "ORDER BY t.startDate",
                         Timesheet.class)
@@ -99,7 +99,15 @@ public class TimesheetDao {
     }
 
     public List<Timesheet> findPendingArchivesForSecretary(String emailAddress) {
-        //TODO: Create query that returns signed archives for secretary
-        return null;
+        return em.createQuery(
+                        "SELECT DISTINCT t FROM Timesheet t " +
+                                "JOIN t.contract c " +
+                                "JOIN c.secretaries s " +
+                                "WHERE s.emailAddress = :emailAddress " +
+                                "AND t.status = tss.entity.TimesheetStatus.SIGNED_BY_SUPERVISOR " +
+                                "ORDER BY t.startDate",
+                        Timesheet.class)
+                .setParameter("emailAddress", emailAddress)
+                .getResultList();
     }
 }
