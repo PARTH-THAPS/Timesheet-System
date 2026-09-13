@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ui:composition
-        template="/WEB-INF/templates/page-layout.xhtml"
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:h="jakarta.faces.html"
-        xmlns:f="jakarta.faces.core"
-        xmlns:ui="jakarta.faces.facelets"
-        xmlns:p="http://primefaces.org/ui">
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
         Contracts
@@ -47,9 +47,9 @@
             </div>
 
             <p:button
-                    value="Add Contract"
-                    icon="pi pi-plus"
-                    outcome="/views/assistant/edit-contract"/>
+                value="Add Contract"
+                icon="pi pi-plus"
+                outcome="/views/assistant/edit-contract"/>
 
         </section>
 
@@ -58,97 +58,97 @@
             <h:form id="contractsForm">
 
                 <p:dataTable
-                        id="contractsTable"
-                        widgetVar="contractsTable"
-                        value="#{contractListBean.contracts}"
-                        var="contract"
-                        paginator="true"
-                        rows="10"
-                        stripedRows="true"
-                        sortMode="single"
-                        emptyMessage="No contracts found.">
+                    id="contractsTable"
+                    widgetVar="contractsTable"
+                    value="#{contractListBean.contracts}"
+                    var="contract"
+                    paginator="true"
+                    rows="10"
+                    stripedRows="true"
+                    sortMode="single"
+                    emptyMessage="No contracts found.">
 
                     <p:column
-                            headerText="Name"
-                            sortBy="#{contract.name}"
-                            filterBy="#{contract.name}"
-                            filterMatchMode="contains">
+                        headerText="Name"
+                        sortBy="#{contract.name}"
+                        filterBy="#{contract.name}"
+                        filterMatchMode="contains">
 
                         <h:outputText value="#{contract.name}"/>
 
                     </p:column>
 
                     <p:column
-                            headerText="Employee"
-                            sortBy="#{contractListBean.getPersonName(contract.personId)}"
-                            filterBy="#{contractListBean.getPersonName(contract.personId)}"
-                            filterMatchMode="contains">
+                        headerText="Employee"
+                        sortBy="#{contractListBean.getPersonName(contract.personId)}"
+                        filterBy="#{contractListBean.getPersonName(contract.personId)}"
+                        filterMatchMode="contains">
 
                         <h:outputText
-                                value="#{contractListBean.getPersonName(contract.personId)}"/>
+                            value="#{contractListBean.getPersonName(contract.personId)}"/>
 
                     </p:column>
 
                     <p:column
-                            headerText="Start"
-                            sortBy="#{contract.startDate}">
+                        headerText="Start"
+                        sortBy="#{contract.startDate}">
 
                         <h:outputText value="#{contract.startDate}">
                             <f:convertDateTime
-                                    type="localDate"
-                                    pattern="dd.MM.yyyy"/>
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
 
                     </p:column>
 
                     <p:column
-                            headerText="End"
-                            sortBy="#{contract.endDate}">
+                        headerText="End"
+                        sortBy="#{contract.endDate}">
 
                         <h:outputText value="#{contract.endDate}">
                             <f:convertDateTime
-                                    type="localDate"
-                                    pattern="dd.MM.yyyy"/>
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
 
                     </p:column>
 
                     <p:column
-                            headerText="Frequency"
-                            sortBy="#{contract.frequency}">
+                        headerText="Frequency"
+                        sortBy="#{contract.frequency}">
 
                         <h:outputText value="#{contract.frequency}"/>
 
                     </p:column>
 
                     <p:column
-                            headerText="Hours / Week"
-                            sortBy="#{contract.hoursPerWeek}">
+                        headerText="Hours / Week"
+                        sortBy="#{contract.hoursPerWeek}">
 
                         <h:outputText value="#{contract.hoursPerWeek}"/>
                     </p:column>
 
                     <p:column
-                            headerText="Status"
-                            sortBy="#{contract.status}"
-                            filterBy="#{contract.status}"
-                            filterMatchMode="exact">
+                        headerText="Status"
+                        sortBy="#{contract.status}"
+                        filterBy="#{contract.status}"
+                        filterMatchMode="exact">
 
                         <f:facet name="filter">
 
                             <p:selectOneMenu
-                                    onchange="PF('contractsTable').filter()">
+                                onchange="PF('contractsTable').filter()">
 
                                 <f:selectItem
-                                        itemLabel="All"
-                                        itemValue="#{null}"
-                                        noSelectionOption="true"/>
+                                    itemLabel="All"
+                                    itemValue="#{null}"
+                                    noSelectionOption="true"/>
 
                                 <f:selectItems
-                                        value="#{contractListBean.statuses}"
-                                        var="status"
-                                        itemLabel="#{status}"
-                                        itemValue="#{status}"/>
+                                    value="#{contractListBean.statuses}"
+                                    var="status"
+                                    itemLabel="#{status}"
+                                    itemValue="#{status}"/>
 
                             </p:selectOneMenu>
 
@@ -161,18 +161,18 @@
                     </p:column>
 
                     <p:column
-                            headerText="Actions"
-                            styleClass="table-actions-column">
+                        headerText="Actions"
+                        styleClass="table-actions-column">
 
                         <p:button
-                                icon="pi pi-eye"
-                                title="View contract"
-                                outcome="/views/assistant/edit-contract"
-                                styleClass="ui-button-secondary">
+                            icon="pi pi-eye"
+                            title="View contract"
+                            outcome="/views/assistant/edit-contract"
+                            styleClass="ui-button-secondary">
 
                             <f:param
-                                    name="id"
-                                    value="#{contract.id}"/>
+                                name="id"
+                                value="#{contract.id}"/>
 
                         </p:button>
 

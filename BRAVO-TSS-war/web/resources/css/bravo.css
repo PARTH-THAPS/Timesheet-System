@@ -598,7 +598,38 @@ body {
     font-weight: 500;
 }
 
-.logout
-{
+.actions-column {
+    white-space: nowrap;
 }
 
+.actions-column .action-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-right: 10px !important;
+    padding: 0 14px !important;
+    height: 38px;
+    line-height: 38px;
+    font-size: 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+.actions-column .action-btn:last-child {
+    margin-right: 0 !important;
+}
+
+.actions-column .action-btn .pi {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.table-responsive-wrapper {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+}

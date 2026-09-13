@@ -5,11 +5,10 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
-
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-
 import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
@@ -31,39 +30,43 @@ public class ContractEditBean implements Serializable {
     private PersonLogic personLogic;
 
     private Long id;
-
     private ContractDTO contract;
-
     private List<PersonDTO> persons;
 
-    public void init() {
+    private List<Long> originalSecretaryIds;
+    private List<Long> originalAssistantIds;
 
+    public void init() {
         if (contract != null) {
             return;
         }
-
         persons = personLogic.findAllPersons();
-
         if (id == null) {
             contract = new ContractDTO();
-
             contract.setFrequency(TimesheetFrequency.MONTHLY);
             contract.setWorkingDaysPerWeek(5);
             contract.setVacationDaysPerYear(20);
             contract.setState(FederalState.RLP);
-
+            contract.setSecretaryIds(new ArrayList<>());
+            contract.setAssistantIds(new ArrayList<>());
         } else {
             contract = contractLogic.searchContract(id);
         }
+
+        originalSecretaryIds = contract.getSecretaryIds() != null
+                ? new ArrayList<>(contract.getSecretaryIds())
+                : new ArrayList<>();
+        originalAssistantIds = contract.getAssistantIds() != null
+                ? new ArrayList<>(contract.getAssistantIds())
+                : new ArrayList<>();
     }
 
     public void save() {
         try {
+            Long contractId;
             if (isNewContract()) {
-
                 PersonDTO person = findSelectedPerson();
-
-                contractLogic.createContract(
+                ContractDTO created = contractLogic.createContract(
                         contract.getName(),
                         contract.getStartDate(),
                         contract.getEndDate(),
@@ -75,18 +78,66 @@ public class ContractEditBean implements Serializable {
                         person,
                         contract.getState()
                 );
-
+                contractId = created.getId();
+                if (contract.getSupervisorId() != null) {
+                    contractLogic.addSupervisor(
+                            contractId,
+                            contract.getSupervisorId()
+                    );
+                }
             } else {
                 contractLogic.updateContract(contract);
+                contractId = contract.getId();
+                if (contract.getSupervisorId() != null) {
+                    contractLogic.addSupervisor(
+                            contractId,
+                            contract.getSupervisorId()
+                    );
+                } else {
+                    contractLogic.removeSupervisor(contractId);
+                }
             }
 
-            redirectToContracts();
+            syncSecretariesAndAssistants(contractId);
 
+            redirectToContracts();
         } catch (Exception e) {
             showError(
                     "Could not save contract",
                     e.getMessage()
             );
+        }
+    }
+
+    private void syncSecretariesAndAssistants(Long contractId) {
+        List<Long> selectedSecretaries = contract.getSecretaryIds() != null
+                ? contract.getSecretaryIds() : List.of();
+        List<Long> secretariesToAdd = selectedSecretaries.stream()
+                .filter(pid -> !originalSecretaryIds.contains(pid))
+                .toList();
+        List<Long> secretariesToRemove = originalSecretaryIds.stream()
+                .filter(pid -> !selectedSecretaries.contains(pid))
+                .toList();
+        if (!secretariesToAdd.isEmpty()) {
+            contractLogic.addSecretary(contractId, secretariesToAdd);
+        }
+        if (!secretariesToRemove.isEmpty()) {
+            contractLogic.removeSecretary(contractId, secretariesToRemove);
+        }
+
+        List<Long> selectedAssistants = contract.getAssistantIds() != null
+                ? contract.getAssistantIds() : List.of();
+        List<Long> assistantsToAdd = selectedAssistants.stream()
+                .filter(pid -> !originalAssistantIds.contains(pid))
+                .toList();
+        List<Long> assistantsToRemove = originalAssistantIds.stream()
+                .filter(pid -> !selectedAssistants.contains(pid))
+                .toList();
+        if (!assistantsToAdd.isEmpty()) {
+            contractLogic.addAssistant(contractId, assistantsToAdd);
+        }
+        if (!assistantsToRemove.isEmpty()) {
+            contractLogic.removeAssistant(contractId, assistantsToRemove);
         }
     }
 
@@ -96,7 +147,6 @@ public class ContractEditBean implements Serializable {
                     contract.getId(),
                     ContractStatus.STARTED
             );
-
         } catch (Exception e) {
             showError(
                     "Could not start contract",
@@ -111,7 +161,6 @@ public class ContractEditBean implements Serializable {
                     contract.getId(),
                     ContractStatus.TERMINATED
             );
-
         } catch (Exception e) {
             showError(
                     "Could not terminate contract",
@@ -124,7 +173,6 @@ public class ContractEditBean implements Serializable {
         try {
             contractLogic.deleteContract(contract.getId());
             redirectToContracts();
-
         } catch (Exception e) {
             showError(
                     "Could not delete contract",
@@ -136,7 +184,6 @@ public class ContractEditBean implements Serializable {
     public void cancel() {
         try {
             redirectToContracts();
-
         } catch (IOException e) {
             showError(
                     "Could not return to contracts",
@@ -146,13 +193,11 @@ public class ContractEditBean implements Serializable {
     }
 
     private PersonDTO findSelectedPerson() {
-
         if (contract.getPersonId() == null) {
             throw new IllegalArgumentException(
                     "Please select an employee."
             );
         }
-
         return persons.stream()
                 .filter(person ->
                         contract.getPersonId().equals(person.getId())
@@ -166,29 +211,24 @@ public class ContractEditBean implements Serializable {
     }
 
     private void redirectToContracts() throws IOException {
-
         FacesContext facesContext =
                 FacesContext.getCurrentInstance();
-
         String contextPath =
                 facesContext
                         .getExternalContext()
                         .getRequestContextPath();
-
         facesContext
                 .getExternalContext()
                 .redirect(
                         contextPath
                                 + "/views/assistant/contracts.xhtml"
                 );
-
         facesContext.responseComplete();
     }
 
     private void showError(
             String summary,
             String detail) {
-
         FacesContext.getCurrentInstance().addMessage(
                 null,
                 new FacesMessage(

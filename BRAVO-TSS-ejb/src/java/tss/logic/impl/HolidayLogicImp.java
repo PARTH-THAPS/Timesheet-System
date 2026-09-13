@@ -23,6 +23,54 @@ public class HolidayLogicImp implements HolidayLogic {
     }
 
     @Override
+    public HolidayDTO createHoliday(String day, LocalDate date, String holiday, FederalState state, int year) {
+        Holiday h = new Holiday();
+        h.setDay(day);
+        h.setDate(date);
+        h.setHoliday(holiday);
+        h.setState(state);
+        h.setYear(year);
+
+        holidayDao.createHoliday(List.of(h));
+
+        return toDTO(h);
+    }
+
+    @Override
+    public HolidayDTO findHoliday(Long id) {
+        Holiday h = holidayDao.findById(id);
+        if (h == null) {
+            throw new IllegalArgumentException("No Holiday found with id: " + id);
+        }
+        return toDTO(h);
+    }
+
+    @Override
+    public HolidayDTO updateHoliday(HolidayDTO dto) {
+        Holiday h = holidayDao.findById(dto.getId());
+        if (h == null) {
+            throw new IllegalArgumentException("No Holiday found with id: " + dto.getId());
+        }
+
+        h.setDay(dto.getDay());
+        h.setDate(dto.getDate());
+        h.setHoliday(dto.getHoliday());
+        h.setState(dto.getState());
+        h.setYear(dto.getYear());
+
+        return toDTO(holidayDao.updateHoliday(h));
+    }
+
+    @Override
+    public void deleteHoliday(HolidayDTO dto) {
+        Holiday h = holidayDao.findById(dto.getId());
+        if (h == null) {
+            throw new IllegalArgumentException("No Holiday found with id: " + dto.getId());
+        }
+        holidayDao.deleteHoliday(h);
+    }
+
+    @Override
     public List<HolidayDTO> findByState(FederalState state) {
         return toDtoList(holidayDao.findByState(state));
     }
@@ -47,6 +95,7 @@ public class HolidayLogicImp implements HolidayLogic {
 
     private HolidayDTO toDTO(Holiday h) {
         HolidayDTO dto = new HolidayDTO();
+        dto.setId(h.getId());
         dto.setUuid(h.getUuid());
         dto.setJpaVersion(h.getJpaVersion());
         dto.setDate(h.getDate());

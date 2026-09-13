@@ -86,6 +86,7 @@ public class Person extends AbstractEntity implements Serializable {
     }
 
     public void setRoles(Set<Role> role) {
+        this.roles.clear();
         this.roles.addAll(role);
     }
 

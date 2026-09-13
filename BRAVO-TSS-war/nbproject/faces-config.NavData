@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scene Scope="Project" version="2">
     <Scope Scope="Faces Configuration Only"/>
-    <Scope Scope="Project"/>
+    <Scope Scope="Project">
+        <Node id="views/portal/home.xhtml" x="1150" y="150" zoom="true"/>
+        <Node id="index.xhtml" x="150" y="150" zoom="true"/>
+        <Node id="views/dev/timesheet.xhtml" x="400" y="300" zoom="true"/>
+        <Node id="views/admin/edit-user.xhtml" x="150" y="450" zoom="true"/>
+        <Node id="views/dev/secretaryArchives.xhtml" x="150" y="300" zoom="true"/>
+        <Node id="views/assistant/edit-contract.xhtml" x="900" y="300" zoom="true"/>
+        <Node id="views/login.xhtml" x="650" y="300" zoom="true"/>
+        <Node id="views/admin/HolidayEdit.xhtml" x="650" y="150" zoom="true"/>
+        <Node id="signup.xhtml" x="400" y="450" zoom="true"/>
+        <Node id="views/admin/usersmgmt.xhtml" x="1400" y="150" zoom="true"/>
+        <Node id="views/employee/timesheets.xhtml" x="400" y="600" zoom="true"/>
+        <Node id="views/admin/HolidayList.xhtml" x="400" y="150" zoom="true"/>
+        <Node id="views/assistant/contracts.xhtml" x="150" y="600" zoom="true"/>
+        <Node id="views/employee/timesheet.xhtml" x="150" y="750" zoom="true"/>
+        <Node id="EditPerson.xhtml" x="900" y="150" zoom="true"/>
+        <Node id="PersonList.xhtml" x="650" y="450" zoom="true"/>
+    </Scope>
     <Scope Scope="All Faces Configurations"/>
 </Scene>
