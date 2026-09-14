@@ -214,35 +214,43 @@ public class ContractLogicImp implements ContractLogic {
     }
 
     private ContractDTO toDTO(Contract c) {
-        ContractDTO dto = new ContractDTO();
-
-        dto.setId(c.getId());
-        dto.setUuid(c.getUuid());
-        dto.setJpaVersion(c.getJpaVersion());
-
-        dto.setName(c.getName());
-        dto.setStartDate(c.getStartDate());
-        dto.setEndDate(c.getEndDate());
-        dto.setFrequency(c.getFrequency());
-
-        dto.setHoursPerWeek(c.getHoursPerWeek());
-        dto.setHoursDue(c.getHoursDue());
-        dto.setVacationHours(c.getVacationHours());
-
-        dto.setWorkingDaysPerWeek(c.getWorkingDaysPerWeek());
-        dto.setVacationDaysPerYear(c.getVacationDaysPerYear());
-
-        dto.setState(c.getState());
-        dto.setStatus(c.getStatus());
-        dto.setTerminationDate(c.getTerminationDate());
-
-        if (c.getEmployee() != null) {
-            dto.setPersonId(c.getEmployee().getId());
-            dto.setPersonUuid(c.getEmployee().getUuid());
-        }
-
-        return dto;
+    ContractDTO dto = new ContractDTO();
+    dto.setId(c.getId());
+    dto.setUuid(c.getUuid());
+    dto.setJpaVersion(c.getJpaVersion());
+    dto.setName(c.getName());
+    dto.setStartDate(c.getStartDate());
+    dto.setEndDate(c.getEndDate());
+    dto.setFrequency(c.getFrequency());
+    dto.setHoursPerWeek(c.getHoursPerWeek());
+    dto.setHoursDue(c.getHoursDue());
+    dto.setVacationHours(c.getVacationHours());
+    dto.setWorkingDaysPerWeek(c.getWorkingDaysPerWeek());
+    dto.setVacationDaysPerYear(c.getVacationDaysPerYear());
+    dto.setState(c.getState());
+    dto.setStatus(c.getStatus());
+    dto.setTerminationDate(c.getTerminationDate());
+    if (c.getEmployee() != null) {
+        dto.setPersonId(c.getEmployee().getId());
+        dto.setPersonUuid(c.getEmployee().getUuid());
     }
+    if (c.getSupervisor() != null) {
+        dto.setSupervisorId(c.getSupervisor().getId());
+    }
+    
+    dto.setSecretaryIds(
+            c.getSecretaries().stream()
+                    .map(Person::getId)
+                    .toList()
+    );
+    dto.setAssistantIds(
+            c.getAssistants().stream()
+                    .map(Person::getId)
+                    .toList()
+    );
+    
+    return dto;
+}
 
     @Override
     public void addSecretary(Long contractId, List<Long> personIds) {

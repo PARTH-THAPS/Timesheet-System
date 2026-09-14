@@ -1,6 +1,7 @@
 package tss.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 import tss.entity.ContractStatus;
 import tss.entity.FederalState;
 import tss.entity.TimesheetFrequency;
@@ -19,8 +20,15 @@ public class ContractDTO extends AbstractDTO {
     private int workingDaysPerWeek;
     private int vacationDaysPerYear;
     private Long personId;
-    private FederalState state;
     private String personUuid;
+    private Long supervisorId;
+    private FederalState state;
+    private ContractStatus status;
+     private List<Long> secretaryIds;
+    private List<Long> assistantIds;
+
+    public ContractDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -28,27 +36,6 @@ public class ContractDTO extends AbstractDTO {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getPersonUuid() {
-        return personUuid;
-    }
-
-    public void setPersonUuid(String personUuid) {
-        this.personUuid = personUuid;
-    }
-
-    public ContractStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ContractStatus status) {
-        this.status = status;
-    }
-    private ContractStatus status;
-
-
-    public ContractDTO() {
     }
 
     public String getName() {
@@ -139,6 +126,22 @@ public class ContractDTO extends AbstractDTO {
         this.personId = personId;
     }
 
+    public String getPersonUuid() {
+        return personUuid;
+    }
+
+    public void setPersonUuid(String personUuid) {
+        this.personUuid = personUuid;
+    }
+
+    public Long getSupervisorId() {
+        return supervisorId;
+    }
+
+    public void setSupervisorId(Long supervisorId) {
+        this.supervisorId = supervisorId;
+    }
+
     public FederalState getState() {
         return state;
     }
@@ -146,5 +149,28 @@ public class ContractDTO extends AbstractDTO {
     public void setState(FederalState state) {
         this.state = state;
     }
+
+    public ContractStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ContractStatus status) {
+        this.status = status;
+    }
     
+    public List<Long> getSecretaryIds() {
+        return secretaryIds;
+    }
+
+    public void setSecretaryIds(List<Long> secretaryIds) {
+        this.secretaryIds = secretaryIds;
+    }
+
+    public List<Long> getAssistantIds() {
+        return assistantIds;
+    }
+
+    public void setAssistantIds(List<Long> assistantIds) {
+        this.assistantIds = assistantIds;
+    }
 }
