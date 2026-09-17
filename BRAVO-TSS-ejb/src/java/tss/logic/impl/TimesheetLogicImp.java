@@ -97,6 +97,10 @@ public class TimesheetLogicImp implements TimesheetLogic {
         }
 
         Timesheet timesheet = timesheetDAO.findById(timesheetId);
+
+        LocalDate start_date = timesheet.getStartDate();
+        LocalDate end_date = timesheet.getEndDate();
+
         if (timesheet == null) {
             throw new IllegalArgumentException("No timesheet found with id: " + timesheetId);
         }
@@ -105,20 +109,26 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         TimesheetEntry entry = toEntity(entryDTO);
 
-        if (entry.getType() == ReportType.VACATION) {
-            validateVacationCap(timesheet.getContract(), entry.getHours(), null);
+        if (entry.getEntryDate().isBefore(start_date)
+                || entry.getEntryDate().isAfter(end_date)) {
+
+            throw new IllegalArgumentException(
+                    "Selected date is outside the timesheet period."
+            );}
+
+            if (entry.getType() == ReportType.VACATION) {
+                validateVacationCap(timesheet.getContract(), entry.getHours(), null);
+            }
+
+            entry.setTimesheet(timesheet);
+            timesheet.getEntries().add(entry);
+            timesheetDAO.updateTimesheet(timesheet);
+
+            return toDTO(timesheet);
         }
-
-        entry.setTimesheet(timesheet);
-        timesheet.getEntries().add(entry);
-        timesheetDAO.updateTimesheet(timesheet);
-        
-        return toDTO(timesheet);
-    }
-
-//     holidays logic
+        //     holidays logic
     public List<HolidayDTO> checkForHolidays(LocalDate startDate, LocalDate endDate, FederalState State) {
-       return holidayLogic.findByStateAndRange(State, startDate, endDate);
+        return holidayLogic.findByStateAndRange(State, startDate, endDate);
     }
 
     //holidays logic
@@ -127,8 +137,6 @@ public class TimesheetLogicImp implements TimesheetLogic {
         LocalDate endDate = timeSheet.getEndDate();
         return holidayLogic.findByStateAndRange(State, startDate, endDate);
     } */
-
-
     @Override
     public TimesheetDTO updateEntry(Long timesheetId, Long entryId, TimesheetEntryDTO updatedEntryDTO) {
         if (updatedEntryDTO == null) {
@@ -412,7 +420,6 @@ public class TimesheetLogicImp implements TimesheetLogic {
         throw new IllegalArgumentException("No entry found with id: " + entryId);
     }
 
-
     @Override
     public List<TimesheetDTO> findByEmployeeUsername(String emailAddress) {
         List<Timesheet> entities = timesheetDAO.findByEmployeeUsername(emailAddress);
@@ -427,6 +434,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
             dto.setHoursDue(t.getHoursDue());
             dto.setSignedByEmployee(t.getSignedByEmployee());
             dto.setSignedBySupervisor(t.getSignedBySupervisor());
+            dto.setId(t.getId());
 
             dtos.add(dto);
         }
@@ -484,10 +492,10 @@ public class TimesheetLogicImp implements TimesheetLogic {
         }
     }
 
-
     private TimesheetDTO toDTO(Timesheet ts) {
         TimesheetDTO dto = new TimesheetDTO();
         dto.setUuid(ts.getUuid());
+        dto.setId(ts.getId());
         dto.setJpaVersion(ts.getJpaVersion());
         dto.setStartDate(ts.getStartDate());
         dto.setEndDate(ts.getEndDate());
@@ -504,6 +512,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
     private TimesheetEntryDTO toDTO(TimesheetEntry entry) {
         TimesheetEntryDTO dto = new TimesheetEntryDTO();
+        dto.setId(entry.getId());
         dto.setUuid(entry.getUuid());
         dto.setJpaVersion(entry.getJpaVersion());
         dto.setEntryDate(entry.getEntryDate());

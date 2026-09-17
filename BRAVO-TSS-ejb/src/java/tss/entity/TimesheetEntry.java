@@ -25,6 +25,7 @@ public class TimesheetEntry extends AbstractEntity {
     private Timesheet timesheet;
     
     public TimesheetEntry() {
+        super(true);
     }
     
     @Transient
