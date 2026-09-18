@@ -72,7 +72,9 @@
                     <div class="form-checkbox">
                         <p:selectBooleanCheckbox
                             id="consent"
-                            value="#{CreatePersonBean.personDto.consent}"/>
+                            value="#{CreatePersonBean.personDto.consent}"
+                            required="true"
+                            />
                         <p:outputLabel for="consent" value="I agree to the required data processing."/>
                     </div>
 

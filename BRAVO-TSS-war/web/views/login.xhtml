@@ -1,30 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <ui:composition
-    template="/WEB-INF/templates/page-layout.xhtml"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html"
-    xmlns:ui="jakarta.faces.facelets"
-    xmlns:p="http://primefaces.org/ui">
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <f:metadata>
+        <f:viewParam name="error" value="#{loginErrorBean.error}"/>
+    </f:metadata>
 
     <ui:define name="pageTitle">
         Login
     </ui:define>
 
     <ui:define name="pageHeadline">
-     
     </ui:define>
 
     <ui:define name="content">
-
         <section class="auth-container">
-
             <div class="card auth-card">
-
                 <p class="text-muted auth-description">
                     Login to access BRAVO-TSS.
                 </p>
-             
+
+                <ui:fragment rendered="#{loginErrorBean.error}">
+                    <div class="form-messages">
+                        <p class="text-muted" style="color:#b91c1c;">
+                            Invalid email or password. Please try again.
+                        </p>
+                    </div>
+                </ui:fragment>
 
                 <form action="j_security_check" method="POST">
                     <div class="form-field">
@@ -63,11 +70,7 @@
                         outcome="/signup"
                         value="Create an account"/>
                 </p>
-
             </div>
-
         </section>
-
     </ui:define>
-
 </ui:composition>

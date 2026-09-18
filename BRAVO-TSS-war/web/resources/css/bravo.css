@@ -1,3 +1,54 @@
+/* Index css */
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%      { transform: translateY(-6px); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 rgba(59, 130, 246, 0); }
+    50%      { box-shadow: 0 0 20px rgba(59, 130, 246, 0.25); }
+}
+
+.welcome-card {
+    animation: fadeSlideUp 0.6s ease-out both;
+}
+
+.welcome-card h2 {
+    animation: float 4s ease-in-out infinite;
+    display: inline-block;
+}
+
+.welcome-card .text-muted {
+    animation: fadeSlideUp 0.6s ease-out 0.15s both;
+}
+
+.form-actions {
+    animation: fadeSlideUp 0.6s ease-out 0.3s both;
+}
+
+.form-actions .ui-button,
+.form-actions a.ui-button {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-actions .ui-button:hover,
+.form-actions a.ui-button:hover {
+    transform: translateY(-3px) scale(1.03);
+    animation: pulseGlow 1.6s ease-in-out infinite;
+}
+
+.form-actions .ui-button:active,
+.form-actions a.ui-button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+
+
 * {
     box-sizing: border-box;
 }
@@ -600,6 +651,7 @@ body {
 
 .actions-column {
     white-space: nowrap;
+    padding-right: 12px;
 }
 
 .actions-column .action-btn {
@@ -619,10 +671,6 @@ body {
     box-sizing: border-box;
 }
 
-.actions-column .action-btn:last-child {
-    margin-right: 0 !important;
-}
-
 .actions-column .action-btn .pi {
     font-size: 14px;
     line-height: 1;
@@ -632,4 +680,41 @@ body {
     width: 100%;
     min-width: 0;
     overflow-x: auto;
+    padding-right: 4px;
+}
+
+
+/* =========================
+   Holiday Management - List actions
+   ========================= */
+.list-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.25rem;
+}
+
+.list-actions .ui-button-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 38px;
+    padding: 0 14px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: background-color 0.15s ease;
+}
+
+.list-actions .ui-button-primary:hover {
+    background: #1d4ed8;
+}
+
+.list-actions .ui-button-primary .pi {
+    font-size: 14px;
+    line-height: 1;
 }

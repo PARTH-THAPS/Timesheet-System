@@ -6,21 +6,20 @@
         xmlns:f="jakarta.faces.core"
         xmlns:ui="jakarta.faces.facelets"
         xmlns:p="http://primefaces.org/ui">
-
     <f:metadata>
         <f:event type="preRenderView" listener="#{loginBean.redirectIfLoggedIn}" />
     </f:metadata>
-
     <ui:define name="pageTitle">
         BRAVO-TSS
     </ui:define>
-
     <ui:define name="pageHeadline">
         Welcome to BRAVO-TSS
     </ui:define>
-
     <ui:define name="content">
-        <section class="card">
+
+        <h:outputStylesheet library="css" name="bravo.css"/>
+
+        <section class="card welcome-card">
             <h2>Bravo Time Sheet System</h2>
             <p class="text-muted">
                 A simple way to track time
@@ -36,6 +35,6 @@
                         outcome="/signup"/>
             </div>
         </section>
-    </ui:define>
 
+    </ui:define>
 </ui:composition>

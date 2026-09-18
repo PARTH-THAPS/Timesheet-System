@@ -25,9 +25,7 @@ public class TimesheetDetailBean implements Serializable {
 
     private TimesheetDTO timesheet;
 
-    private TimesheetEntryDTO entry;
-    
-    
+    private TimesheetEntryDTO entry = new TimesheetEntryDTO();
 
     public void init() {
         if (timesheet != null) {
@@ -157,6 +155,21 @@ public class TimesheetDetailBean implements Serializable {
                         )
                 );
     }
+    
+    public double calculateEntryHours(TimesheetEntryDTO entry) {
+    if (entry == null
+            || entry.getStartTime() == null
+            || entry.getEndTime() == null) {
+        return 0;
+    }
+    long minutes = java.time.Duration.between(
+            entry.getStartTime(),
+            entry.getEndTime()
+    ).toMinutes();
+
+    
+    return minutes / 60.0;
+}
 
     public Long getId() {
         return id;
