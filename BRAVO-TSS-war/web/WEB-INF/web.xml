@@ -154,7 +154,7 @@
         <realm-name>bravo-tss</realm-name>
         <form-login-config>
             <form-login-page>/views/login.xhtml</form-login-page>
-            <form-error-page>/views/login.xhtml</form-error-page>
+            <form-error-page>/views/login.xhtml?error=true</form-error-page>
         </form-login-config>
     </login-config>
     <security-role>

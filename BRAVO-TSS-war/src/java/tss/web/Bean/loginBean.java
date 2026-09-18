@@ -17,6 +17,7 @@ public class loginBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(loginBean.class.getName());
+    private boolean error;
 
     private User currentUser;
     
@@ -85,4 +86,12 @@ public class loginBean implements Serializable {
         }
     }
 }
+    
+     public boolean isError() {
+        return error;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
+    }
 }
