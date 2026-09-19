@@ -85,6 +85,18 @@ public class TimesheetDao {
         }
     }
 
+    public List<Timesheet> findByStatus(TimesheetStatus status) {
+        try {
+            return em.createQuery(
+                            "SELECT t FROM Timesheet t WHERE t.status = :status ORDER BY t.startDate",
+                            Timesheet.class)
+                    .setParameter("status", status)
+                    .getResultList();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
     public List<Timesheet> findByEmployeeUsername(String emailAddress) {
         return em.createQuery(
                         "SELECT DISTINCT t FROM Timesheet t " +
@@ -100,7 +112,7 @@ public class TimesheetDao {
 
     public List<Timesheet> findPendingArchivesForSecretary(String emailAddress) {
         return em.createQuery(
-                        "SELECT DISTINCT t FROM Timesheet t " +
+                        "SELECT DISTINCT t FROM Timesheet              t " +
                                 "JOIN t.contract c " +
                                 "JOIN c.secretaries s " +
                                 "WHERE s.emailAddress = :emailAddress " +
@@ -109,5 +121,24 @@ public class TimesheetDao {
                         Timesheet.class)
                 .setParameter("emailAddress", emailAddress)
                 .getResultList();
+    }
+
+    public List<Timesheet> findInProgressOnLastDay() {
+        return em.createQuery(
+                        "SELECT t FROM Timesheet t WHERE t.endDate = CURRENT_DATE ORDER BY t.startDate",
+                        Timesheet.class)
+                .getResultList();
+    }
+
+    public List<Timesheet> findByStatusOnLastDay(TimesheetStatus status) {
+        try {
+            return em.createQuery(
+                            "SELECT t FROM Timesheet t WHERE t.status = :status AND t.endDate = CURRENT_DATE ORDER BY t.startDate",
+                            Timesheet.class)
+                    .setParameter("status", status)
+                    .getResultList();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

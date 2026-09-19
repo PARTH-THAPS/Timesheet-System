@@ -19,7 +19,7 @@ public class TestEmailServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        reminderService.sendReminder("example@gmail.com");
+        reminderService.sendReminder("example@gmail.com", "subject", "test body");
 
         resp.setContentType("text/plain");
         resp.getWriter().write("Email trigger command sent! Check Mail.");
