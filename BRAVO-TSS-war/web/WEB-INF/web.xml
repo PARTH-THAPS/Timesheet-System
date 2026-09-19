@@ -1,180 +1,189 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-    <display-name>BRAVO-TSS</display-name>
-    <context-param>
-        <param-name>jakarta.faces.PROJECT_STAGE</param-name>
-        <param-value>Development</param-value>
-    </context-param>
-    <servlet>
-        <servlet-name>Faces Servlet</servlet-name>
-        <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>*.xhtml</url-pattern>
-    </servlet-mapping>
-    <session-config>
-        <session-timeout>30</session-timeout>
-    </session-config>
-    <mime-mapping>
-        <extension>json</extension>
-        <mime-type>application/json</mime-type>
-    </mime-mapping>
-    <mime-mapping>
-        <extension>woff</extension>
-        <mime-type>application/woff</mime-type>
-    </mime-mapping>
-    <mime-mapping>
-        <extension>woff2</extension>
-        <mime-type>application/woff2</mime-type>
-    </mime-mapping>
-    <mime-mapping>
-        <extension>eot</extension>
-        <mime-type>application/eot</mime-type>
-    </mime-mapping>
-    <mime-mapping>
-        <extension>ttf</extension>
-        <mime-type>application/ttf</mime-type>
-    </mime-mapping>
-    <welcome-file-list>
-        <welcome-file>index.xhtml</welcome-file>
-    </welcome-file-list>
-    <security-constraint>
-        <display-name>Enforce HTTPS</display-name>
-        <web-resource-collection>
-            <web-resource-name>All Pages</web-resource-name>
-            <description/>
-            <url-pattern>/*</url-pattern>
-        </web-resource-collection>
-        <user-data-constraint>
-            <description/>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
-    </security-constraint>
+<?xml version="1.0" encoding="UTF-8"?><web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">    
+    <display-name>BRAVO-TSS</display-name>    
+    <context-param>        
+        <param-name>jakarta.faces.PROJECT_STAGE</param-name>        
+        <param-value>Development</param-value>    
+    </context-param>    
+    <servlet>        
+        <servlet-name>Faces Servlet</servlet-name>        
+        <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>        
+        <load-on-startup>1</load-on-startup>    
+    </servlet>    
+    <servlet-mapping>        
+        <servlet-name>Faces Servlet</servlet-name>        
+        <url-pattern>*.xhtml</url-pattern>    
+    </servlet-mapping>    
+    <session-config>        
+        <session-timeout>30</session-timeout>    
+    </session-config>    
+    <mime-mapping>        
+        <extension>json</extension>        
+        <mime-type>application/json</mime-type>    
+    </mime-mapping>    
+    <mime-mapping>        
+        <extension>woff</extension>        
+        <mime-type>application/woff</mime-type>    
+    </mime-mapping>    
+    <mime-mapping>        
+        <extension>woff2</extension>        
+        <mime-type>application/woff2</mime-type>    
+    </mime-mapping>    
+    <mime-mapping>        
+        <extension>eot</extension>        
+        <mime-type>application/eot</mime-type>    
+    </mime-mapping>    
+    <mime-mapping>        
+        <extension>ttf</extension>        
+        <mime-type>application/ttf</mime-type>    
+    </mime-mapping>    
+    <welcome-file-list>        
+        <welcome-file>index.xhtml</welcome-file>    
+    </welcome-file-list>    
+    <security-constraint>        
+        <display-name>Enforce HTTPS</display-name>        
+        <web-resource-collection>            
+            <web-resource-name>All Pages</web-resource-name>            
+            <description/>            
+            <url-pattern>/*</url-pattern>        
+        </web-resource-collection>        
+        <user-data-constraint>            
+            <description/>            
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>        
+        </user-data-constraint>    
+    </security-constraint>    
+    <!--    <security-constraint>        
+        <web-resource-collection>            
+            <web-resource-name>Portal</web-resource-name>            
+            <url-pattern>/views/portal/*</url-pattern>        
+        </web-resource-collection>            
+        <auth-constraint>            
+            <role-name>EMPLOYEE</role-name>            
+            <role-name>SUPERVISOR</role-name>            
+            <role-name>ASSISTANT</role-name>            
+            <role-name>SECRETARY</role-name>            
+            <role-name>ADMIN</role-name>        
+        </auth-constraint>    
+    </security-constraint>-->    
+    <security-constraint>        
+        <display-name>Protected Pages</display-name>        
+        <web-resource-collection>            
+            <web-resource-name>Protected Pages</web-resource-name>            
+            <description/>            
+            <url-pattern>/views/portal/*</url-pattern>        
+        </web-resource-collection>        
+        <auth-constraint>            
+            <description/>            
+            <role-name>EMPLOYEE</role-name>            
+            <role-name>SUPERVISOR</role-name>            
+            <role-name>ASSISTANT</role-name>            
+            <role-name>SECRETARY</role-name>            
+            <role-name>ADMIN</role-name>            
+            <role-name>GUEST</role-name>        
+        </auth-constraint>    
+    </security-constraint>    
+    <security-constraint>        
+        <display-name>Authenticated access to employee pages</display-name>        
+        <web-resource-collection>            
+            <web-resource-name>Employee Pages</web-resource-name>            
+            <description/>            
+            <url-pattern>/views/employee/*</url-pattern>        
+        </web-resource-collection>        
+        <auth-constraint>            
+            <description>Employee</description>            
+            <role-name>EMPLOYEE</role-name>        
+        </auth-constraint>    
+    </security-constraint>    
+    <security-constraint>        
+        <display-name>Authenticated access to supervisor pages</display-name>        
+        <web-resource-collection>            
+            <web-resource-name>Supervisor Pages</web-resource-name>            
+            <description/>            
+            <url-pattern>/views/supervisor/*</url-pattern>        
+        </web-resource-collection>        
+        <auth-constraint>            
+            <description>Supervisor</description>            
+            <role-name>SUPERVISOR</role-name>        
+        </auth-constraint>    
+    </security-constraint>    
+    <security-constraint>        
+        <display-name>Authenticated access to assistant pages</display-name>        
+        <web-resource-collection>            
+            <web-resource-name>Assistant Pages</web-resource-name>            
+            <description/>            
+            <url-pattern>/views/assistant/*</url-pattern>        
+        </web-resource-collection>        
+        <auth-constraint>            
+            <description>Assistant</description>            
+            <role-name>ASSISTANT</role-name>        
+        </auth-constraint>    
+    </security-constraint>    
+    <security-constraint>        
+        <display-name>Authenticated access to secretary pages</display-name>        
+        <web-resource-collection>            
+            <web-resource-name>Secretary Pages</web-resource-name>            
+            <description/>            
+            <url-pattern>/views/secretary/*</url-pattern>        
+        </web-resource-collection>        
+        <auth-constraint>            
+            <description>Secretary</description>            
+            <role-name>SECRETARY</role-name>        
+        </auth-constraint>    
+    </security-constraint>    
+    <security-constraint>        
+        <display-name>Authenticated access to administrator pages</display-name>        
+        <web-resource-collection>            
+            <web-resource-name>Administrator Pages</web-resource-name>            
+            <description/>            
+            <url-pattern>/views/admin/*</url-pattern>        
+        </web-resource-collection>        
+        <auth-constraint>            
+            <description>Administrator</description>            
+            <role-name>ADMIN</role-name>        
+        </auth-constraint>    
+    </security-constraint>    
+    <security-constraint>        
+        <display-name>Authenticated access to Guest pages</display-name>        
+        <web-resource-collection>            
+            <web-resource-name>Guest Pages</web-resource-name>            
+            <description/>            
+            <url-pattern>/views/guest/*</url-pattern>        
+        </web-resource-collection>        
+        <auth-constraint>            
+            <description>Guest</description>            
+            <role-name>GUEST</role-name>        
+        </auth-constraint>    
+    </security-constraint>            
     
-    
-    <!--    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>Portal</web-resource-name>
-            <url-pattern>/views/portal/*</url-pattern>
-        </web-resource-collection>
-    
-        <auth-constraint>
-            <role-name>EMPLOYEE</role-name>
-            <role-name>SUPERVISOR</role-name>
-            <role-name>ASSISTANT</role-name>
-            <role-name>SECRETARY</role-name>
-            <role-name>ADMIN</role-name>
-        </auth-constraint>
-    </security-constraint>-->
-    
-    <security-constraint>
-        <display-name>Protected Pages</display-name>
-        <web-resource-collection>
-            <web-resource-name>Protected Pages</web-resource-name>
-            <description/>
-            <url-pattern>/views/portal/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <description/>
-            <role-name>EMPLOYEE</role-name>
-            <role-name>SUPERVISOR</role-name>
-            <role-name>ASSISTANT</role-name>
-            <role-name>SECRETARY</role-name>
-            <role-name>ADMIN</role-name>
-        </auth-constraint>
-    </security-constraint>
-    
-    
-    <security-constraint>
-        <display-name>Authenticated access to employee pages</display-name>
-        <web-resource-collection>
-            <web-resource-name>Employee Pages</web-resource-name>
-            <description/>
-            <url-pattern>/views/employee/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <description>Employee</description>
-            <role-name>EMPLOYEE</role-name>
-        </auth-constraint>
-    </security-constraint>
-    <security-constraint>
-        <display-name>Authenticated access to supervisor pages</display-name>
-        <web-resource-collection>
-            <web-resource-name>Supervisor Pages</web-resource-name>
-            <description/>
-            <url-pattern>/views/supervisor/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <description>Supervisor</description>
-            <role-name>SUPERVISOR</role-name>
-        </auth-constraint>
-    </security-constraint>
-    <security-constraint>
-        <display-name>Authenticated access to assistant pages</display-name>
-        <web-resource-collection>
-            <web-resource-name>Assistant Pages</web-resource-name>
-            <description/>
-            <url-pattern>/views/assistant/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <description>Assistant</description>
-            <role-name>ASSISTANT</role-name>
-        </auth-constraint>
-    </security-constraint>
-    <security-constraint>
-        <display-name>Authenticated access to secretary pages</display-name>
-        <web-resource-collection>
-            <web-resource-name>Secretary Pages</web-resource-name>
-            <description/>
-            <url-pattern>/views/secretary/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <description>Secretary</description>
-            <role-name>SECRETARY</role-name>
-        </auth-constraint>
-    </security-constraint>
-    <security-constraint>
-        <display-name>Authenticated access to administrator pages</display-name>
-        <web-resource-collection>
-            <web-resource-name>Administrator Pages</web-resource-name>
-            <description/>
-            <url-pattern>/views/admin/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <description>Administrator</description>
-            <role-name>ADMIN</role-name>
-        </auth-constraint>
-    </security-constraint>
-    
-    
-    <login-config>
-        <auth-method>FORM</auth-method>
-        <realm-name>bravo-tss</realm-name>
-        <form-login-config>
-            <form-login-page>/views/login.xhtml</form-login-page>
-            <form-error-page>/views/login.xhtml?error=true</form-error-page>
-        </form-login-config>
-    </login-config>
-    <security-role>
-        <description>Employee: works under one or more contracts (student or staff)</description>
-        <role-name>EMPLOYEE</role-name>
-    </security-role>
-    <security-role>
-        <description>Supervisor: contractual boss of an employee; signs time sheets</description>
-        <role-name>SUPERVISOR</role-name>
-    </security-role>
-    <security-role>
-        <description>Assistant: manages tasks and contracts of employees</description>
-        <role-name>ASSISTANT</role-name>
-    </security-role>
-    <security-role>
-        <description>Secretary: prints, forwards and archives time sheets</description>
-        <role-name>SECRETARY</role-name>
-    </security-role>
-    <security-role>
-        <description>Administrator: installs, configures, and operates the TSS</description>
-        <role-name>ADMIN</role-name>
+    <login-config>        
+        <auth-method>FORM</auth-method>        
+        <realm-name>bravo-tss</realm-name>        
+        <form-login-config>            
+            <form-login-page>/views/login.xhtml</form-login-page>            
+            <form-error-page>/views/login.xhtml?error=true</form-error-page>        
+        </form-login-config>    
+    </login-config>    
+    <security-role>        
+        <description>Employee: works under one or more contracts (student or staff)</description>        
+        <role-name>EMPLOYEE</role-name>    
+    </security-role>    
+    <security-role>        
+        <description>Supervisor: contractual boss of an employee; signs time sheets</description>        
+        <role-name>SUPERVISOR</role-name>    
+    </security-role>    
+    <security-role>        
+        <description>Assistant: manages tasks and contracts of employees</description>        
+        <role-name>ASSISTANT</role-name>    
+    </security-role>    
+    <security-role>        
+        <description>Secretary: prints, forwards and archives time sheets</description>        
+        <role-name>SECRETARY</role-name>    
+    </security-role>    
+    <security-role>        
+        <description>Administrator: installs, configures, and operates the TSS</description>        
+        <role-name>ADMIN</role-name>    
+    </security-role>    
+    <security-role>        
+        <description>can see its profile only </description>        
+        <role-name>GUEST</role-name>    
     </security-role>
 </web-app>

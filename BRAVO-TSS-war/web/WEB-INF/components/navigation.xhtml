@@ -1,84 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html"
-    xmlns:ui="jakarta.faces.facelets">
+   xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:h="jakarta.faces.html"
+   xmlns:ui="jakarta.faces.facelets">
 
-    <nav class="app-navigation">
+   <nav class="app-navigation">
 
-        <ul class="navigation-list">
+       <ul class="navigation-list">
 
-            <li>
-                <h:link
-                    outcome="/views/portal/home"
-                    styleClass="navigation-link">
+           <!-- Home -->
+           <li>
+               <h:link
+                   outcome="/views/portal/home"
+                   styleClass="navigation-link">
 
-                    <i class="pi pi-home"></i>
-                    <span>Home</span>
+                   <i class="pi pi-home"></i>
+                   <span>Home</span>
 
-                </h:link>
-            </li>
+               </h:link>
+           </li>
 
-            <ui:fragment rendered="#{mockUserBean.hasRole('EMPLOYEE')}">
+           <!-- My Profile -->
+           <li>
+               <h:link
+                   outcome="/views/portal/EditInfo"
+                   styleClass="navigation-link">
 
-                <li>
-                    <h:link
-                        outcome="/views/employee/timesheets"
-                        styleClass="navigation-link">
+                   <i class="pi pi-users"></i>
+                   <span>My Profile</span>
 
-                        <i class="pi pi-clock"></i>
-                        <span>Timesheets</span>
+               </h:link>
+           </li>
 
-                    </h:link>
-                </li>
+           <!-- Employee -->
+           <ui:fragment
+               rendered="#{loginBean.hasRole('EMPLOYEE')}">
 
-            </ui:fragment>
+               <li>
+                   <h:link
+                       outcome="/views/employee/timesheets"
+                       styleClass="navigation-link">
 
-            <ui:fragment
-                rendered="#{mockUserBean.hasRole('ASSISTANT')
-                            or mockUserBean.hasRole('SUPERVISOR')}">
+                       <i class="pi pi-clock"></i>
+                       <span>Timesheets</span>
 
-                <li>
-                    <h:link
-                        outcome="/views/assistant/contracts"
-                        styleClass="navigation-link">
+                   </h:link>
+               </li>
 
-                        <i class="pi pi-file"></i>
-                        <span>Contracts</span>
+           </ui:fragment>
 
-                    </h:link>
-                </li>
+           <!-- Assistant / Supervisor -->
+           <ui:fragment
+               rendered="#{loginBean.hasRole('ASSISTANT')
+                           or loginBean.hasRole('SUPERVISOR')}">
 
-            </ui:fragment>
+               <li>
+                   <h:link
+                       outcome="/views/assistant/contracts"
+                       styleClass="navigation-link">
 
-            <ui:fragment rendered="#{mockUserBean.hasRole('ADMIN')}">
+                       <i class="pi pi-file"></i>
+                       <span>Contracts</span>
 
-                <li>
-                    <h:link
-                        outcome="/views/admin/usersmgmt"
-                        styleClass="navigation-link">
+                   </h:link>
+               </li>
 
-                        <i class="pi pi-users"></i>
-                        <span>Users</span>
+           </ui:fragment>
 
-                    </h:link>
-                </li>
+           <!-- Admin -->
+           <ui:fragment
+               rendered="#{loginBean.hasRole('ADMIN')}">
 
+               <!-- User Management -->
+               <li>
+                   <h:link
+                       outcome="/views/admin/usersmgmt"
+                       styleClass="navigation-link">
 
-                <li>
-                    <h:link
-                        outcome="/views/admin/HolidayList"
-                        styleClass="navigation-link">
-                        <i class="pi pi-address-book"></i>
-                        <span>Holiday Management</span>
-                    </h:link>
-                </li>
+                       <i class="pi pi-users"></i>
+                       <span>Users</span>
 
-            </ui:fragment>
+                   </h:link>
+               </li>
 
-        </ul>
+               <!-- Holiday Management -->
+               <li>
+                   <h:link
+                       outcome="/views/admin/HolidayList"
+                       styleClass="navigation-link">
 
-    </nav>
+                       <i class="pi pi-address-book"></i>
+                       <span>Holiday Management</span>
+
+                   </h:link>
+               </li>
+
+               <!-- Dashboard -->
+               <li>
+                   <h:link
+                       outcome="/views/admin/dashboard"
+                       styleClass="navigation-link">
+
+                       <i class="pi pi-chart-bar"></i>
+                       <span>Dashboard</span>
+
+                   </h:link>
+               </li>
+
+           </ui:fragment>
+
+       </ul>
+
+   </nav>
 
 </ui:composition>
