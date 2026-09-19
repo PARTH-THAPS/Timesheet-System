@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition
+   template="/WEB-INF/templates/page-layout.xhtml"
+   xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:h="jakarta.faces.html"
+   xmlns:f="jakarta.faces.core"
+   xmlns:ui="jakarta.faces.facelets"
+   xmlns:p="http://primefaces.org/ui">
+
+   <!-- Page Title -->
+   <ui:define name="pageTitle">
+       Dashboard
+   </ui:define>
+
+   <!-- Page Headline -->
+   <ui:define name="pageHeadline">
+       Dashboard
+   </ui:define>
+
+   <!-- Navigation -->
+   <ui:define name="navigation">
+       <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+   </ui:define>
+
+   <!-- Header Actions -->
+   <ui:define name="headerActions">
+
+       <div class="user-info">
+
+           <span class="user-name">
+               #{loginBean.user.firstName} #{loginBean.user.lastName}
+           </span>
+
+           <ui:repeat
+               value="#{loginBean.user.roles}"
+               var="role">
+
+               <span class="badge">
+                   #{role}
+               </span>
+
+           </ui:repeat>
+
+       </div>
+
+       <h:form>
+
+           <h:commandButton
+               value="Logout"
+               styleClass="button-logout"
+               action="#{loginBean.logout}"/>
+
+       </h:form>
+
+   </ui:define>
+
+   <!-- Main Content -->
+   <ui:define name="content">
+
+       <!-- Section Header -->
+       <section class="page-section-header">
+
+           <div>
+
+               <h2>
+                   System overview
+               </h2>
+
+               <p class="text-muted">
+                   A snapshot of users, roles and contracts across the system.
+               </p>
+
+           </div>
+
+       </section>
+
+       <!-- Statistics -->
+       <section
+           class="statistics-grid"
+           style="margin-bottom: 2rem;">
+
+           <div class="statistic">
+
+               <span class="statistic-label">
+                   Total users
+               </span>
+
+               <span class="statistic-value">
+                   #{adminDashboardBean.totalUsers}
+               </span>
+
+           </div>
+
+           <div class="statistic">
+
+               <span class="statistic-label">
+                   Consented users
+               </span>
+
+               <span class="statistic-value">
+                   #{adminDashboardBean.consentedUserCount}
+               </span>
+
+           </div>
+
+           <div class="statistic">
+
+               <span class="statistic-label">
+                   Active contracts
+               </span>
+
+               <span class="statistic-value">
+                   #{adminDashboardBean.activeContractCount}
+               </span>
+
+           </div>
+
+           <div class="statistic">
+
+               <span class="statistic-label">
+                   Total contracts
+               </span>
+
+               <span class="statistic-value">
+                   #{adminDashboardBean.totalContractCount}
+               </span>
+
+           </div>
+
+       </section>
+
+       <!-- Users by Role -->
+       <section
+           class="card"
+           style="margin-bottom: 2rem;">
+
+           <h3 style="margin-top: 0;">
+               Users by role
+           </h3>
+
+           <table
+               class="table-responsive-wrapper"
+               style="width: 100%; border-collapse: collapse;">
+
+               <thead>
+
+                   <tr>
+
+                       <th
+                           style="text-align: left; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+
+                           Role
+
+                       </th>
+
+                       <th
+                           style="text-align: right; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+
+                           Users
+
+                       </th>
+
+                   </tr>
+
+               </thead>
+
+               <tbody>
+
+                   <ui:repeat
+                       value="#{adminDashboardBean.roleCounts.entrySet().toArray()}"
+                       var="entry">
+
+                       <tr>
+
+                           <td
+                               style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
+
+                               <span class="role-badge">
+                                   #{entry.key}
+                               </span>
+
+                           </td>
+
+                           <td
+                               style="text-align: right; padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
+
+                               #{entry.value}
+
+                           </td>
+
+                       </tr>
+
+                   </ui:repeat>
+
+               </tbody>
+
+           </table>
+
+       </section>
+
+   </ui:define>
+
+</ui:composition>

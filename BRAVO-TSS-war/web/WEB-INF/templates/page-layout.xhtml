@@ -1,68 +1,53 @@
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets"
-       xmlns:f="jakarta.faces.core"
-      xmlns:p="primefaces">
-     <f:metadata>
-        <ui:insert name="metadata"/>
-    </f:metadata>
+     xmlns:h="jakarta.faces.html"
+     xmlns:ui="jakarta.faces.facelets"
+     xmlns:f="jakarta.faces.core"
+     xmlns:p="primefaces">
 
-<h:head>
+   <f:view locale="#{localeBean.userLocale}">
 
-    <title>
-        <ui:insert name="pageTitle">
-            BRAVO-TSS
-        </ui:insert>
-    </title>
+       <f:metadata>
+           <ui:insert name="metadata"/>
+       </f:metadata>
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0"/>
+       <h:head>
+           <title>
+               <ui:insert name="pageTitle">
+                   BRAVO-TSS
+               </ui:insert>
+           </title>
+           <meta name="viewport"
+                 content="width=device-width, initial-scale=1.0"/>
+           <h:outputStylesheet
+                   library="css"
+                   name="bravo.css"/>
+       </h:head>
 
-    <h:outputStylesheet
-            library="css"
-            name="bravo.css"/>
+       <h:body>
+           <header class="app-header">
+               <div class="app-header-content">
+                   <h:link
+                           outcome="/index"
+                           styleClass="app-logo">
+                       BRAVO TSS
+                   </h:link>
+                   <div class="app-header-actions">
+                       <ui:insert name="headerActions"/>
+                   </div>
+               </div>
+           </header>
+           <div class="app-body">
+               <ui:insert name="navigation"/>
+               <main class="page-container">
+                   <h1 class="page-title">
+                       <ui:insert name="pageHeadline"/>
+                   </h1>
+                   <ui:insert name="content"/>
+               </main>
+           </div>
+       </h:body>
 
-</h:head>
-
-
-<h:body>
-
-    <header class="app-header">
-
-        <div class="app-header-content">
-
-            <h:link
-                    outcome="/index"
-                    styleClass="app-logo">
-                BRAVO TSS
-            </h:link>
-
-            <div class="app-header-actions">
-                <ui:insert name="headerActions"/>
-            </div>
-
-        </div>
-
-    </header>
-
-    <div class="app-body">
-
-        <ui:insert name="navigation"/>
-
-        <main class="page-container">
-
-            <h1 class="page-title">
-                <ui:insert name="pageHeadline"/>
-            </h1>
-
-            <ui:insert name="content"/>
-
-        </main>
-
-    </div>
-
-</h:body>
+   </f:view>
 
 </html>
