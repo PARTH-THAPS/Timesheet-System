@@ -3,21 +3,27 @@ package tss.dto;
 import java.util.Set;
 import tss.entity.Role;
 
-
 public class User extends AbstractDTO {
-     private static final long serialVersionUID = 282980014285470000L;
 
+    private static final long serialVersionUID = 282980014285470000L;
     private String email;
     private String firstName;
-
+    private Long id;
     private String lastName;
-    private Set<Role> roles; 
+    private Set<Role> roles;
 
- 
+    public Long getId() {
+        return id;
+    }
 
-    public User(String uuid, int jpaVersion, String email, String firstName, String lastName, Set<Role> roles) {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User(Long id, String uuid, int jpaVersion, String email, String firstName, String lastName, Set<Role> roles) {
         super(uuid, jpaVersion);
-        this.email=email;
+        this.id = id;
+        this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.roles = roles;
@@ -50,5 +56,4 @@ public class User extends AbstractDTO {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
 }

@@ -220,7 +220,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
     @Override
     public TimesheetDTO getTimesheetById(Long timesheetId) {
-        Timesheet timesheet = timesheetDAO.findById(timesheetId);
+        Timesheet timesheet = timesheetDAO.findByIdWithEntries(timesheetId);
         if (timesheet == null) {
             throw new IllegalArgumentException("No timesheet found with id: " + timesheetId);
         }
@@ -279,6 +279,20 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         return toDTO(timesheet);
 
+    }
+    
+    @Override
+    public List<TimesheetDTO> findPendingSignaturesForSupervisor(String emailAddress) {
+
+        List<Timesheet> entities =timesheetDAO.findPendingSignaturesForSupervisor(emailAddress);
+
+        if (entities == null) {
+            return List.of();
+        }
+
+        return entities.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

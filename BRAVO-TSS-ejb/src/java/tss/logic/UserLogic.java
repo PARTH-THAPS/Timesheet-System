@@ -9,6 +9,7 @@ public interface UserLogic {
     public static final String USER_ROLE="USER" ;
     public static final String ADMIN_ROLE="ADMIN" ;
     public static final String ASSISTANT_ROLE="ASSISTANT";
+    public static final String EMPLOYEE_ROLE="EMPLOYEE";
     public static final String SECREATRY_ROLE="SECRETARY";
     public static final String GUEST_ROLE="GUEST";
     public static final String SUPERVISOR_ROLE="SUPERVISOR";

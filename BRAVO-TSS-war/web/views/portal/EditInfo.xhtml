@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+   template="/WEB-INF/templates/page-layout.xhtml"
+   xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:h="jakarta.faces.html"
+   xmlns:f="jakarta.faces.core"
+   xmlns:ui="jakarta.faces.facelets">
+
+   <ui:define name="pageTitle">
+       My Basic Info
+   </ui:define>
+
+   <ui:define name="pageHeadline">
+       My Basic Info
+   </ui:define>
+
+   <ui:define name="navigation">
+       <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+   </ui:define>
+
+   <ui:define name="content">
+
+       <h:form id="personalInfoForm">
+
+           <h:messages
+               globalOnly="true"
+               style="color:red;"/>
+
+           <h:outputText
+               value="#{personalDataBean.user}"
+               style="display:none;"/>
+
+           <table>
+
+               <tr>
+                   <td>
+                       <h:outputLabel
+                           for="firstName"
+                           value="First Name:"/>
+                   </td>
+
+                   <td>
+                       <h:inputText
+                           id="firstName"
+                           value="#{personalDataBean.personDTO.firstName}"
+                           required="true"
+                           requiredMessage="First name is required."/>
+                   </td>
+               </tr>
+
+               <tr>
+                   <td>
+                       <h:outputLabel
+                           for="lastName"
+                           value="Last Name:"/>
+                   </td>
+
+                   <td>
+                       <h:inputText
+                           id="lastName"
+                           value="#{personalDataBean.personDTO.lastName}"
+                           required="true"
+                           requiredMessage="Last name is required."/>
+                   </td>
+               </tr>
+
+               <tr>
+                   <td>
+                       <h:outputLabel
+                           for="email"
+                           value="Email:"/>
+                   </td>
+
+                   <td>
+                       <h:inputText
+                           id="email"
+                           value="#{personalDataBean.personDTO.emailAddress}"
+                           required="true"
+                           requiredMessage="Email is required."/>
+                   </td>
+               </tr>
+
+           </table>
+
+           <br/>
+
+           <h:commandButton
+               value="Save"
+               action="#{personalDataBean.save}"/>
+
+       </h:form>
+
+   </ui:define>
+
+</ui:composition>

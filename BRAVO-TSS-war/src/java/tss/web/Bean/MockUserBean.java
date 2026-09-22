@@ -47,7 +47,8 @@ public class MockUserBean implements Serializable {
         "SUPERVISOR",
         "ASSISTANT",
         "SECRETARY",
-        "ADMIN"
+        "ADMIN",
+        "GUEST"
     };
 }
 }
