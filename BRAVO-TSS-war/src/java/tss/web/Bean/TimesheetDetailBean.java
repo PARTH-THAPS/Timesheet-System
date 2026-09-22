@@ -83,23 +83,46 @@ public class TimesheetDetailBean implements Serializable {
     }
     
     public void signByEmployee() {
-        try {
-            timesheetLogic.signByEmployee(timesheet.getId());
-            reload();
-            showInfo("Timesheet signed", "You signed this timesheet.");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            showError("Could not sign", e.getMessage());
-        }
+    if (timesheet == null || timesheet.getId() == null) {
+        showError("Could not sign", "No timesheet is loaded.");
+        return;
     }
 
+    try {
+        timesheet = timesheetLogic.signByEmployee(timesheet.getId());
+
+        showInfo(
+                "Timesheet signed",
+                "The timesheet was signed successfully."
+        );
+    } catch (IllegalArgumentException | IllegalStateException e) {
+        showError("Could not sign", messageOf(e));
+    }
+}
+
     public void revokeEmployeeSignature() {
-        try {
-            timesheetLogic.revokeEmployeeSignature(timesheet.getId());
-            reload();
-            showInfo("Signature revoked", "Your signature was revoked.");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            showError("Could not revoke signature", e.getMessage());
-        }
+    if (timesheet == null || timesheet.getId() == null) {
+        showError("Could not revoke signature","No timesheet is loaded.");
+        return;
+    }
+
+    try {
+        timesheet = timesheetLogic.revokeEmployeeSignature(timesheet.getId());
+
+        showInfo(
+                "Signature revoked",
+                "The employee signature was revoked."
+        );
+    } catch (IllegalArgumentException | IllegalStateException e) {
+        showError("Could not revoke signature", messageOf(e)
+        );
+    }
+}
+
+    private String messageOf(Exception e) {
+        return e.getMessage() != null
+            ? e.getMessage()
+            : "The operation could not be completed.";
     }
 
     private void reload() {
@@ -131,7 +154,30 @@ public class TimesheetDetailBean implements Serializable {
                 && timesheet.getStatus()
                 == TimesheetStatus.IN_PROGRESS;
     }
+    
+    public boolean isCanSignByEmployee() {
+    return timesheet != null
+            && timesheet.getStatus()
+                    == TimesheetStatus.IN_PROGRESS;
+}
 
+    public boolean isCanRevokeEmployeeSignature() {
+        return timesheet != null
+                && timesheet.getStatus()
+                        == TimesheetStatus.SIGNED_BY_EMPLOYEE;
+    }
+
+
+    public boolean isEmployeeSigned() {
+        return timesheet != null
+                && timesheet.getSignedByEmployee() != null;
+    }
+
+    public boolean isSupervisorSigned() {
+        return timesheet != null
+                && timesheet.getSignedBySupervisor() != null;
+    }
+    
     public ReportType[] getReportTypes() {
         return ReportType.values();
     }
@@ -155,6 +201,7 @@ public class TimesheetDetailBean implements Serializable {
                         )
                 );
     }
+    
     
     public double calculateEntryHours(TimesheetEntryDTO entry) {
     if (entry == null

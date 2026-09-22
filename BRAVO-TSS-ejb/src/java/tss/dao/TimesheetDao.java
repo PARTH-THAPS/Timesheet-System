@@ -141,4 +141,36 @@ public class TimesheetDao {
             return null;
         }
     }
+    
+    public List<Timesheet> findPendingSignaturesForSupervisor(String emailAddress) {
+
+        return em.createQuery(
+                "SELECT DISTINCT t "
+                + "FROM Timesheet t "
+                + "LEFT JOIN FETCH t.entries "
+                + "WHERE t.status = :status "
+                + "ORDER BY t.startDate",
+                Timesheet.class
+        )
+        .setParameter("status",TimesheetStatus.SIGNED_BY_EMPLOYEE)
+        .getResultList();
+    }
+    
+    public Timesheet findByIdWithEntries(Long id) {
+    if (id == null) {
+        throw new IllegalArgumentException(
+                "id must not be null"
+        );
+    }
+
+    return em.createQuery(
+            "SELECT DISTINCT t "
+            + "FROM Timesheet t "
+            + "LEFT JOIN FETCH t.entries "
+            + "WHERE t.id = :id",
+            Timesheet.class
+    )
+    .setParameter("id", id)
+    .getSingleResult();
+}
 }

@@ -34,6 +34,8 @@ public interface TimesheetLogic {
     TimesheetDTO revokeEmployeeSignature(Long timesheetId);
 
     TimesheetDTO signBySupervisor(Long timesheetId);
+    
+    List<TimesheetDTO> findPendingSignaturesForSupervisor(String emailAddress);
 
     TimesheetDTO requestChanges(Long timesheetId);
 

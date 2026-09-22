@@ -19,6 +19,7 @@ import tss.logic.UserLogic;
    UserLogic.USER_ROLE,
    UserLogic.ADMIN_ROLE,
    UserLogic.ASSISTANT_ROLE,
+   UserLogic.EMPLOYEE_ROLE,
    UserLogic.GUEST_ROLE,
    UserLogic.SECREATRY_ROLE,
    UserLogic.SUPERVISOR_ROLE
@@ -36,6 +37,7 @@ public class UserLogicImp implements UserLogic {
        USER_ROLE,
        ADMIN_ROLE,
        ASSISTANT_ROLE,
+       EMPLOYEE_ROLE,
        GUEST_ROLE,
        SECREATRY_ROLE,
        SUPERVISOR_ROLE
