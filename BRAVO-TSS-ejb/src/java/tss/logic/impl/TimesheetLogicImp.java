@@ -492,6 +492,11 @@ public class TimesheetLogicImp implements TimesheetLogic {
         }
     }
 
+    @Override
+    public int archiveOldRecords() {
+        return timesheetDAO.deleteArchiveOldRecords();
+    }
+
     private TimesheetDTO toDTO(Timesheet ts) {
         TimesheetDTO dto = new TimesheetDTO();
         dto.setUuid(ts.getUuid());

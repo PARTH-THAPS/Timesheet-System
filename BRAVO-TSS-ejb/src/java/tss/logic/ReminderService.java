@@ -9,11 +9,18 @@ import tss.entity.Person;
 import tss.entity.Timesheet;
 import tss.entity.TimesheetStatus;
 
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
+import java.util.StringJoiner;
 
 @Startup
 @Singleton
-@Stateless
 public class ReminderService {
 
     @EJB
@@ -23,6 +30,7 @@ public class ReminderService {
     private Session mailSession;
 
     private static final String MESSAGE_BUNDLE = "tss.web.i18n.messages";
+    private static final Locale DEFAULT_LOCALE = Locale.getDefault();
 
 
     public void sendReminder(String recipientEmail, String subject, String body) {
@@ -75,32 +83,52 @@ public class ReminderService {
         for (Map.Entry<String, List<Timesheet>> entry : userRemindersMap.entrySet()) {
             String recipientEmail = entry.getKey();
             List<Timesheet> urgentSheets = entry.getValue();
+            ResourceBundle bundle = resolveBundle(recipientEmail);
 
             sendReminder(
                     recipientEmail,
-                    "Timesheet reminder",
-                    buildReminderBody(recipientEmail, urgentSheets)
+                    bundle.getString("reminder.subject"),
+                    buildReminderBody(recipientEmail, urgentSheets, bundle)
             );
         }
     }
 
-    private String buildReminderBody(String recipientEmail, List<Timesheet> urgentSheets) {
+    private String buildReminderBody(String recipientEmail, List<Timesheet> urgentSheets, ResourceBundle bundle) {
         StringBuilder body = new StringBuilder();
-        //ResourceBundle bundle = ResourceBundle.getBundle(MESSAGE_BUNDLE, lb.getUserLocale());
-        body.append("Hello,\n\n");
-        body.append("You have ").append(urgentSheets.size()).append(" timesheet reminder(s).\n\n");
+        body.append(bundle.getString("reminder.greeting")).append("\n\n");
+        body.append(MessageFormat.format(bundle.getString("reminder.count"), urgentSheets.size())).append("\n\n");
 
         StringJoiner timesheetLines = new StringJoiner("\n");
         for (Timesheet sheet : urgentSheets) {
-            timesheetLines.add("- Timesheet #" + sheet.getId()
-                    + " | status: " + sheet.getStatus()
-                    + " | start: " + sheet.getStartDate()
-                    + " | end: " + sheet.getEndDate());
+            timesheetLines.add(MessageFormat.format(
+                    bundle.getString("reminder.timesheet.line"),
+                    sheet.getId(),
+                    translateStatus(sheet.getStatus(), bundle),
+                    sheet.getStartDate(),
+                    sheet.getEndDate()));
         }
 
         body.append(timesheetLines);
-        body.append("\n\nPlease review the listed timesheets.\n");
-        body.append("Recipient: ").append(recipientEmail).append("\n");
+        body.append("\n\n").append(bundle.getString("reminder.review")).append("\n");
+        body.append(MessageFormat.format(bundle.getString("reminder.recipient"), recipientEmail)).append("\n");
         return body.toString();
+    }
+
+    private ResourceBundle resolveBundle(String recipientEmail) {
+        return ResourceBundle.getBundle(MESSAGE_BUNDLE, resolveLocale(recipientEmail));
+    }
+
+    private Locale resolveLocale(String recipientEmail) {
+        //TODO:Add functionality that returns preferred language for user
+        return DEFAULT_LOCALE;
+    }
+
+    private String translateStatus(TimesheetStatus status, ResourceBundle bundle) {
+        if (status == null) {
+            return "";
+        }
+
+        String key = "reminder.timesheet.status." + status.name();
+        return bundle.containsKey(key) ? bundle.getString(key) : status.name();
     }
 }

@@ -4,6 +4,7 @@ import jakarta.annotation.Resource;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.annotation.security.DeclareRoles;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBContext;
@@ -45,6 +46,8 @@ public class UserLogicImp implements UserLogic {
         SECREATRY_ROLE,
         SUPERVISOR_ROLE
     })
+
+    @PermitAll //TODO: Check if PermitALL is used correct here
     public User getCurrentUser() {
 
         Principal principal = ejbContext.getCallerPrincipal();
