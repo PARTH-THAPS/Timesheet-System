@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import tss.entity.Contract;
@@ -141,6 +142,16 @@ public class TimesheetDao {
             return null;
         }
     }
+
+    public int deleteArchiveOldRecords() {
+        return em.createQuery(
+                        "DELETE FROM Timesheet t " +
+                                "WHERE t.status = :status " +
+                                "AND t.endDate < :cutoffDate")
+                .setParameter("status", TimesheetStatus.ARCHIVED)
+                .setParameter("cutoffDate", LocalDateTime.now().minusYears(2).toLocalDate())
+                .executeUpdate();
+    }
     
     public List<Timesheet> findPendingSignaturesForSupervisor(String emailAddress) {
 
@@ -173,4 +184,4 @@ public class TimesheetDao {
     .setParameter("id", id)
     .getSingleResult();
 }
-}
+

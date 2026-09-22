@@ -2,6 +2,7 @@ package tss.logic.impl;
 
 import jakarta.annotation.Resource;
 import jakarta.annotation.security.DeclareRoles;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBContext;

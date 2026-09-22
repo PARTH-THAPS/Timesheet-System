@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <f:metadata>
+        <f:viewParam name="id" value="#{contractArchiveTimesheetsBean.id}" required="true" />
+        <f:viewAction action="#{contractArchiveTimesheetsBean.init}" />
+    </f:metadata>
+
+    <ui:define name="pageTitle">Archived Timesheets</ui:define>
+    <ui:define name="pageHeadline">Archived Timesheets</ui:define>
+
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+    <ui:define name="content">
+        <section class="page-section-header">
+            <div>
+                <h2>Timesheets for: #{contractArchiveTimesheetsBean.contract.name}</h2>
+                <p class="text-muted">
+                    Employee: #{contractArchiveTimesheetsBean.getPersonName(contractArchiveTimesheetsBean.contract.personId)}
+                </p>
+            </div>
+            <p:button value="Back to Archive" outcome="/views/supervisor/archived-contracts" icon="pi pi-arrow-left" styleClass="ui-button-secondary" />
+        </section>
+
+        <section class="card">
+            <h:form id="archivedTimesheetsForm">
+                <p:dataTable
+                        id="timesheetsTable"
+                        value="#{contractArchiveTimesheetsBean.timesheets}"
+                        var="ts"
+                        paginator="true"
+                        rows="10"
+                        stripedRows="true"
+                        emptyMessage="No timesheets found for this contract.">
+
+                    <p:column headerText="Start Date" sortBy="#{ts.startDate}">
+                        <h:outputText value="#{ts.startDate}">
+                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="End Date" sortBy="#{ts.endDate}">
+                        <h:outputText value="#{ts.endDate}">
+                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Status">
+                        <span class="status-badge">#{ts.status}</span>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </section>
+    </ui:define>
+</ui:composition>

@@ -154,6 +154,114 @@
         </auth-constraint>    
     </security-constraint>            
     
+    <!--    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Portal</web-resource-name>
+            <url-pattern>/views/portal/*</url-pattern>
+        </web-resource-collection>
+    
+        <auth-constraint>
+            <role-name>EMPLOYEE</role-name>
+            <role-name>SUPERVISOR</role-name>
+            <role-name>ASSISTANT</role-name>
+            <role-name>SECRETARY</role-name>
+            <role-name>ADMIN</role-name>
+        </auth-constraint>
+    </security-constraint>-->
+    
+    <security-constraint>
+        <display-name>Protected Pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Protected Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/portal/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description/>
+            <role-name>EMPLOYEE</role-name>
+            <role-name>SUPERVISOR</role-name>
+            <role-name>ASSISTANT</role-name>
+            <role-name>SECRETARY</role-name>
+            <role-name>ADMIN</role-name>
+        </auth-constraint>
+    </security-constraint>
+    
+    
+    <security-constraint>
+        <display-name>Authenticated access to employee pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Employee Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/employee/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Employee</description>
+            <role-name>EMPLOYEE</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Authenticated access to supervisor pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Supervisor Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/supervisor/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Supervisor</description>
+            <role-name>SUPERVISOR</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Authenticated access to assistant pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Assistant Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/assistant/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Assistant</description>
+            <role-name>ASSISTANT</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Authenticated access to secretary pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Secretary Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/secretary/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Secretary</description>
+            <role-name>SECRETARY</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Authenticated access to administrator pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Administrator Pages</web-resource-name>
+            <description/>
+            <url-pattern>/views/admin/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Administrator</description>
+            <role-name>ADMIN</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <display-name>Shared Contract Views</display-name>
+        <web-resource-collection>
+            <web-resource-name>Shared Views</web-resource-name>
+            <url-pattern>/views/shared/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>ASSISTANT</role-name>
+            <role-name>SUPERVISOR</role-name>
+            <role-name>SECRETARY</role-name>
+        </auth-constraint>
+    </security-constraint>
+    
+    
     <login-config>        
         <auth-method>FORM</auth-method>        
         <realm-name>bravo-tss</realm-name>        
@@ -184,6 +292,6 @@
     </security-role>    
     <security-role>        
         <description>can see its profile only </description>        
-        <role-name>GUEST</role-name>    
+        <role-name>GUEST</role-name>
     </security-role>
 </web-app>

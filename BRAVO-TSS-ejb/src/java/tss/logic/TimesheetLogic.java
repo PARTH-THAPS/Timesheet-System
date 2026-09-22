@@ -26,7 +26,8 @@ public interface TimesheetLogic {
     TimesheetDTO signByEmployee(Long timesheetId);
 
     void archiveTimesheet(Long timesheetId);
-
+    
+    int archiveOldRecords();
     List<TimesheetDTO> findByEmployeeUsername(String emailAddress);
 
     List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress);
