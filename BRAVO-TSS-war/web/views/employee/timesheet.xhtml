@@ -53,7 +53,8 @@
 
 
     <ui:define name="content">
-
+        
+      
         <h:form id="timesheetForm">
 
             <p:messages
@@ -125,7 +126,7 @@
                     </strong>
 
                 </div>
-
+                
 
                 <div class="statistic">
 
@@ -175,7 +176,103 @@
                 </div>
 
             </section>
+            
+            <section class="approval-card">
 
+                <div class="approval-card-header">
+                    <div>
+                        <h3>Approval status</h3>
+                        <p class="text-muted">
+                            Review your entries before signing.
+                        </p>
+                    </div>
+
+                    <p:commandButton
+                        value="Sign Timesheet"
+                        icon="pi pi-check"
+                        action="#{timesheetDetailBean.signByEmployee}"
+                        rendered="#{timesheetDetailBean.canSignByEmployee}"
+                        process="@this"
+                        update="@form"
+                        styleClass="signature-button signature-button-sign">
+
+                    <p:confirm
+                            header="Sign Timesheet"
+                            message="Do you want to sign this timesheet?"
+                            icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+
+                    <p:commandButton
+                            value="Revoke Signature"
+                            icon="pi pi-undo"
+                            action="#{timesheetDetailBean.revokeEmployeeSignature}"
+                            rendered="#{timesheetDetailBean.canRevokeEmployeeSignature}"
+                            process="@this"
+                            update="@form"
+                            styleClass="signature-button signature-button-revoke">
+
+                        <p:confirm
+                                header="Revoke Signature"
+                                message="Do you want to revoke your signature?"
+                                icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                    
+                </div>
+                
+            <div class="approval-steps">
+                <div class="approval-step
+                    #{timesheetDetailBean.employeeSigned
+                        ? 'completed'
+                        : 'active'}">
+
+                   <span class="approval-step-icon">
+                       <i class="pi
+                          #{timesheetDetailBean.employeeSigned
+                              ? 'pi-check'
+                              : 'pi-user'}"/>
+                   </span>
+
+                   <span>
+                       <strong>Employee review</strong>
+
+                       <small>
+                           #{timesheetDetailBean.employeeSigned
+                               ? 'Signed'
+                               : 'Current step'}
+                       </small>
+                   </span>
+               </div>
+
+                <div class="approval-step
+                    #{timesheetDetailBean.supervisorSigned
+                        ? 'completed'
+                        : (timesheetDetailBean.employeeSigned
+                            ? 'active'
+                            : '')}">
+
+                   <span class="approval-step-icon">
+                       <i class="pi
+                          #{timesheetDetailBean.supervisorSigned
+                              ? 'pi-check'
+                              : 'pi-user-edit'}"/>
+                   </span>
+
+                   <span>
+                       <strong>Supervisor review</strong>
+
+                       <small>
+                           #{timesheetDetailBean.supervisorSigned
+                               ? 'Signed'
+                               : (timesheetDetailBean.employeeSigned
+                                   ? 'Current step'
+                                   : 'After employee signature')}
+                       </small>
+                   </span>
+               </div>
+            </div>
+               
+
+            </section>
 
             <section class="card">
 
@@ -197,7 +294,7 @@
                             update="entryDialog"
                             oncomplete="PF('entryDialog').show()"
                             rendered="#{timesheetDetailBean.editable}"/>
-
+                    
                 </div>
 
 

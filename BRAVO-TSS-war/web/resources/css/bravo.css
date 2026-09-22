@@ -733,6 +733,168 @@ body {
    padding-right: 4px;
 }
 
+.approval-card {
+    background: #ffffff;
+    border: 1px solid #e1e5eb;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+}
+
+.approval-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.approval-steps {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.approval-step {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #7a8494;
+}
+
+.approval-step.active {
+    color: #2f3b4c;
+}
+
+.approval-step-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: #eef1f5;
+}
+
+.approval-step.active .approval-step-icon {
+    background: #e6f3dc;
+    color: #5c9f32;
+}
+
+.approval-step small {
+    display: block;
+    color: #8b95a3;
+}
+
+.signature-button {
+    border-radius: 0.45rem !important;
+    font-weight: 600 !important;
+}
+
+.signature-button-sign {
+    background: #63a535 !important;
+    border-color: #63a535 !important;
+    color: #ffffff !important;
+}
+
+.signature-button-sign:hover {
+    background: #548f2c !important;
+    border-color: #548f2c !important;
+}
+
+.signature-button-revoke {
+    background: #d99a18 !important;
+    border-color: #d99a18 !important;
+    color: #ffffff !important;
+}
+
+.signature-button-revoke:hover {
+    background: #b98012 !important;
+    border-color: #b98012 !important;
+   
+}
+
+.approval-steps {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 1.25rem;
+}
+
+.approval-step {
+    flex: 1 1 0;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    color: #7a8494;
+}
+
+.approval-step.active,
+.approval-step.completed {
+    color: #2f3b4c;
+}
+
+.approval-step-icon {
+    flex: 0 0 2rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2rem;
+    height: 2rem;
+
+    border-radius: 50%;
+    background: #eef1f5;
+}
+
+.approval-step.active .approval-step-icon,
+.approval-step.completed .approval-step-icon {
+    background: #e6f3dc;
+    color: #5c9f32;
+}
+
+.approval-step small {
+    display: block;
+    color: #8b95a3;
+}
+
+.approval-step.completed small {
+    color: #5c9f32;
+}
+.approval-step.completed {
+    color: #2f3b4c;
+}
+
+
+.approval-step.completed strong {
+    color: #2f3b4c;
+}
+
+
+
+
+@media (max-width: 700px) {
+    .page-section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .timesheet-header-actions {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .signature-button {
+        flex: 1;
+    }
+}
 
 /* =========================
   Holiday Management - List actions
