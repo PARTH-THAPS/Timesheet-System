@@ -22,7 +22,6 @@ import tss.logic.TerminationBlockedException;
 import tss.logic.TerminationBlockedException;
 import tss.logic.TimesheetLogic;
 
-
 @Stateless
 public class ContractLogicImp implements ContractLogic {
 
@@ -219,46 +218,44 @@ public class ContractLogicImp implements ContractLogic {
         return toDTO(contract);
     }
 
-   // STARTED -> TERMINATED
-@Override
-public ContractDTO terminateContract(Long contractId, boolean confirmed) {
-    Contract contract = contractsDao.findContract(contractId);
-    if (contract == null) {
-        throw new IllegalArgumentException("No contract found with id: " + contractId);
-    }
-    if (contract.getStatus() != ContractStatus.STARTED) {
-        throw new IllegalStateException("Only a started contract can be terminated.");
+    // STARTED -> TERMINATED
+    @Override
+    public ContractDTO terminateContract(Long contractId, boolean confirmed) {
+        Contract contract = contractsDao.findContract(contractId);
+        if (contract == null) {
+            throw new IllegalArgumentException("No contract found with id: " + contractId);
+        }
+        if (contract.getStatus() != ContractStatus.STARTED) {
+            throw new IllegalStateException("Only a started contract can be terminated.");
+        }
+
+        // Signed by the employee only: waiting for the supervisor
+        if (hasTimesheetsPendingSupervisorSignature(contractId)) {
+            throw new TerminationBlockedException(
+                    "Contract cannot be terminated: a timesheet is signed by the employee "
+                    + "and still awaiting the supervisor's signature.");
+        }
+
+        // IN_PROGRESS with entries: error
+        if (hasUnresolvedInProgressTimesheets(contractId) && !confirmed) {
+            throw new TerminationBlockedException(
+                    "Contract cannot be terminated: a timesheet is still in progress and contains entries. "
+                    + "Please have it signed by the employee and the supervisor first.");
+        }
+
+        contract.setTerminationDate(terminationDate());
+        contract.setStatus(ContractStatus.TERMINATED);
+        timesheetLogic.deleteInProgressTimesheets(contractId);   // only empty ones are left here
+
+        contractsDao.UpdateContract(contract);
+        return toDTO(contract);
     }
 
-    // Signed by the employee only: waiting for the supervisor
-    if (hasTimesheetsPendingSupervisorSignature(contractId)) {
-        throw new TerminationBlockedException(
-                "Contract cannot be terminated: a timesheet is signed by the employee "
-                + "and still awaiting the supervisor's signature.");
-    }
-
-    // IN_PROGRESS with entries: error
-    if (hasUnresolvedInProgressTimesheets(contractId) && !confirmed) {
-        throw new TerminationBlockedException(
-                "Contract cannot be terminated: a timesheet is still in progress and contains entries. "
-                + "Please have it signed by the employee and the supervisor first.");
-    }
-
-    contract.setTerminationDate(terminationDate());
-    contract.setStatus(ContractStatus.TERMINATED);
-    timesheetLogic.deleteInProgressTimesheets(contractId);   // only empty ones are left here
-
-    contractsDao.UpdateContract(contract);
-    return toDTO(contract);
-}
-    
-    
 //     boolean nothingLeftToArchive = timesheetLogic.getTimesheetsForContract(contractId).stream()
 //                .allMatch(t -> t.getStatus() == TimesheetStatus.ARCHIVED);
 //        if (nothingLeftToArchive) {
 //            contract.setStatus(ContractStatus.ARCHIVED);
 //        }
-
     public static double vacationHours(LocalDate startDate, LocalDate endDate, int workingDaysPerWeek, int vacationDaysPerYear, double hoursPerWeek) {
         long durationInMonths = ChronoUnit.MONTHS.between(startDate, endDate.plusDays(1));
         return vacationDaysPerYear * (double) durationInMonths / 12 * hoursPerWeek / workingDaysPerWeek;
@@ -469,13 +466,13 @@ public ContractDTO terminateContract(Long contractId, boolean confirmed) {
     }
 
     @Override
-public boolean hasUnresolvedInProgressTimesheets(Long contractId) {
-    // IN_PROGRESS with at least one entry
-    return timesheetLogic.getTimesheetsForContract(contractId).stream()
-            .anyMatch(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS
-                    && t.getEntries() != null
-                    && !t.getEntries().isEmpty());
-}
+    public boolean hasUnresolvedInProgressTimesheets(Long contractId) {
+        // IN_PROGRESS with at least one entry
+        return timesheetLogic.getTimesheetsForContract(contractId).stream()
+                .anyMatch(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS
+                && t.getEntries() != null
+                && !t.getEntries().isEmpty());
+    }
 
     @Override
     public boolean hasTimesheetsPendingSupervisorSignature(Long contractId) {
@@ -487,6 +484,11 @@ public boolean hasUnresolvedInProgressTimesheets(Long contractId) {
     public boolean hasEmptyInProgressTimesheets(Long contractId) {
         return timesheetLogic.getTimesheetsForContract(contractId).stream()
                 .anyMatch(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS
-                        && (t.getEntries() == null || t.getEntries().isEmpty()));
+                && (t.getEntries() == null || t.getEntries().isEmpty()));
+    }
+
+    @Override
+    public long countContractsByEmployee(Long personId) {
+        return contractsDao.countContractsByEmployee(personId);
     }
 }

@@ -3,11 +3,13 @@ package tss.web.Bean;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,10 +46,24 @@ public class ContractEditBean implements Serializable {
     private List<Long> originalSecretaryIds;
     private List<Long> originalAssistantIds;
 
-    // Termination flags, loaded once per state change instead of on every JSF render
     private boolean terminateBlocked;
     private boolean hasUnresolvedInProgress;
     private boolean hasEmptyInProgress;
+
+    private LocalDate dateOfBirth;
+    private boolean dateOfBirthRequired;
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public boolean isDateOfBirthRequired() {
+        return dateOfBirthRequired;
+    }
 
     public void init() {
         if (contract != null) {
@@ -78,6 +94,7 @@ public class ContractEditBean implements Serializable {
                 : new ArrayList<>();
 
         refreshTerminationFlags();
+        updateDateOfBirthRequired();
     }
 
     private boolean isAuthorizedForContract(ContractDTO contract) {
@@ -103,11 +120,10 @@ public class ContractEditBean implements Serializable {
         }
     }
 
-    
-
     public void save() {
         try {
             validateNoOverlap();
+            validateDateOfBirth();
 
             Long contractId;
 
@@ -128,6 +144,7 @@ public class ContractEditBean implements Serializable {
                 );
 
                 contractId = created.getId();
+                
 
                 if (contract.getSupervisorId() != null) {
                     contractLogic.addSupervisor(contractId, contract.getSupervisorId());
@@ -141,6 +158,9 @@ public class ContractEditBean implements Serializable {
                 } else {
                     contractLogic.removeSupervisor(contractId);
                 }
+            }
+            if (dateOfBirthRequired && dateOfBirth != null) {
+                personLogic.updateDateOfBirth(contract.getPersonId(), dateOfBirth);
             }
 
             syncSecretariesAndAssistants(contractId);
@@ -250,46 +270,46 @@ public class ContractEditBean implements Serializable {
             );
         }
     }
-private void refreshTerminationFlags() {
-    if (contract == null || contract.getId() == null
-            || contract.getStatus() != ContractStatus.STARTED) {
-        terminateBlocked = false;
-        hasUnresolvedInProgress = false;
-        hasEmptyInProgress = false;
-        return;
+
+    private void refreshTerminationFlags() {
+        if (contract == null || contract.getId() == null
+                || contract.getStatus() != ContractStatus.STARTED) {
+            terminateBlocked = false;
+            hasUnresolvedInProgress = false;
+            hasEmptyInProgress = false;
+            return;
+        }
+        Long contractId = contract.getId();
+
+        // Only an employee-signed timesheet blocks the button
+        terminateBlocked = contractLogic.hasTimesheetsPendingSupervisorSignature(contractId);
+
+        // These two only choose the text of the confirm dialog
+        hasUnresolvedInProgress = contractLogic.hasUnresolvedInProgressTimesheets(contractId);
+        hasEmptyInProgress = contractLogic.hasEmptyInProgressTimesheets(contractId);
     }
-    Long contractId = contract.getId();
-
-    // Only an employee-signed timesheet blocks the button
-    terminateBlocked = contractLogic.hasTimesheetsPendingSupervisorSignature(contractId);
-
-    // These two only choose the text of the confirm dialog
-    hasUnresolvedInProgress = contractLogic.hasUnresolvedInProgressTimesheets(contractId);
-    hasEmptyInProgress = contractLogic.hasEmptyInProgressTimesheets(contractId);
-}
-    
 
     public void terminate() {
-   
-    if (!isStarted()) {
-        showError("Could not terminate contract",
-                "Only a started contract can be terminated.");
-        return;
+
+        if (!isStarted()) {
+            showError("Could not terminate contract",
+                    "Only a started contract can be terminated.");
+            return;
+        }
+        try {
+            // The confirm dialog (contract.terminate.confirm.*) has already been accepted
+            // by the user, so deleting IN_PROGRESS timesheets is confirmed here.
+            contract = contractLogic.terminateContract(contract.getId(), true);
+        } catch (TerminationBlockedException e) {
+            // A timesheet was signed by the employee after the page was rendered
+            showError("Contract cannot be terminated", e.getMessage());
+        } catch (Exception e) {
+            showError("Could not terminate contract", e.getMessage());
+        } finally {
+
+            refreshTerminationFlags();
+        }
     }
-    try {
-        // The confirm dialog (contract.terminate.confirm.*) has already been accepted
-        // by the user, so deleting IN_PROGRESS timesheets is confirmed here.
-        contract = contractLogic.terminateContract(contract.getId(), true);
-    } catch (TerminationBlockedException e) {
-        // A timesheet was signed by the employee after the page was rendered
-        showError("Contract cannot be terminated", e.getMessage());
-    }  catch (Exception e) {
-        showError("Could not terminate contract", e.getMessage());
-    } finally {
-        
-        refreshTerminationFlags();
-    }
-}
 
     public void delete() {
         try {
@@ -359,6 +379,43 @@ private void refreshTerminationFlags() {
                         detail
                 )
         );
+    }
+
+    public void onEmployeeChange(AjaxBehaviorEvent event) {
+        dateOfBirth = null;
+        updateDateOfBirthRequired();
+    }
+
+    private void updateDateOfBirthRequired() {
+        dateOfBirthRequired = false;
+
+        if (contract == null || contract.getPersonId() == null) {
+            return;
+        }
+        PersonDTO employee = persons.stream()
+                .filter(p -> contract.getPersonId().equals(p.getId()))
+                .findFirst()
+                .orElse(null);
+        if (employee == null) {
+            return;
+        }
+
+        // Required if this person already has a contract in the system
+        dateOfBirthRequired = contractLogic.countContractsByEmployee(employee.getId()) > 0;
+
+        if (dateOfBirthRequired) {
+            dateOfBirth = employee.getDateOfBirth();   // prefill if already stored
+        }
+    }
+
+    private void validateDateOfBirth() {
+        if (dateOfBirthRequired && dateOfBirth == null) {
+            PersonDTO employee = findSelectedPerson();
+            throw new IllegalArgumentException(
+                    "Date of birth is required for " + employee.getFirstName()
+                    + " " + employee.getLastName()
+                    + " because this person already has a contract.");
+        }
     }
 
     public boolean isNewContract() {
@@ -440,5 +497,9 @@ private void refreshTerminationFlags() {
 
     public List<PersonDTO> getPersons() {
         return persons;
+    }
+
+    public LocalDate getToday() {
+        return LocalDate.now();
     }
 }

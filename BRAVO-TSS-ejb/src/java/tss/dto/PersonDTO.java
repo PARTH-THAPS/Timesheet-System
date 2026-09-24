@@ -1,10 +1,11 @@
 package tss.dto;
 
+import java.time.LocalDate;
 import tss.entity.Language;
 import tss.entity.Role;
 
 import java.util.Set;
-
+import java.time.LocalDate;
 
 public class PersonDTO extends AbstractDTO {
     private String firstName;
@@ -15,6 +16,15 @@ public class PersonDTO extends AbstractDTO {
     private Set<Role> role;
     private Long id;
     private Language preferredLanguage;
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+    private LocalDate dateOfBirth;
 
     public Long getId() {
         return id;

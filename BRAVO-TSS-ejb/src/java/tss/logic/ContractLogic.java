@@ -47,10 +47,11 @@ public interface ContractLogic {
 
     boolean hasEmptyInProgressTimesheets(Long contractId);
 
-    // PREPARED -> STARTED and TERMINATED -> ARCHIVED. TERMINATED is not allowed here.
+
     ContractDTO updateContractStatus(Long contractId, ContractStatus contractStatus);
 
-// STARTED -> TERMINATED. confirmed = true allows deleting IN_PROGRESS timesheets that contain entries.
+
     ContractDTO terminateContract(Long contractId, boolean confirmed);
+    long countContractsByEmployee(Long personId);
 
 }
