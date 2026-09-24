@@ -58,7 +58,6 @@
         <h:form id="timesheetForm">
 
             <p:messages
-                    showDetail="true"
                     closable="true"/>
 
 
@@ -291,6 +290,7 @@
                             value="Add Entry"
                             icon="pi pi-plus"
                             action="#{timesheetDetailBean.prepareNewEntry}"
+                            process="@this"
                             update="entryDialog"
                             oncomplete="PF('entryDialog').show()"
                             rendered="#{timesheetDetailBean.editable}"/>
@@ -370,11 +370,20 @@
                             headerText="Actions"
                             rendered="#{timesheetDetailBean.editable}"
                             styleClass="table-actions-column">
-
+                        
+                        <p:commandButton
+                                icon="pi pi-pencil"
+                                title="Edit entry"
+                                action="#{timesheetDetailBean.prepareEditEntry(entry)}"
+                                process="@this"
+                                update=":timesheetForm:entryDialog"
+                                oncomplete="PF('entryDialog').show()"
+                                styleClass="ui-button-secondary ui-button-outlined"/>
                         <p:commandButton
                                 icon="pi pi-trash"
                                 title="Delete entry"
                                 action="#{timesheetDetailBean.deleteEntry(entry)}"
+                                process="@this"
                                 update="@form"
                                 styleClass="ui-button-danger ui-button-outlined">
 
@@ -421,12 +430,14 @@
 
 
             <p:dialog
-                    id="entryDialog"
-                    widgetVar="entryDialog"
-                    header="Add Timesheet Entry"
-                    modal="true"
-                    resizable="false"
-                    width="500">
+                id="entryDialog"
+                widgetVar="entryDialog"
+                header="#{timesheetDetailBean.editingEntry
+                    ? 'Edit Timesheet Entry'
+                    : 'Add Timesheet Entry'}"
+                modal="true"
+                resizable="false"
+                width="500">
 
                 <p:outputPanel id="entryDialogContent">
 
@@ -443,6 +454,7 @@
                                     value="#{timesheetDetailBean.entry.entryDate}"
                                     pattern="dd.MM.yyyy"
                                     required="true"
+                                    requiredMessage="Date is required."
                                     showIcon="true"/>
 
                         </div>
@@ -459,6 +471,7 @@
                                     value="#{timesheetDetailBean.entry.startTime}"
                                     timeOnly="true"
                                     pattern="HH:mm"
+                                    requiredMessage="Start time is required."
                                     required="true"/>
 
                         </div>
@@ -475,6 +488,7 @@
                                     value="#{timesheetDetailBean.entry.endTime}"
                                     timeOnly="true"
                                     pattern="HH:mm"
+                                    requiredMessage="End time is required."
                                     required="true"/>
 
                         </div>
@@ -489,7 +503,8 @@
                             <p:selectOneMenu
                                     id="entryType"
                                     value="#{timesheetDetailBean.entry.type}"
-                                    required="true">
+                                    required="true"
+                                    requiredMessage="Type is required.">
 
                                 <f:selectItems
                                         value="#{timesheetDetailBean.reportTypes}"
@@ -522,9 +537,12 @@
                     <div class="form-actions">
 
                         <p:commandButton
-                                value="Save Entry"
+                                value="#{timesheetDetailBean.editingEntry
+                                    ? 'Update Entry'
+                                    : 'Save Entry'}"
                                 icon="pi pi-save"
                                 action="#{timesheetDetailBean.saveEntry}"
+                                process="@this,entryDialogContent"
                                 update="@form"
                                 oncomplete="if (!args.validationFailed) PF('entryDialog').hide()"/>
 

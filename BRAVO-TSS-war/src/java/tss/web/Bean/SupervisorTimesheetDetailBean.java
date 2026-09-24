@@ -7,6 +7,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.security.Principal;
 
 import tss.dto.TimesheetDTO;
 import tss.dto.TimesheetEntryDTO;
@@ -32,19 +33,28 @@ public class SupervisorTimesheetDetailBean
 
         if (id == null) {
             showError(
-                    "Could not load timesheet",
-                    "No timesheet id was provided."
-            );
+                    "Could not load timesheet","No timesheet id was provided.");
+            return;
+        }
+
+        Principal principal = FacesContext
+                .getCurrentInstance()
+                .getExternalContext()
+                .getUserPrincipal();
+
+        if (principal == null) {
+            showError("Could not load timesheet","No authenticated supervisor was found.");
             return;
         }
 
         try {
             timesheet =
-                    timesheetLogic.getTimesheetById(id);
+                    timesheetLogic.getTimesheetForSupervisor(
+                            id,
+                            principal.getName()
+                    );
         } catch (IllegalArgumentException e) {
-            showError(
-                    "Could not load timesheet",
-                    messageOf(e)
+            showError("Could not load timesheet",e.getMessage()
             );
         }
     }

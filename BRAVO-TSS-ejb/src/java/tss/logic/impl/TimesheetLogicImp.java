@@ -6,6 +6,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import tss.dto.TimesheetDTO;
@@ -109,23 +110,22 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         TimesheetEntry entry = toEntity(entryDTO);
 
-        if (entry.getEntryDate().isBefore(start_date)
-                || entry.getEntryDate().isAfter(end_date)) {
+        if (entry.getEntryDate().isBefore(start_date)|| entry.getEntryDate().isAfter(end_date)) {
 
-            throw new IllegalArgumentException(
-                    "Selected date is outside the timesheet period."
-            );}
+            throw new IllegalArgumentException("Selected date is outside the timesheet period.");}
 
-            if (entry.getType() == ReportType.VACATION) {
+        validateNoOverlap(timesheet, entry, null);
+
+        if (entry.getType() == ReportType.VACATION) {
                 validateVacationCap(timesheet.getContract(), entry.getHours(), null);
-            }
-
-            entry.setTimesheet(timesheet);
-            timesheet.getEntries().add(entry);
-            timesheetDAO.updateTimesheet(timesheet);
-
-            return toDTO(timesheet);
         }
+
+        entry.setTimesheet(timesheet);
+        timesheet.getEntries().add(entry);
+        timesheetDAO.updateTimesheet(timesheet);
+
+        return toDTO(timesheet);
+    }
         //     holidays logic
     public List<HolidayDTO> checkForHolidays(LocalDate startDate, LocalDate endDate, FederalState State) {
         return holidayLogic.findByStateAndRange(State, startDate, endDate);
@@ -155,6 +155,13 @@ public class TimesheetLogicImp implements TimesheetLogic {
         ReportType updatedType = toReportType(updatedEntryDTO.getType());
         double updatedHours = computeHours(updatedEntryDTO.getStartTime(), updatedEntryDTO.getEndTime());
 
+        TimesheetEntry candidate = new TimesheetEntry();
+        candidate.setEntryDate(updatedEntryDTO.getEntryDate());
+        candidate.setStartTime(updatedEntryDTO.getStartTime());
+        candidate.setEndTime(updatedEntryDTO.getEndTime());
+
+        validateNoOverlap(timesheet, candidate, entryId);
+
         if (updatedType == ReportType.VACATION) {
             validateVacationCap(timesheet.getContract(), updatedHours, entryId);
         }
@@ -167,7 +174,6 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         timesheetDAO.updateTimesheet(timesheet);
         return toDTO(timesheet);
-
     }
 
     @Override
@@ -294,6 +300,59 @@ public class TimesheetLogicImp implements TimesheetLogic {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+    
+   @Override
+    public List<TimesheetDTO> findTimesheetsForSupervisor(
+            String emailAddress
+    ) {
+        List<Timesheet> entities =
+                timesheetDAO.findBySupervisor(
+                        emailAddress
+                );
+
+        if (entities == null) {
+            return List.of();
+        }
+
+        return entities.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }    
+    @Override
+    public TimesheetDTO getTimesheetForSupervisor(
+            Long timesheetId,
+            String supervisorEmail
+    ) {
+        Timesheet timesheet =
+                timesheetDAO.findByIdForSupervisor(
+                        timesheetId,
+                        supervisorEmail
+                );
+
+        return toDTO(timesheet);
+    }
+    
+    @Override
+    public boolean canSupervisorAccessTimesheet(
+            Long timesheetId,
+            String supervisorEmail
+    ) {
+        if (timesheetId == null || supervisorEmail == null) {
+            return false;
+        }
+
+        try {
+            timesheetDAO.findByIdForSupervisor(
+                    timesheetId,
+                    supervisorEmail
+            );
+
+            return true;
+
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
 
     @Override
     public TimesheetDTO requestChanges(Long timesheetId) {
@@ -382,6 +441,44 @@ public class TimesheetLogicImp implements TimesheetLogic {
             throw new IllegalStateException(
                     "Vacation hours exceed contract allowance: used=" + usedVacationHours
                     + " + new=" + newHours + " > allowed=" + allowed);
+        }
+    }
+    
+    private void validateNoOverlap(Timesheet timesheet,TimesheetEntry newEntry,Long excludingEntryId) {
+        if (newEntry.getEntryDate() == null|| newEntry.getStartTime() == null|| newEntry.getEndTime() == null) {
+            return;
+        }
+
+        if (!newEntry.getStartTime().isBefore(newEntry.getEndTime())) {
+            throw new IllegalArgumentException("Start time must be before end time.");
+        }
+
+        for (TimesheetEntry existing : timesheet.getEntries()) {
+            if (isExcluded(existing, excludingEntryId)) {
+                continue;
+            }
+
+            if (existing.getEntryDate() == null|| existing.getStartTime() == null|| existing.getEndTime() == null) {
+                continue;
+            }
+
+            if (!existing.getEntryDate().equals(newEntry.getEntryDate())) {
+                continue;
+            }
+
+            boolean overlaps =
+                    newEntry.getStartTime().isBefore(existing.getEndTime())
+                    && existing.getStartTime().isBefore(newEntry.getEndTime());
+
+            if (overlaps) {
+                throw new IllegalStateException("This entry overlaps with an existing entry from "
+                        + existing.getStartTime()
+                        + " to "
+                        + existing.getEndTime()
+                        + " on "
+                        + existing.getEntryDate()
+                        + ".");
+            }
         }
     }
 
@@ -524,9 +621,17 @@ public class TimesheetLogicImp implements TimesheetLogic {
         dto.setHoursDue(ts.getHoursDue());
         dto.setContractId(ts.getContract() != null ? ts.getContract().getId() : null);
         if (ts.getEntries() != null) {
-            dto.setEntries(ts.getEntries().stream().map(this::toDTO).collect(Collectors.toList()));
+            List<TimesheetEntryDTO> sortedEntries = ts.getEntries().stream().map(this::toDTO).sorted(
+                    Comparator.comparing(TimesheetEntryDTO::getEntryDate,Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(
+                            TimesheetEntryDTO::getStartTime,Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
+
+            dto.setEntries(sortedEntries);
         }
-        return dto;
+        if (ts.getContract() != null && ts.getContract().getEmployee() != null) {
+            dto.setEmployeeFirstName(ts.getContract().getEmployee().getFirstName());
+            dto.setEmployeeLastName(ts.getContract().getEmployee().getLastName());
+        }
+            return dto;
     }
 
     private TimesheetEntryDTO toDTO(TimesheetEntry entry) {
