@@ -50,6 +50,10 @@
                         stripedRows="true"
                         emptyMessage="No timesheets await your signature.">
 
+                    <p:column headerText="Employee">
+                        <h:outputText
+                                value="#{timesheet.employeeFullName}"/>
+                    </p:column>
                     <p:column headerText="Period">
                         <h:outputText
                                 value="#{timesheet.startDate}">

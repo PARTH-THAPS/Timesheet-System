@@ -16,6 +16,9 @@ public class TimesheetDTO extends AbstractDTO {
     private Long contractId;
     private List<TimesheetEntryDTO> entries;
     private String state;
+    
+    private String employeeFirstName;
+    private String employeeLastName;
 
     public String getState() {
         return state;
@@ -105,6 +108,43 @@ public class TimesheetDTO extends AbstractDTO {
         } 
         else { 
             this.entries = Collections.emptyList(); }
+    }
+    
+    public String getEmployeeFirstName() {
+        return employeeFirstName;
+    }
+
+    public void setEmployeeFirstName(String employeeFirstName) {
+        this.employeeFirstName = employeeFirstName;
+    }
+
+    public String getEmployeeLastName() {
+        return employeeLastName;
+    }
+
+    public void setEmployeeLastName(String employeeLastName) {
+        this.employeeLastName = employeeLastName;
+    }
+    
+    public String getEmployeeFullName() {
+        if (employeeFirstName == null && employeeLastName == null) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        if (employeeFirstName != null) {
+            sb.append(employeeFirstName);
+        }
+
+        if (employeeLastName != null) {
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append(employeeLastName);
+        }
+
+        return sb.toString();
     }
 }
     

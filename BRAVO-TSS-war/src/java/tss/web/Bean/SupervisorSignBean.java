@@ -32,8 +32,7 @@ public class SupervisorSignBean
         reload();
     }
 
-    public void loadPendingTimesheets(
-            String emailAddress) {
+    public void loadPendingTimesheets(String emailAddress) {
 
         List<TimesheetDTO> result =timesheetLogic.findPendingSignaturesForSupervisor(emailAddress);
 

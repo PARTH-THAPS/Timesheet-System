@@ -59,10 +59,14 @@
                                     pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </h2>
-
+                    
                     <p class="text-muted">
-                        Review the employee's reported entries.
+                        Employee:
+                        <strong>
+                            #{supervisorTimesheetDetailBean.timesheet.employeeFullName}
+                        </strong>
                     </p>
+
                 </div>
 
                 <span class="status-badge">

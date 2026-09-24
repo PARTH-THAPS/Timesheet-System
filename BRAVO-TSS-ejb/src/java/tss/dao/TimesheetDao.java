@@ -142,17 +142,58 @@ public class TimesheetDao {
         }
     }
     
-    public List<Timesheet> findPendingSignaturesForSupervisor(String emailAddress) {
-
+    public List<Timesheet> findBySupervisor(String emailAddress) {
         return em.createQuery(
                 "SELECT DISTINCT t "
                 + "FROM Timesheet t "
-                + "LEFT JOIN FETCH t.entries "
-                + "WHERE t.status = :status "
+                + "JOIN FETCH t.contract c "
+                + "JOIN FETCH c.employee e "
+                + "JOIN c.supervisor s "
+                + "WHERE s.emailAddress = :emailAddress "
+                + "ORDER BY t.startDate DESC",
+                Timesheet.class
+        )
+        .setParameter("emailAddress", emailAddress)
+        .getResultList();
+    }
+    
+    public Timesheet findByIdForSupervisor(Long timesheetId,String supervisorEmail) {
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT t "
+                    + "FROM Timesheet t "
+                    + "JOIN FETCH t.entries "
+                    + "JOIN FETCH t.contract c "
+                    + "JOIN FETCH c.employee e "
+                    + "JOIN c.supervisor s "
+                    + "WHERE t.id = :timesheetId "
+                    + "AND s.emailAddress = :supervisorEmail",
+                    Timesheet.class
+            )
+            .setParameter("timesheetId", timesheetId)
+            .setParameter("supervisorEmail", supervisorEmail)
+            .getSingleResult();
+        } catch (NoResultException e) {
+            throw new IllegalArgumentException(
+                    "This timesheet does not belong to you."
+            );
+        }
+    }
+    
+    public List<Timesheet> findPendingSignaturesForSupervisor(String emailAddress) {
+        return em.createQuery(
+                "SELECT DISTINCT t "
+                + "FROM Timesheet t "
+                + "JOIN FETCH t.contract c "
+                + "JOIN FETCH c.employee e "
+                + "JOIN c.supervisor s "
+                + "WHERE s.emailAddress = :emailAddress "
+                + "AND t.status = "
+                + "tss.entity.TimesheetStatus.SIGNED_BY_EMPLOYEE "
                 + "ORDER BY t.startDate",
                 Timesheet.class
         )
-        .setParameter("status",TimesheetStatus.SIGNED_BY_EMPLOYEE)
+        .setParameter("emailAddress", emailAddress)
         .getResultList();
     }
     
@@ -173,4 +214,5 @@ public class TimesheetDao {
     .setParameter("id", id)
     .getSingleResult();
 }
+    
 }

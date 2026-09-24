@@ -26,6 +26,8 @@ public class TimesheetDetailBean implements Serializable {
     private TimesheetDTO timesheet;
 
     private TimesheetEntryDTO entry = new TimesheetEntryDTO();
+    
+    private Long editingEntryId;
 
     public void init() {
         if (timesheet != null) {
@@ -49,12 +51,49 @@ public class TimesheetDetailBean implements Serializable {
 
     public void prepareNewEntry() {
         entry = new TimesheetEntryDTO();
+        editingEntryId = null;
+    }
+
+    public void prepareEditEntry(TimesheetEntryDTO selected) {
+        if (selected == null) {
+            return;
+        }
+
+        editingEntryId = selected.getId();
+
+        entry = new TimesheetEntryDTO();
+        entry.setId(selected.getId());
+        entry.setEntryDate(selected.getEntryDate());
+        entry.setStartTime(selected.getStartTime());
+        entry.setEndTime(selected.getEndTime());
+        entry.setDescription(selected.getDescription());
+        entry.setType(selected.getType());
     }
 
     public void saveEntry() {
         try {
-            timesheetLogic.addEntry(timesheet.getId(),entry);
-            showInfo("Entry added", "The entry was added successfully.");;
+            if (editingEntryId != null) {
+                timesheetLogic.updateEntry(
+                        timesheet.getId(),
+                        editingEntryId,
+                        entry
+                );
+
+                showInfo(
+                        "Entry updated",
+                        "The entry was updated successfully."
+                );
+            } else {
+                timesheetLogic.addEntry(
+                        timesheet.getId(),
+                        entry
+                );
+
+                showInfo(
+                        "Entry added",
+                        "The entry was added successfully."
+                );
+            }
 
             reload();
             prepareNewEntry();
@@ -153,6 +192,10 @@ public class TimesheetDetailBean implements Serializable {
         return timesheet != null
                 && timesheet.getStatus()
                 == TimesheetStatus.IN_PROGRESS;
+    }
+    
+    public boolean isEditingEntry() {
+        return editingEntryId != null;
     }
     
     public boolean isCanSignByEmployee() {

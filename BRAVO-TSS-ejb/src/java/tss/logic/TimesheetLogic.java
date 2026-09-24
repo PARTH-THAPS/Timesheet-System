@@ -38,5 +38,11 @@ public interface TimesheetLogic {
     List<TimesheetDTO> findPendingSignaturesForSupervisor(String emailAddress);
 
     TimesheetDTO requestChanges(Long timesheetId);
+    
+    boolean canSupervisorAccessTimesheet(Long timesheetId,String supervisorEmai);
+    
+    List<TimesheetDTO> findTimesheetsForSupervisor(String emailAddress);
+    
+    TimesheetDTO getTimesheetForSupervisor(Long timesheetId,String supervisorEmail);
 
 }
