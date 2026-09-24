@@ -17,14 +17,14 @@
 
     <ui:define name="pageTitle">
         #{contractEditBean.newContract
-            ? msg['contract.add']
-            : msg['contract.title']}
+          ? msg['contract.add']
+          : msg['contract.title']}
     </ui:define>
 
     <ui:define name="pageHeadline">
         #{contractEditBean.newContract
-            ? msg['contract.add']
-            : msg['contract.title']}
+          ? msg['contract.add']
+          : msg['contract.title']}
     </ui:define>
 
     <ui:define name="navigation">
@@ -32,19 +32,19 @@
     </ui:define>
 
     <ui:define name="headerActions">
-    <div class="user-info">
-        <span class="user-name">
-            #{loginBean.user.firstName} #{loginBean.user.lastName}
-        </span>
-        <ui:repeat
+        <div class="user-info">
+            <span class="user-name">
+                #{loginBean.user.firstName} #{loginBean.user.lastName}
+            </span>
+            <ui:repeat
                 value="#{loginBean.user.roles}"
                 var="role">
-            <span class="badge">
-                #{msg['role.'.concat(role.name())]}
-            </span>
-        </ui:repeat>
-    </div>
-</ui:define>
+                <span class="badge">
+                    #{msg['role.'.concat(role.name())]}
+                </span>
+            </ui:repeat>
+        </div>
+    </ui:define>
 
     <ui:define name="content">
         <section class="card contract-form-card">
@@ -116,7 +116,7 @@
                                 itemValue="#{null}"
                                 noSelectionOption="true"/>
                             <f:selectItems
-                                value="#{contractEditBean.persons}"
+                                value="#{contractEditBean.supervisors}"
                                 var="person"
                                 itemValue="#{person.id}"
                                 itemLabel="#{person.firstName} #{person.lastName}"/>
@@ -135,9 +135,10 @@
                             label="#{msg['contract.selectSecretaries']}"
                             filter="true"
                             multiple="true"
+                            required="true"
                             panelStyleClass="form-checkboxmenu-panel">
                             <f:selectItems
-                                value="#{contractEditBean.persons}"
+                                value="#{contractEditBean.secretaries}"
                                 var="person"
                                 itemValue="#{person.id}"
                                 itemLabel="#{person.firstName} #{person.lastName}"/>
@@ -158,7 +159,7 @@
                             multiple="true"
                             panelStyleClass="form-checkboxmenu-panel">
                             <f:selectItems
-                                value="#{contractEditBean.persons}"
+                                value="#{contractEditBean.assistants}"
                                 var="person"
                                 itemValue="#{person.id}"
                                 itemLabel="#{person.firstName} #{person.lastName}"/>
@@ -348,8 +349,8 @@
                         <p:confirm
                             header="#{msg['contract.terminate']}"
                             message="#{contractEditBean.hasUnresolvedInProgressTimesheets
-                                        ? msg['contract.terminate.confirm.warning']
-                                        : msg['contract.terminate.confirm']}"
+                                       ? msg['contract.terminate.confirm.warning']
+                                       : msg['contract.terminate.confirm']}"
                             icon="pi pi-exclamation-triangle"/>
                     </p:commandButton>
 

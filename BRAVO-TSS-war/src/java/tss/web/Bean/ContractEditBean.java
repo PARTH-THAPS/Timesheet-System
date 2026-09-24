@@ -9,14 +9,18 @@ import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
 import tss.entity.FederalState;
+import tss.entity.Role;
 import tss.entity.TimesheetFrequency;
 import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
+import java.util.Set;
 
 @Named
 @ViewScoped
@@ -89,50 +93,82 @@ public class ContractEditBean implements Serializable {
     }
 
     public void save() {
-        try {
-            Long contractId;
-            if (isNewContract()) {
-                PersonDTO person = findSelectedPerson();
-                ContractDTO created = contractLogic.createContract(
-                        contract.getName(),
-                        contract.getStartDate(),
-                        contract.getEndDate(),
-                        contract.getFrequency(),
-                        contract.getHoursPerWeek(),
-                        contract.getHoursDue(),
-                        contract.getWorkingDaysPerWeek(),
-                        contract.getVacationDaysPerYear(),
-                        person,
-                        contract.getState()
-                );
-                contractId = created.getId();
-                if (contract.getSupervisorId() != null) {
-                    contractLogic.addSupervisor(
-                            contractId,
-                            contract.getSupervisorId()
-                    );
-                }
-            } else {
-                contractLogic.updateContract(contract);
-                contractId = contract.getId();
-                if (contract.getSupervisorId() != null) {
-                    contractLogic.addSupervisor(
-                            contractId,
-                            contract.getSupervisorId()
-                    );
-                } else {
-                    contractLogic.removeSupervisor(contractId);
-                }
+    try {
+        validateNoOverlap();
+
+        Long contractId;
+        if (isNewContract()) {
+            PersonDTO person = findSelectedPerson();
+            ContractDTO created = contractLogic.createContract(
+                    contract.getName(),
+                    contract.getStartDate(),
+                    contract.getEndDate(),
+                    contract.getFrequency(),
+                    contract.getHoursPerWeek(),
+                    contract.getHoursDue(),
+                    contract.getWorkingDaysPerWeek(),
+                    contract.getVacationDaysPerYear(),
+                    person,
+                    contract.getState()
+            );
+            contractId = created.getId();
+            if (contract.getSupervisorId() != null) {
+                contractLogic.addSupervisor(contractId, contract.getSupervisorId());
             }
-            syncSecretariesAndAssistants(contractId);
-            redirectToContracts();
-        } catch (Exception e) {
-            showError(
-                    "Could not save contract",
-                    e.getMessage()
+        } else {
+            contractLogic.updateContract(contract);
+            contractId = contract.getId();
+            if (contract.getSupervisorId() != null) {
+                contractLogic.addSupervisor(contractId, contract.getSupervisorId());
+            } else {
+                contractLogic.removeSupervisor(contractId);
+            }
+        }
+        syncSecretariesAndAssistants(contractId);
+        redirectToContracts();
+    } catch (Exception e) {
+        showError("Could not save contract", e.getMessage());
+    }
+}
+
+private void validateNoOverlap() {
+    Long employeeId = contract.getPersonId();
+    Long supervisorId = contract.getSupervisorId();
+    List<Long> secretaryIds = contract.getSecretaryIds() != null
+            ? contract.getSecretaryIds() : List.of();
+    List<Long> assistantIds = contract.getAssistantIds() != null
+            ? contract.getAssistantIds() : List.of();
+
+    if (secretaryIds.isEmpty()) {
+        throw new IllegalArgumentException("At least one secretary is required.");
+    }
+
+    // Collect every (role label, personId) pair that was actually assigned
+    List<Map.Entry<String, Long>> assignments = new ArrayList<>();
+    if (employeeId != null) assignments.add(Map.entry("employee", employeeId));
+    if (supervisorId != null) assignments.add(Map.entry("supervisor", supervisorId));
+    for (Long id : secretaryIds) assignments.add(Map.entry("secretary", id));
+    for (Long id : assistantIds) assignments.add(Map.entry("assistant", id));
+
+    Set<Long> seen = new HashSet<>();
+    for (Map.Entry<String, Long> entry : assignments) {
+        if (!seen.add(entry.getValue())) {
+            throw new IllegalArgumentException(
+                    "Each person may only have one role on this contract. "
+                    + personNameOrId(entry.getValue())
+                    + " is assigned to more than one role."
             );
         }
     }
+}
+
+private String personNameOrId(Long id) {
+    return persons.stream()
+            .filter(p -> p.getId().equals(id))
+            .findFirst()
+            .map(p -> p.getFirstName() + " " + p.getLastName())
+            .orElse("Person #" + id);
+}
 
     private void syncSecretariesAndAssistants(Long contractId) {
         List<Long> selectedSecretaries = contract.getSecretaryIds() != null
@@ -287,6 +323,24 @@ public class ContractEditBean implements Serializable {
                 contract.getId()
         );
     }
+    
+    public List<PersonDTO> getSupervisors() {
+    return persons.stream()
+            .filter(p -> p.getRole() != null && p.getRole().contains(Role.SUPERVISOR))
+            .toList();
+}
+
+public List<PersonDTO> getSecretaries() {
+    return persons.stream()
+            .filter(p -> p.getRole() != null && p.getRole().contains(Role.SECRETARY))
+            .toList();
+}
+
+public List<PersonDTO> getAssistants() {
+    return persons.stream()
+            .filter(p -> p.getRole() != null && p.getRole().contains(Role.ASSISTANT))
+            .toList();
+}
 
     public boolean isEditable() {
         return isNewContract() || isPrepared();
