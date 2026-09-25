@@ -26,6 +26,7 @@ public class ContractDTO extends AbstractDTO {
     private ContractStatus status;
      private List<Long> secretaryIds;
     private List<Long> assistantIds;
+    private int archiveDuration;
 
     public ContractDTO() {
     }
@@ -173,4 +174,8 @@ public class ContractDTO extends AbstractDTO {
     public void setAssistantIds(List<Long> assistantIds) {
         this.assistantIds = assistantIds;
     }
+
+    public void setArchiveDuration(int archiveDuration) { this.archiveDuration = archiveDuration; }
+
+    public int getArchiveDuration() { return archiveDuration; }
 }

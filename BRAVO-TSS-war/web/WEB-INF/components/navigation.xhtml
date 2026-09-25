@@ -83,35 +83,28 @@
                    </h:link>
                </li>
 
-                <li>
-                    <h:link
-                        outcome="/views/shared/archive-contracts"
-                        styleClass="navigation-link">
-
-                        <i class="pi pi-folder-open"/>
-                        <span>Contract Archive</span>
-
-                    </h:link>
-                </li>
-
             </ui:fragment>
 
-            <ui:fragment rendered="#{mockUserBean.hasRole('SUPERVISOR')}">
+           <ui:fragment
+                   rendered="#{loginBean.hasRole('ASSISTANT')
+                           or loginBean.hasRole('SUPERVISOR')
+                           or loginBean.hasRole('SECRETARY')}">
 
-                <li>
-                    <h:link
-                        outcome="/views/supervisor/archived-contracts"
-                        styleClass="navigation-link">
+               <li>
+                   <h:link
+                           outcome="/views/shared/archive-contracts"
+                           styleClass="navigation-link">
 
-                        <i class="pi pi-briefcase"/>
-                        <span>Supervision Archive</span>
+                       <i class="pi pi-folder-open"/>
+                       <span>Contract Archive</span>
 
-                    </h:link>
-                </li>
+                   </h:link>
+               </li>
 
-            </ui:fragment>
+           </ui:fragment>
 
-            <ui:fragment rendered="#{mockUserBean.hasRole('SECRETARY')}">
+
+            <ui:fragment rendered="#{loginBean.hasRole('SECRETARY')}">
                 <li>
                     <h:link
                             outcome="/views/secretary/secretary-archive"

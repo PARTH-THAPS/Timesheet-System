@@ -25,6 +25,7 @@ public class Contract extends AbstractEntity {
     private int vacationDaysPerYear;
     @Enumerated(EnumType.STRING)
     private FederalState state;
+    private int archiveDuration = 2;
 
     @ManyToOne
     @JoinColumn(name = "EMPLOYEE_ID")
@@ -209,4 +210,11 @@ public class Contract extends AbstractEntity {
         this.state = state;
     }
 
+    public void setArchiveDuration(int archiveDuration) {
+        this.archiveDuration = archiveDuration;
+    }
+
+    public int getArchiveDuration() {
+        return archiveDuration;
+    }
 }

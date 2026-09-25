@@ -45,7 +45,7 @@
                 <p:dataTable
                     id="contractsTable"
                     widgetVar="contractsTable"
-                    value="#{contractListBean.contracts}"
+                    value="#{archiveContractsBean.archivedContracts}"
                     var="contract"
                     paginator="true"
                     rows="10"
@@ -62,11 +62,11 @@
                     </p:column>
 
                     <p:column
-                        headerText="Employee"
-                        sortBy="#{contractListBean.getPersonName(contract.personId)}"
-                        filterBy="#{contractListBean.getPersonName(contract.personId)}"
-                        filterMatchMode="contains">
-                        <h:outputText value="#{contractListBean.getPersonName(contract.personId)}"/>
+                            headerText="Employee"
+                            sortBy="#{archiveContractsBean.getPersonName(contract.personId)}"
+                            filterBy="#{archiveContractsBean.getPersonName(contract.personId)}"
+                            filterMatchMode="contains">
+                        <h:outputText value="#{archiveContractsBean.getPersonName(contract.personId)}"/>
                     </p:column>
 
                     <p:column

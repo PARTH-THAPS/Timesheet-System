@@ -1,5 +1,6 @@
 package tss.dto;
 
+import tss.entity.Language;
 import tss.entity.Role;
 
 import java.util.Set;
@@ -13,6 +14,7 @@ public class PersonDTO extends AbstractDTO {
     private String password;
     private Set<Role> role;
     private Long id;
+    private Language preferredLanguage;
 
     public Long getId() {
         return id;
@@ -72,4 +74,8 @@ public class PersonDTO extends AbstractDTO {
     public void setRole(Set<Role> role) {
         this.role = role;
     }
+
+    public void setPreferredLanguage(Language language) { this.preferredLanguage = language; }
+
+    public Language getPreferredLanguage() { return preferredLanguage; }
 }

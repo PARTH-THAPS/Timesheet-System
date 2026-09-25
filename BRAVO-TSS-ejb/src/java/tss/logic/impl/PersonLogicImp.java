@@ -104,6 +104,7 @@ public class PersonLogicImp implements PersonLogic {
     dto.setEmailAddress(p.getEmailAddress());
     dto.setConsent(p.isConsent());
     dto.setRole(p.getRole());
+    dto.setPreferredLanguage(p.getPreferredLanguage());
     return dto;
 }
 

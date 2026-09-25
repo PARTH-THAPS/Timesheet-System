@@ -152,6 +152,22 @@ public class ContractLogicImp implements ContractLogic {
                 .toList();
     }
 
+    @Override
+    public List<ContractDTO> findAllArchivedContractsForSupervisor(long id) {
+        return contractsDao.findAllArchivedContractsForSupervisor(id)
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<ContractDTO> findAllArchivedContracts() {
+        return contractsDao.findAllArchivedContracts()
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
     public void CheckForArchivedTimesheet(Contract contract) {
         boolean allArchivedTimesheet = contract.getTimesheet().stream().allMatch(ts -> ts.getStatus() == TimesheetStatus.ARCHIVED);
         if (allArchivedTimesheet) {
@@ -230,6 +246,7 @@ public class ContractLogicImp implements ContractLogic {
     dto.setState(c.getState());
     dto.setStatus(c.getStatus());
     dto.setTerminationDate(c.getTerminationDate());
+    dto.setArchiveDuration(c.getArchiveDuration());
     if (c.getEmployee() != null) {
         dto.setPersonId(c.getEmployee().getId());
         dto.setPersonUuid(c.getEmployee().getUuid());

@@ -1,9 +1,10 @@
-package tss.logic;
+package tss.web;
 
 import jakarta.annotation.Resource;
 import jakarta.ejb.*;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
+import tss.dao.PersonDao;
 import tss.dao.TimesheetDao;
 import tss.entity.Person;
 import tss.entity.Timesheet;
@@ -15,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.StringJoiner;
 
@@ -25,6 +25,9 @@ public class ReminderService {
 
     @EJB
     private TimesheetDao timesheetDAO;
+
+    @EJB
+    private PersonDao personDao;
 
     @Resource(lookup = "mail/Mailsession")
     private Session mailSession;
@@ -48,18 +51,21 @@ public class ReminderService {
         }
     }
 
-    @Schedule(hour = "6", minute = "5", persistent = false)
+    //For testing set: hour = "*" minute = "*" second = "0" - it repeats every minute
+    @Schedule(hour = "6", minute = "0", persistent = false)
     public void processDailyReminders() {
         System.out.println("Processing daily aggregated timesheet reminders...");
         Map<String, List<Timesheet>> userRemindersMap = new HashMap<>();
 
-        List<Timesheet> inProgressSheets = timesheetDAO.findInProgressOnLastDay();
+        // RE1: Employee Reminders (IN_PROGRESS)
+        List<Timesheet> inProgressSheets = timesheetDAO.findPendingRemindersByStatus(TimesheetStatus.IN_PROGRESS);
         for (Timesheet sheet : inProgressSheets) {
             String employeeEmail = sheet.getContract().getEmployee().getEmailAddress();
             userRemindersMap.computeIfAbsent(employeeEmail, k -> new ArrayList<>()).add(sheet);
         }
 
-        List<Timesheet> employeeSignedSheets = timesheetDAO.findByStatusOnLastDay(TimesheetStatus.SIGNED_BY_EMPLOYEE);
+        // RE2: Supervisor and Assistant Reminders (SIGNED_BY_EMPLOYEE)
+        List<Timesheet> employeeSignedSheets = timesheetDAO.findPendingRemindersByStatus(TimesheetStatus.SIGNED_BY_EMPLOYEE);
         if (employeeSignedSheets != null) {
             for (Timesheet sheet : employeeSignedSheets) {
                 String supervisorEmail = sheet.getContract().getSupervisor().getEmailAddress();
@@ -71,7 +77,8 @@ public class ReminderService {
             }
         }
 
-        List<Timesheet> supervisorSignedSheets = timesheetDAO.findByStatusOnLastDay(TimesheetStatus.SIGNED_BY_SUPERVISOR);
+        // RE3: Secretary Reminders (SIGNED_BY_SUPERVISOR)
+        List<Timesheet> supervisorSignedSheets = timesheetDAO.findPendingRemindersByStatus(TimesheetStatus.SIGNED_BY_SUPERVISOR);
         if (supervisorSignedSheets != null) {
             for (Timesheet sheet : supervisorSignedSheets) {
                 for (Person secretary : sheet.getContract().getSecretaries()) {
@@ -90,6 +97,14 @@ public class ReminderService {
                     bundle.getString("reminder.subject"),
                     buildReminderBody(recipientEmail, urgentSheets, bundle)
             );
+
+////15 seconds delay for development testing(MailTrap free version doesn't allow sending all messages at once)
+//            try {
+//                Thread.sleep(15000);
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//            }
+
         }
     }
 
@@ -119,7 +134,13 @@ public class ReminderService {
     }
 
     private Locale resolveLocale(String recipientEmail) {
-        //TODO:Add functionality that returns preferred language for user
+        Person person = personDao.getPerson(recipientEmail);
+
+        if (person != null && person.getPreferredLanguage() != null) {
+            return Locale.of(person.getPreferredLanguage().name().toLowerCase());
+        }
+
+        System.err.println("Could not resolve language for " + recipientEmail + ". Defaulting to server locale.");
         return DEFAULT_LOCALE;
     }
 

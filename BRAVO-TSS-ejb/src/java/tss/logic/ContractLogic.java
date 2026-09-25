@@ -23,6 +23,10 @@ public interface ContractLogic {
 
     List<ContractDTO> findAllContracts();
 
+    List<ContractDTO> findAllArchivedContractsForSupervisor(long id);
+
+    List<ContractDTO> findAllArchivedContracts();
+
     ContractDTO updateContractStatus(Long contrcatId, ContractStatus contractStatus);
 
     void CheckForArchivedTimesheet(Contract contract);
