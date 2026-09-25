@@ -8,11 +8,11 @@
     xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
-        Supervision Archive
+        #{msg['supervisionArchive.title']}
     </ui:define>
 
     <ui:define name="pageHeadline">
-        Supervision Archive
+        #{msg['supervisionArchive.title']}
     </ui:define>
 
     <ui:define name="navigation">
@@ -22,26 +22,33 @@
     <ui:define name="headerActions">
         <div class="user-info">
             <span class="user-name">
-                #{mockUserBean.fullName}
+                #{loginBean.user.firstName} #{loginBean.user.lastName}
             </span>
-            <span class="user-role">
-                #{mockUserBean.role}
-            </span>
+            <ui:repeat
+                value="#{loginBean.user.roles}"
+                var="role">
+                <span class="badge">
+                    #{msg['role.'.concat(role.name())]}
+                </span>
+            </ui:repeat>
         </div>
     </ui:define>
 
     <ui:define name="content">
+
         <section class="page-section-header">
             <div>
-                <h2>Archived Contracts</h2>
+                <h2>#{msg['supervisionArchive.archivedContracts']}</h2>
+
                 <p class="text-muted">
-                    Archived contracts for your supervision.
+                    #{msg['supervisionArchive.description']}
                 </p>
             </div>
         </section>
 
         <section class="card">
             <h:form id="archivedContractsForm">
+
                 <p:dataTable
                     id="archivedContractsTable"
                     value="#{supervisorArchivedContractsBean.archivedContracts}"
@@ -50,67 +57,88 @@
                     rows="10"
                     stripedRows="true"
                     sortMode="single"
-                    emptyMessage="No archived contracts found for your supervision.">
+                    emptyMessage="#{msg['supervisionArchive.noArchivedContracts']}">
 
                     <p:column
-                        headerText="Name"
+                        headerText="#{msg['contract.name']}"
                         sortBy="#{contract.name}"
                         filterBy="#{contract.name}"
                         filterMatchMode="contains">
+
                         <h:outputText value="#{contract.name}"/>
+
                     </p:column>
 
                     <p:column
-                        headerText="Employee"
+                        headerText="#{msg['contract.employee']}"
                         sortBy="#{supervisorArchivedContractsBean.getPersonName(contract.personId)}"
                         filterBy="#{supervisorArchivedContractsBean.getPersonName(contract.personId)}"
                         filterMatchMode="contains">
-                        <h:outputText value="#{supervisorArchivedContractsBean.getPersonName(contract.personId)}"/>
+
+                        <h:outputText
+                            value="#{supervisorArchivedContractsBean.getPersonName(contract.personId)}"/>
+
                     </p:column>
 
                     <p:column
-                        headerText="Start"
+                        headerText="#{msg['contract.start']}"
                         sortBy="#{contract.startDate}">
+
                         <h:outputText value="#{contract.startDate}">
-                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
+
                     </p:column>
 
                     <p:column
-                        headerText="End"
+                        headerText="#{msg['contract.end']}"
                         sortBy="#{contract.endDate}">
+
                         <h:outputText value="#{contract.endDate}">
-                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
+
                     </p:column>
 
                     <p:column
-                        headerText="Status"
+                        headerText="#{msg['contract.status']}"
                         sortBy="#{contract.status}"
                         filterBy="#{contract.status}"
                         filterMatchMode="exact">
+
                         <span class="status-badge">
-                            #{contract.status}
+                            #{msg['contract.status.'.concat(contract.status.name())]}
                         </span>
+
                     </p:column>
 
                     <p:column
-                        headerText="Actions"
+                        headerText="#{msg['common.actions']}"
                         styleClass="table-actions-column">
+
                         <p:button
-                            value="Timesheets"
+                            value="#{msg['supervisionArchive.timesheets']}"
                             icon="pi pi-folder-open"
                             outcome="/views/shared/archive-contract-timesheets"
                             styleClass="ui-button-secondary">
+
                             <f:param
                                 name="id"
                                 value="#{contract.id}"/>
+
                         </p:button>
+
                     </p:column>
 
                 </p:dataTable>
+
             </h:form>
         </section>
-    </ui:define>
-</ui:composition>
 
+    </ui:define>
+
+</ui:composition>

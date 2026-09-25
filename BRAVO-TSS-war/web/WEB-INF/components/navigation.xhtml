@@ -1,171 +1,133 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ui:composition
-   xmlns="http://www.w3.org/1999/xhtml"
-   xmlns:h="jakarta.faces.html"
-   xmlns:ui="jakarta.faces.facelets">
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
 
-   <nav class="app-navigation">
+    <nav class="app-navigation">
 
-       <ul class="navigation-list">
+        <ul class="navigation-list">
 
-           <!-- Home -->
-           <li>
-               <h:link
-                   outcome="/views/portal/home"
-                   styleClass="navigation-link">
+            <li>
+                <h:link
+                    outcome="/views/portal/home"
+                    styleClass="navigation-link">
+                    <i class="pi pi-home"></i>
+                    <span>#{msg['home.title']}</span>
+                </h:link>
+            </li>
 
-                   <i class="pi pi-home"></i>
-                   <span>Home</span>
+            <li>
+                <h:link
+                    outcome="/views/portal/EditInfo"
+                    styleClass="navigation-link">
+                    <i class="pi pi-users"></i>
+                    <span>#{msg['navigation.myProfile']}</span>
+                </h:link>
+            </li>
 
-               </h:link>
-           </li>
+            <ui:fragment rendered="#{loginBean.hasRole('EMPLOYEE')}">
+                <li>
+                    <h:link
+                        outcome="/views/employee/timesheets"
+                        styleClass="navigation-link">
+                        <i class="pi pi-clock"></i>
+                        <span>#{msg['timesheet.title']}</span>
+                    </h:link>
+                </li>
+            </ui:fragment>
 
-           <!-- My Profile -->
-           <li>
-               <h:link
-                   outcome="/views/portal/EditInfo"
-                   styleClass="navigation-link">
+            <ui:fragment rendered="#{loginBean.hasRole('SUPERVISOR')}">
+                <li>
+                    <h:link
+                        outcome="/views/supervisor/timesheets"
+                        styleClass="navigation-link">
+                        <i class="pi pi-file-edit"></i>
+                        <span>#{msg['timesheet.title']}</span>
+                    </h:link>
+                </li>
+            </ui:fragment>
 
-                   <i class="pi pi-users"></i>
-                   <span>My Profile</span>
-
-               </h:link>
-           </li>
-
-           <!-- Employee -->
-           <ui:fragment
-               rendered="#{loginBean.hasRole('EMPLOYEE')}">
-
-               <li>
-                   <h:link
-                       outcome="/views/employee/timesheets"
-                       styleClass="navigation-link">
-
-                       <i class="pi pi-clock"></i>
-                       <span>Timesheets</span>
-
-                   </h:link>
-               </li>
-
-           </ui:fragment>
-           
-           <!-- Supervisor -->
             <ui:fragment
-                    rendered="#{loginBean.hasRole('SUPERVISOR')}">
+                rendered="#{loginBean.hasRole('ASSISTANT')
+                            or loginBean.hasRole('SUPERVISOR')}">
 
                 <li>
                     <h:link
-                            outcome="/views/supervisor/timesheets"
-                            styleClass="navigation-link">
-
-                        <i class="pi pi-file-edit"></i>
-                        <span>Timesheets</span>
-
+                        outcome="/views/assistant/contracts"
+                        styleClass="navigation-link">
+                        <i class="pi pi-file"></i>
+                        <span>#{msg['contracts.title']}</span>
                     </h:link>
                 </li>
-
-            </ui:fragment>
-
-           <!-- Assistant / Supervisor -->
-           <ui:fragment
-               rendered="#{loginBean.hasRole('ASSISTANT')
-                           or loginBean.hasRole('SUPERVISOR')}">
-
-               <li>
-                   <h:link
-                       outcome="/views/assistant/contracts"
-                       styleClass="navigation-link">
-
-                       <i class="pi pi-file"></i>
-                       <span>Contracts</span>
-
-                   </h:link>
-               </li>
 
                 <li>
                     <h:link
                         outcome="/views/shared/archive-contracts"
                         styleClass="navigation-link">
-
-                        <i class="pi pi-folder-open"/>
-                        <span>Contract Archive</span>
-
+                        <i class="pi pi-folder-open"></i>
+                        <span>#{msg['archive.contractArchive']}</span>
                     </h:link>
                 </li>
 
             </ui:fragment>
 
-            <ui:fragment rendered="#{mockUserBean.hasRole('SUPERVISOR')}">
-
+            <ui:fragment rendered="#{loginBean.hasRole('SUPERVISOR')}">
                 <li>
                     <h:link
                         outcome="/views/supervisor/archived-contracts"
                         styleClass="navigation-link">
-
-                        <i class="pi pi-briefcase"/>
-                        <span>Supervision Archive</span>
-
+                        <i class="pi pi-briefcase"></i>
+                        <span>#{msg['supervisionArchive.title']}</span>
                     </h:link>
                 </li>
-
             </ui:fragment>
 
-            <ui:fragment rendered="#{mockUserBean.hasRole('SECRETARY')}">
+            <ui:fragment rendered="#{loginBean.hasRole('SECRETARY')}">
                 <li>
                     <h:link
-                            outcome="/views/secretary/secretary-archive"
-                            styleClass="navigation-link">
+                        outcome="/views/secretary/secretary-archive"
+                        styleClass="navigation-link">
                         <i class="pi pi-inbox"></i>
-                        <span>Pending Archives</span>
+                        <span>#{msg['archive.title']}</span>
                     </h:link>
                 </li>
             </ui:fragment>
 
-           <!-- Admin -->
-           <ui:fragment
-               rendered="#{loginBean.hasRole('ADMIN')}">
+            <ui:fragment rendered="#{loginBean.hasRole('ADMIN')}">
 
-               <!-- User Management -->
-               <li>
-                   <h:link
-                       outcome="/views/admin/usersmgmt"
-                       styleClass="navigation-link">
+                <li>
+                    <h:link
+                        outcome="/views/admin/usersmgmt"
+                        styleClass="navigation-link">
+                        <i class="pi pi-users"></i>
+                        <span>#{msg['users.title']}</span>
+                    </h:link>
+                </li>
 
-                       <i class="pi pi-users"></i>
-                       <span>Users</span>
+                <li>
+                    <h:link
+                        outcome="/views/admin/HolidayList"
+                        styleClass="navigation-link">
+                        <i class="pi pi-address-book"></i>
+                        <span>#{msg['holiday.list']}</span>
+                    </h:link>
+                </li>
 
-                   </h:link>
-               </li>
+                <li>
+                    <h:link
+                        outcome="/views/admin/dashboard"
+                        styleClass="navigation-link">
+                        <i class="pi pi-chart-bar"></i>
+                        <span>#{msg['dashboard.title']}</span>
+                    </h:link>
+                </li>
 
-               <!-- Holiday Management -->
-               <li>
-                   <h:link
-                       outcome="/views/admin/HolidayList"
-                       styleClass="navigation-link">
+            </ui:fragment>
 
-                       <i class="pi pi-address-book"></i>
-                       <span>Holiday Management</span>
+        </ul>
 
-                   </h:link>
-               </li>
-
-               <!-- Dashboard -->
-               <li>
-                   <h:link
-                       outcome="/views/admin/dashboard"
-                       styleClass="navigation-link">
-
-                       <i class="pi pi-chart-bar"></i>
-                       <span>Dashboard</span>
-
-                   </h:link>
-               </li>
-
-           </ui:fragment>
-
-       </ul>
-
-   </nav>
+    </nav>
 
 </ui:composition>

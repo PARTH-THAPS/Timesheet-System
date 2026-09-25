@@ -1,508 +1,478 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ui:composition
-   template="/WEB-INF/templates/page-layout.xhtml"
-   xmlns="http://www.w3.org/1999/xhtml"
-   xmlns:h="jakarta.faces.html"
-   xmlns:f="jakarta.faces.core"
-   xmlns:ui="jakarta.faces.facelets"
-   xmlns:p="http://primefaces.org/ui">
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
 
-   <ui:define name="pageTitle">
-       Home
-   </ui:define>
+    <ui:define name="pageTitle">
+        #{msg['home.title']}
+    </ui:define>
 
-   <ui:define name="pageHeadline">
-       Home
-   </ui:define>
+    <ui:define name="pageHeadline">
+        #{msg['home.title']}
+    </ui:define>
 
-   <ui:define name="navigation">
-       <ui:include src="/WEB-INF/components/navigation.xhtml"/>
-   </ui:define>
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml" />
+    </ui:define>
 
-   <ui:define name="headerActions">
+    <ui:define name="headerActions">
 
-       <div class="user-info">
+        <div class="user-info">
 
-           <span class="user-name">
-               #{loginBean.user.firstName} #{loginBean.user.lastName}
-           </span>
+            <span class="user-name">
+                #{loginBean.user.firstName}
+                #{loginBean.user.lastName}
+            </span>
 
-           <ui:repeat
-               value="#{loginBean.user.roles}"
-               var="role">
+            <ui:repeat
+                value="#{loginBean.user.roles}"
+                var="role">
 
-               <span class="badge">
-                   #{role}
-               </span>
+                <span class="badge">
+                    #{msg['role.'.concat(role.name())]}
+                </span>
 
-           </ui:repeat>
+            </ui:repeat>
 
-       </div>
+        </div>
 
-       <h:form>
+        <h:form>
 
-           <div class="language-switch">
+            <div class="language-switch">
 
-               <p:commandLink
-                   actionListener="#{localeBean.selectEnglish}"
-                   update="@all"
-                   styleClass="language-link"
-                   title="#{msg.switchToEN}">
-                   EN
-               </p:commandLink>
+                <p:commandLink
+                    actionListener="#{localeBean.selectEnglish}"
+                    update="@all"
+                    styleClass="language-link"
+                    title="#{msg['language.switchToEN']}">
+                    EN
+                </p:commandLink>
 
-               <span class="language-separator">|</span>
+                <span class="language-separator">
+                    |
+                </span>
 
-               <p:commandLink
-                   actionListener="#{localeBean.selectGerman}"
-                   update="@all"
-                   styleClass="language-link"
-                   title="#{msg.switchToDE}">
-                   DE
-               </p:commandLink>
+                <p:commandLink
+                    actionListener="#{localeBean.selectGerman}"
+                    update="@all"
+                    styleClass="language-link"
+                    title="#{msg['language.switchToDE']}">
+                    DE
+                </p:commandLink>
 
-           </div>
 
-       </h:form>
+                <span class="language-separator">
+                    |
+                </span>
+                <p:commandLink
+                    actionListener="#{localeBean.selectFrench}"
+                    update="@all"
+                    styleClass="language-link"
+                    title="#{msg['language.switchToDE']}">
+                    FR
+                </p:commandLink>
 
-       <h:form>
+            </div>
 
-           <h:commandButton
-               value="Logout"
-               styleClass="button-logout"
-               action="#{loginBean.logout}"/>
+        </h:form>
 
-       </h:form>
+        <h:form>
 
-   </ui:define>
+            <h:commandButton
+                value="#{msg['button.logout']}"
+                styleClass="button-logout"
+                action="#{loginBean.logout}" />
 
-   <ui:define name="content">
+        </h:form>
 
-       <!-- Welcome Section -->
-       <section class="home-welcome">
+    </ui:define>
 
-           <h2>
-               Welcome, #{loginBean.user.firstName}
-           </h2>
+    <ui:define name="content">
 
-           <p class="text-muted">
-               Below are the functionality you can perform.
-           </p>
+        <section class="home-welcome">
 
-       </section>
+            <h2>
+                #{msg['home.welcome']}, #{loginBean.user.firstName}
+            </h2>
 
-       <!-- Statistics -->
-       <section
-           class="statistics-grid"
-           style="margin-bottom: 2rem;">
+            <p class="text-muted">
+                #{msg['home.description']}
+            </p>
 
-           <div class="statistic">
+        </section>
 
-               <span class="statistic-label">
-                   Signed in as
-               </span>
+        <section
+            class="statistics-grid"
+            style="margin-bottom: 2rem;">
 
-               <span class="statistic-value">
-                   #{loginBean.user.firstName}
-                   #{loginBean.user.lastName}
-               </span>
+            <div class="statistic">
 
-           </div>
+                <span class="statistic-label">
+                    #{msg['home.signedInAs']}
+                </span>
 
-           <div class="statistic">
+                <span class="statistic-value">
+                    #{loginBean.user.firstName}
+                    #{loginBean.user.lastName}
+                </span>
 
-               <span class="statistic-label">
-                   Assigned roles
-               </span>
+            </div>
 
-               <span class="statistic-value">
-                   #{loginBean.user.roles.size()}
-               </span>
+            <div class="statistic">
 
-           </div>
+                <span class="statistic-label">
+                    #{msg['home.assignedRoles']}
+                </span>
 
-       </section>
+                <span class="statistic-value">
+                    #{loginBean.user.roles.size()}
+                </span>
 
-       <!-- Dashboard Cards -->
-       <section class="dashboard-grid">
+            </div>
 
-           <!-- Employee -->
-           <ui:fragment
-               rendered="#{loginBean.hasRole('EMPLOYEE')}">
+        </section>
 
-               <div
-                   class="dashboard-card"
-                   onclick="PF('dlgMyTimesheets').show()">
+        <section class="dashboard-grid">
 
-                   <i class="pi pi-clock dashboard-icon"></i>
+            <!-- Employee -->
+            <ui:fragment
+                rendered="#{loginBean.hasRole('EMPLOYEE')}">
 
-                   <div>
+                <div
+                    class="dashboard-card"
+                    onclick="PF('dlgMyTimesheets').show()">
 
-                       <h3>
-                           My Timesheets
-                       </h3>
+                    <i class="pi pi-clock dashboard-icon"></i>
 
-                       <p>
-                           View and manage your working time and timesheets.
-                       </p>
+                    <div>
 
-                   </div>
+                        <h3>
+                            #{msg['home.myTimesheets.title']}
+                        </h3>
 
-                   <i class="pi pi-info-circle dashboard-card-help"></i>
+                        <p>
+                            #{msg['home.myTimesheets.description']}
+                        </p>
 
-               </div>
+                    </div>
 
-               <div
-                   class="dashboard-card"
-                   onclick="PF('dlgHolidays').show()">
+                    <i class="pi pi-info-circle dashboard-card-help"></i>
 
-                   <i class="pi pi-calendar dashboard-icon"></i>
+                </div>
 
-                   <div>
+                <div
+                    class="dashboard-card"
+                    onclick="PF('dlgHolidays').show()">
 
-                       <h3>
-                           Holidays
-                       </h3>
+                    <i class="pi pi-calendar dashboard-icon"></i>
 
-                       <p>
-                           View holidays and absences.
-                       </p>
+                    <div>
 
-                   </div>
+                        <h3>
+                            #{msg['home.holidays.title']}
+                        </h3>
 
-                   <i class="pi pi-info-circle dashboard-card-help"></i>
+                        <p>
+                            #{msg['home.holidays.description']}
+                        </p>
 
-               </div>
+                    </div>
 
-           </ui:fragment>
+                    <i class="pi pi-info-circle dashboard-card-help"></i>
 
-           <!-- Supervisor -->
-           <ui:fragment
-               rendered="#{loginBean.hasRole('SUPERVISOR')}">
+                </div>
 
-               <div
-                   class="dashboard-card"
-                   onclick="PF('dlgTimesheetApproval').show()">
+            </ui:fragment>
 
-                   <i class="pi pi-check-circle dashboard-icon"></i>
+            <!-- Supervisor -->
+            <ui:fragment
+                rendered="#{loginBean.hasRole('SUPERVISOR')}">
 
-                   <div>
+                <div
+                    class="dashboard-card"
+                    onclick="PF('dlgTimesheetApproval').show()">
 
-                       <h3>
-                           Timesheet Approval
-                       </h3>
+                    <i class="pi pi-check-circle dashboard-icon"></i>
 
-                       <p>
-                           Review and sign submitted timesheets.
-                       </p>
+                    <div>
 
-                   </div>
+                        <h3>
+                            #{msg['home.timesheetApproval.title']}
+                        </h3>
 
-                   <i class="pi pi-info-circle dashboard-card-help"></i>
+                        <p>
+                            #{msg['home.timesheetApproval.description']}
+                        </p>
 
-               </div>
+                    </div>
 
-           </ui:fragment>
+                    <i class="pi pi-info-circle dashboard-card-help"></i>
 
-           <!-- Guest -->
-           <ui:fragment
-               rendered="#{loginBean.hasOnlyRole('GUEST')}">
+                </div>
 
-               <div
-                   class="dashboard-card"
-                   onclick="PF('dlgGuest').show()">
+            </ui:fragment>
 
-                   <i class="pi pi-check-circle dashboard-icon"></i>
+            <!-- Guest -->
+            <ui:fragment
+                rendered="#{loginBean.hasOnlyRole('GUEST')}">
 
-                   <div>
+                <div
+                    class="dashboard-card"
+                    onclick="PF('dlgGuest').show()">
 
-                       <h3>
-                           #{msg['dashboard.GUEST.TITLE']}
-                       </h3>
+                    <i class="pi pi-check-circle dashboard-icon"></i>
 
-                       <p>
-                           #{msg['dashboard.GUEST.DESCRIPTION']}
-                       </p>
+                    <div>
 
-                   </div>
+                        <h3>
+                            #{msg['dashboard.GUEST.TITLE']}
+                        </h3>
 
-                   <i class="pi pi-info-circle dashboard-card-help"></i>
+                        <p>
+                            #{msg['dashboard.GUEST.DESCRIPTION']}
+                        </p>
 
-               </div>
+                    </div>
 
-           </ui:fragment>
+                    <i class="pi pi-info-circle dashboard-card-help"></i>
 
-           <!-- Assistant -->
-           <ui:fragment
-               rendered="#{loginBean.hasRole('ASSISTANT')}">
+                </div>
 
-               <div
-                   class="dashboard-card"
-                   onclick="PF('dlgEmployees').show()">
+            </ui:fragment>
 
-                   <i class="pi pi-users dashboard-icon"></i>
+            <!-- Assistant -->
+            <ui:fragment
+                rendered="#{loginBean.hasRole('ASSISTANT')}">
 
-                   <div>
+                <div
+                    class="dashboard-card"
+                    onclick="PF('dlgEmployees').show()">
 
-                       <h3>
-                           Employees
-                       </h3>
+                    <i class="pi pi-users dashboard-icon"></i>
 
-                       <p>
-                           Manage employees, contracts and assignments.
-                       </p>
+                    <div>
 
-                   </div>
+                        <h3>
+                            #{msg['home.employees.title']}
+                        </h3>
 
-                   <i class="pi pi-info-circle dashboard-card-help"></i>
+                        <p>
+                            #{msg['home.employees.description']}
+                        </p>
 
-               </div>
+                    </div>
 
-           </ui:fragment>
+                    <i class="pi pi-info-circle dashboard-card-help"></i>
 
-           <!-- Secretary -->
-           <ui:fragment
-               rendered="#{loginBean.hasRole('SECRETARY')}">
+                </div>
 
-               <div
-                   class="dashboard-card"
-                   onclick="PF('dlgTimesheetArchive').show()">
+            </ui:fragment>
 
-                   <i class="pi pi-folder dashboard-icon"></i>
+            <!-- Secretary -->
+            <ui:fragment
+                rendered="#{loginBean.hasRole('SECRETARY')}">
 
-                   <div>
+                <div
+                    class="dashboard-card"
+                    onclick="PF('dlgTimesheetArchive').show()">
 
-                       <h3>
-                           Timesheet Archive
-                       </h3>
+                    <i class="pi pi-folder dashboard-icon"></i>
 
-                       <p>
-                           Process and archive completed timesheets.
-                       </p>
+                    <div>
 
-                   </div>
+                        <h3>
+                            #{msg['home.timesheetArchive.title']}
+                        </h3>
 
-                   <i class="pi pi-info-circle dashboard-card-help"></i>
+                        <p>
+                            #{msg['home.timesheetArchive.description']}
+                        </p>
 
-               </div>
+                    </div>
 
-           </ui:fragment>
+                    <i class="pi pi-info-circle dashboard-card-help"></i>
 
-           <!-- Admin -->
-           <ui:fragment
-               rendered="#{loginBean.hasRole('ADMIN')}">
+                </div>
 
-               <div
-                   class="dashboard-card"
-                   onclick="PF('dlgAdministration').show()">
+            </ui:fragment>
 
-                   <i class="pi pi-cog dashboard-icon"></i>
+            <!-- Admin -->
+            <ui:fragment
+                rendered="#{loginBean.hasRole('ADMIN')}">
 
-                   <div>
+                <div
+                    class="dashboard-card"
+                    onclick="PF('dlgAdministration').show()">
 
-                       <h3>
-                           Administration
-                       </h3>
+                    <i class="pi pi-cog dashboard-icon"></i>
 
-                       <p>
-                           Manage users and application settings.
-                       </p>
+                    <div>
 
-                   </div>
+                        <h3>
+                            #{msg['home.administration.title']}
+                        </h3>
 
-                   <i class="pi pi-info-circle dashboard-card-help"></i>
+                        <p>
+                            #{msg['home.administration.description']}
+                        </p>
 
-               </div>
+                    </div>
 
-           </ui:fragment>
+                    <i class="pi pi-info-circle dashboard-card-help"></i>
 
-       </section>
+                </div>
 
-       <!-- Help Dialogs -->
+            </ui:fragment>
 
-       <!-- Employee Dialogs -->
-       <ui:fragment
-           rendered="#{loginBean.hasRole('EMPLOYEE')}">
+        </section>
 
-           <p:dialog
-               header="My Timesheets"
-               widgetVar="dlgMyTimesheets"
-               modal="true"
-               closable="true"
-               resizable="false"
-               width="420">
+        <!-- Dialogs -->
 
-               <p>
-                   Your timesheet is generated automatically for each pay period.
-                   Here you can review your logged working hours, edit entries before
-                   they're submitted, and check whether a timesheet has been signed
-                   by you and your supervisor.
-               </p>
+        <ui:fragment
+            rendered="#{loginBean.hasRole('EMPLOYEE')}">
 
-           </p:dialog>
+            <p:dialog
+                header="#{msg['home.myTimesheets.title']}"
+                widgetVar="dlgMyTimesheets"
+                modal="true"
+                closable="true"
+                resizable="false"
+                appendTo="@(body)"
+                width="420">
 
-           <p:dialog
-               header="Holidays"
-               widgetVar="dlgHolidays"
-               modal="true"
-               closable="true"
-               resizable="false"
-               width="420">
+                <p>
+                    #{msg['home.myTimesheets.dialog']}
+                </p>
 
-               <p>
-                   View the company holiday calendar and your own recorded absences.
-                   This gives you a quick overview of upcoming holidays and how many
-                   absence days you've taken or have remaining.
-               </p>
+            </p:dialog>
 
-           </p:dialog>
+            <p:dialog
+                header="#{msg['home.holidays.title']}"
+                widgetVar="dlgHolidays"
+                modal="true"
+                closable="true"
+                resizable="false"
+                appendTo="@(body)"
+                width="420">
 
-       </ui:fragment>
+                <p>
+                    #{msg['home.holidays.dialog']}
+                </p>
 
-       <!-- Supervisor Dialog -->
-       <ui:fragment
-           rendered="#{loginBean.hasRole('SUPERVISOR')}">
+            </p:dialog>
 
-           <p:dialog
-               header="Timesheet Approval"
-               widgetVar="dlgTimesheetApproval"
-               modal="true"
-               closable="true"
-               resizable="false"
-               width="420">
+        </ui:fragment>
 
-               <p>
-                   Review timesheets submitted by the employees under your supervision.
-                   You can approve and sign off on completed timesheets, or flag entries
-                   that need correction before they move forward.
-               </p>
+        <!-- Supervisor Dialog -->
+        <ui:fragment
+            rendered="#{loginBean.hasRole('SUPERVISOR')}">
 
-           </p:dialog>
+            <p:dialog
+                header="#{msg['home.timesheetApproval.title']}"
+                widgetVar="dlgTimesheetApproval"
+                modal="true"
+                closable="true"
+                resizable="false"
+                appendTo="@(body)"
+                width="420">
 
-       </ui:fragment>
+                <p>
+                    #{msg['home.timesheetApproval.dialog']}
+                </p>
 
-       <!-- Guest Dialog -->
-       <ui:fragment
-           rendered="#{loginBean.hasOnlyRole('GUEST')}">
+            </p:dialog>
 
-           <p:dialog
-               header="#{msg['dashboard.GUEST.TITLE']}"
-               widgetVar="dlgGuest"
-               modal="true"
-               closable="true"
-               resizable="false"
-               width="420">
+        </ui:fragment>
 
-               <p>
-                   #{msg['dashboard.GUEST.DESCRIPTION']}
-               </p>
+        <!-- Guest Dialog -->
+        <ui:fragment
+            rendered="#{loginBean.hasOnlyRole('GUEST')}">
 
-           </p:dialog>
+            <p:dialog
+                header="#{msg['dashboard.GUEST.TITLE']}"
+                widgetVar="dlgGuest"
+                modal="true"
+                closable="true"
+                resizable="false"
+                appendTo="@(body)"
+                width="420">
 
-       </ui:fragment>
+                <p>
+                    #{msg['dashboard.GUEST.DESCRIPTION']}
+                </p>
 
-       <!-- Assistant Dialog -->
-       <ui:fragment
-           rendered="#{loginBean.hasRole('ASSISTANT')}">
+            </p:dialog>
 
-           <p:dialog
-               header="Employees"
-               widgetVar="dlgEmployees"
-               modal="true"
-               closable="true"
-               resizable="false"
-               width="420">
+        </ui:fragment>
 
-               <p>
-                   Manage employee records, contracts, and task assignments.
-                   You can create new contracts, update existing ones, and assign
-                   employees to the appropriate supervisors or projects.
-               </p>
+        <!-- Assistant Dialog -->
+        <ui:fragment
+            rendered="#{loginBean.hasRole('ASSISTANT')}">
 
-           </p:dialog>
+            <p:dialog
+                header="#{msg['home.employees.title']}"
+                widgetVar="dlgEmployees"
+                modal="true"
+                closable="true"
+                resizable="false"
+                appendTo="@(body)"
+                width="420">
 
-       </ui:fragment>
+                <p>
+                    #{msg['home.employees.dialog']}
+                </p>
 
-       <!-- Secretary Dialog -->
-       <ui:fragment
-           rendered="#{loginBean.hasRole('SECRETARY')}">
+            </p:dialog>
 
-           <p:dialog
-               header="Timesheet Archive"
-               widgetVar="dlgTimesheetArchive"
-               modal="true"
-               closable="true"
-               resizable="false"
-               width="420">
+        </ui:fragment>
 
-               <p>
-                   Process fully signed timesheets — printing, forwarding, and
-                   archiving completed records so they're available for future
-                   reference or payroll processing.
-               </p>
+        <!-- Secretary Dialog -->
+        <ui:fragment
+            rendered="#{loginBean.hasRole('SECRETARY')}">
 
-           </p:dialog>
+            <p:dialog
+                header="#{msg['home.timesheetArchive.title']}"
+                widgetVar="dlgTimesheetArchive"
+                modal="true"
+                closable="true"
+                resizable="false"
+                appendTo="@(body)"
+                width="420">
 
-       </ui:fragment>
+                <p>
+                    #{msg['home.timesheetArchive.dialog']}
+                </p>
 
-       <!-- Admin Dialog -->
-       <ui:fragment
-           rendered="#{loginBean.hasRole('ADMIN')}">
+            </p:dialog>
 
-           <p:dialog
-               header="Administration"
-               widgetVar="dlgAdministration"
-               modal="true"
-               closable="true"
-               resizable="false"
-               width="420">
+        </ui:fragment>
 
-               <p>
-                   Manage user accounts and roles, configure application-wide
-                   settings, and oversee the overall setup of the timesheet system.
-               </p>
+        <!-- Admin Dialog -->
+        <ui:fragment
+            rendered="#{loginBean.hasRole('ADMIN')}">
 
-           </p:dialog>
+            <p:dialog
+                header="#{msg['home.administration.title']}"
+                widgetVar="dlgAdministration"
+                modal="true"
+                closable="true"
+                resizable="false"
+                appendTo="@(body)"
+                width="420">
 
-       </ui:fragment>
+                <p>
+                    #{msg['home.administration.dialog']}
+                </p>
 
-       <!-- Development Panel
-       <section class="development-panel">
+            </p:dialog>
 
-           <h3>
-               Development
-           </h3>
+        </ui:fragment>
 
-           <p class="text-muted">
-               Switch the mocked user role to preview the application
-               for different users.
-           </p>
-
-           <h:form>
-
-               <div class="development-actions">
-
-                   <p:selectOneMenu
-                       value="#{mockUserBean.role}">
-
-                       <f:selectItems
-                           value="#{mockUserBean.roles}"/>
-
-                   </p:selectOneMenu>
-
-                   <p:commandButton
-                       value="Switch Role"
-                       icon="pi pi-refresh"
-                       ajax="false"/>
-
-               </div>
-
-           </h:form>
-
-       </section>
-       -->
-
-   </ui:define>
+    </ui:define>
 
 </ui:composition>

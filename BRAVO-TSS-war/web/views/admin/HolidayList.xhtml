@@ -6,14 +6,34 @@
         xmlns:f="jakarta.faces.core"
         xmlns:p="http://primefaces.org/ui">
 
-    <ui:define name="pageTitle">Holiday List</ui:define>
+    <ui:define name="pageTitle">
+        #{msg['holiday.list']}
+    </ui:define>
 
-    <ui:define name="pageHeadline">Holidays</ui:define>
+    <ui:define name="pageHeadline">
+        #{msg['holiday.list']}
+    </ui:define>
 
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
-
+ 
+    
+    <ui:define name="headerActions">
+            <div class="user-info">
+                <span class="user-name">
+                    #{loginBean.user.firstName} #{loginBean.user.lastName}
+                </span>
+                <ui:repeat
+                    value="#{loginBean.user.roles}"
+                    var="role">
+                    <span class="badge">
+                        #{msg['role.'.concat(role.name())]}
+                    </span>
+                </ui:repeat>
+            </div>
+        </ui:define>
+    
     <ui:define name="content">
 
         <div class="list-actions">
@@ -21,83 +41,97 @@
                     outcome="/views/admin/HolidayEdit"
                     styleClass="ui-button ui-button-primary">
                 <i class="pi pi-plus"></i>
-                <span>Add Holiday</span>
+                <span>#{msg['holiday.add']}</span>
             </h:link>
         </div>
 
         <h:form id="holidayForm">
 
-            <h:messages globalOnly="true" />
+            <h:messages globalOnly="true"/>
+
             <div class="table-responsive-wrapper">
-            <p:dataTable id="holidayTable"
-                         var="holiday"
-                         value="#{HolidayListBean.holiday}"
-                         emptyMessage="No holidays found."
-                         paginator="true"
-                         paginatorAlwaysVisible="false"
-                         style="width:100%"
-                         rows="10">
 
-                <p:column headerText="Holiday">
-                    <h:outputText value="#{holiday.holiday}" />
-                </p:column>
+                <p:dataTable
+                        id="holidayTable"
+                        var="holiday"
+                        value="#{HolidayListBean.holiday}"
+                        emptyMessage="#{msg['holiday.noHolidays']}"
+                        paginator="true"
+                        paginatorAlwaysVisible="false"
+                        style="width:100%"
+                        rows="10">
 
-                <p:column headerText="State">
-                    <h:outputText value="#{holiday.state}" />
-                </p:column>
+                    <p:column headerText="#{msg['holiday.holiday']}">
+                        <h:outputText value="#{holiday.holiday}"/>
+                    </p:column>
 
-                <p:column headerText="Year">
-                    <h:outputText value="#{holiday.year}" />
-                </p:column>
+                    <p:column headerText="#{msg['holiday.state']}">
+                        <h:outputText value="#{holiday.state}"/>
+                    </p:column>
 
-                <p:column headerText="Date">
-                    <h:outputText value="#{holiday.date}">
-                        <f:convertDateTime type="localDate" pattern="dd.MM.yyyy" />
-                    </h:outputText>
-                </p:column>
+                    <p:column headerText="#{msg['holiday.year']}">
+                        <h:outputText value="#{holiday.year}"/>
+                    </p:column>
 
-                <p:column headerText="Day">
-                    <h:outputText value="#{holiday.day}" />
-                </p:column>
+                    <p:column headerText="#{msg['holiday.date']}">
+                        <h:outputText value="#{holiday.date}">
+                            <f:convertDateTime
+                                    type="localDate"
+                                    pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
 
-                <p:column headerText="Actions" styleClass="actions-column">
+                    <p:column headerText="#{msg['holiday.day']}">
+                        <h:outputText value="#{holiday.day}"/>
+                    </p:column>
 
-                    <h:link
-                            outcome="/views/admin/HolidayEdit"
-                            styleClass="ui-button ui-button-secondary action-btn">
-                        <f:param name="id" value="#{holiday.id}" />
-                        <i class="pi pi-pencil"></i>
-                        <span>Edit</span>
-                    </h:link>
+                    <p:column
+                            headerText="#{msg['common.actions']}"
+                            styleClass="actions-column">
 
-                    <p:commandButton
-                            value="Delete"
-                            icon="pi pi-trash"
-                            action="#{HolidayListBean.deleteHoliday(holiday)}"
-                            ajax="false"
-                            styleClass="ui-button-danger action-btn">
+                        <h:link
+                                outcome="/views/admin/HolidayEdit"
+                                styleClass="ui-button ui-button-secondary action-btn">
 
-                        <p:confirm
-                                header="Delete holiday"
-                                message="Are you sure you want to delete this holiday?"
-                                icon="pi pi-exclamation-triangle"/>
+                            <f:param
+                                    name="id"
+                                    value="#{holiday.id}"/>
 
-                    </p:commandButton>
+                            <i class="pi pi-pencil"></i>
+                            <span>#{msg['button.edit']}</span>
 
-                </p:column>
+                        </h:link>
 
-            </p:dataTable>
+                        <p:commandButton
+                                value="#{msg['button.delete']}"
+                                icon="pi pi-trash"
+                                action="#{HolidayListBean.deleteHoliday(holiday)}"
+                                ajax="false"
+                                styleClass="ui-button-danger action-btn">
+
+                            <p:confirm
+                                    header="#{msg['holiday.delete.header']}"
+                                    message="#{msg['holiday.delete.message']}"
+                                    icon="pi pi-exclamation-triangle"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
             </div>
+
             <p:confirmDialog global="true">
 
                 <p:commandButton
-                        value="Yes"
+                        value="#{msg['button.yes']}"
                         type="button"
                         styleClass="ui-confirmdialog-yes"
                         icon="pi pi-check"/>
 
                 <p:commandButton
-                        value="No"
+                        value="#{msg['button.no']}"
                         type="button"
                         styleClass="ui-confirmdialog-no ui-button-secondary"
                         icon="pi pi-times"/>

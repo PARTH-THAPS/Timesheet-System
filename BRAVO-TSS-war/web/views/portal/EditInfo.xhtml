@@ -1,96 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ui:composition
-   template="/WEB-INF/templates/page-layout.xhtml"
-   xmlns="http://www.w3.org/1999/xhtml"
-   xmlns:h="jakarta.faces.html"
-   xmlns:f="jakarta.faces.core"
-   xmlns:ui="jakarta.faces.facelets">
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets">
 
-   <ui:define name="pageTitle">
-       My Basic Info
-   </ui:define>
+    <ui:define name="pageTitle">
+        #{msg['personalInfo.title']}
+    </ui:define>
 
-   <ui:define name="pageHeadline">
-       My Basic Info
-   </ui:define>
+    <ui:define name="pageHeadline">
+        #{msg['personalInfo.title']}
+    </ui:define>
 
-   <ui:define name="navigation">
-       <ui:include src="/WEB-INF/components/navigation.xhtml"/>
-   </ui:define>
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
 
-   <ui:define name="content">
 
-       <h:form id="personalInfoForm">
+    <ui:define name="headerActions">
+        <div class="user-info">
+            <span class="user-name">
+                #{loginBean.user.firstName} #{loginBean.user.lastName}
+            </span>
+            <ui:repeat
+                value="#{loginBean.user.roles}"
+                var="role">
+                <span class="badge">
+                    #{msg['role.'.concat(role.name())]}
+                </span>
+            </ui:repeat>
+        </div>
+    </ui:define>
 
-           <h:messages
-               globalOnly="true"
-               style="color:red;"/>
 
-           <h:outputText
-               value="#{personalDataBean.user}"
-               style="display:none;"/>
+    <ui:define name="content">
 
-           <table>
 
-               <tr>
-                   <td>
-                       <h:outputLabel
-                           for="firstName"
-                           value="First Name:"/>
-                   </td>
 
-                   <td>
-                       <h:inputText
-                           id="firstName"
-                           value="#{personalDataBean.personDTO.firstName}"
-                           required="true"
-                           requiredMessage="First name is required."/>
-                   </td>
-               </tr>
 
-               <tr>
-                   <td>
-                       <h:outputLabel
-                           for="lastName"
-                           value="Last Name:"/>
-                   </td>
+        <h:form id="personalInfoForm">
 
-                   <td>
-                       <h:inputText
-                           id="lastName"
-                           value="#{personalDataBean.personDTO.lastName}"
-                           required="true"
-                           requiredMessage="Last name is required."/>
-                   </td>
-               </tr>
+            <h:messages
+                globalOnly="true"
+                style="color:red;"/>
 
-               <tr>
-                   <td>
-                       <h:outputLabel
-                           for="email"
-                           value="Email:"/>
-                   </td>
+            <h:outputText
+                value="#{personalDataBean.user}"
+                style="display:none;"/>
 
-                   <td>
-                       <h:inputText
-                           id="email"
-                           value="#{personalDataBean.personDTO.emailAddress}"
-                           required="true"
-                           requiredMessage="Email is required."/>
-                   </td>
-               </tr>
+            <table>
 
-           </table>
+                <tr>
+                    <td>
+                        <h:outputLabel
+                            for="firstName"
+                            value="#{msg['person.firstName']}:"/>
+                    </td>
 
-           <br/>
+                    <td>
+                        <h:inputText
+                            id="firstName"
+                            value="#{personalDataBean.personDTO.firstName}"
+                            required="true"
+                            requiredMessage="#{msg['personalInfo.firstName.required']}"/>
+                    </td>
+                </tr>
 
-           <h:commandButton
-               value="Save"
-               action="#{personalDataBean.save}"/>
+                <tr>
+                    <td>
+                        <h:outputLabel
+                            for="lastName"
+                            value="#{msg['person.lastName']}:"/>
+                    </td>
 
-       </h:form>
+                    <td>
+                        <h:inputText
+                            id="lastName"
+                            value="#{personalDataBean.personDTO.lastName}"
+                            required="true"
+                            requiredMessage="#{msg['personalInfo.lastName.required']}"/>
+                    </td>
+                </tr>
 
-   </ui:define>
+                <tr>
+                    <td>
+                        <h:outputLabel
+                            for="email"
+                            value="#{msg['person.email']}:"/>
+                    </td>
+
+                    <td>
+                        <h:inputText
+                            id="email"
+                            value="#{personalDataBean.personDTO.emailAddress}"
+                            required="true"
+                            requiredMessage="#{msg['personalInfo.email.required']}"/>
+                    </td>
+                </tr>
+
+            </table>
+
+            <br/>
+
+            <h:commandButton
+                value="#{msg['button.save']}"
+                action="#{personalDataBean.save}"/>
+
+        </h:form>
+
+    </ui:define>
 
 </ui:composition>

@@ -1,33 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
 
+<?xml version="1.0" encoding="UTF-8"?>
 <ui:composition
-        template="/WEB-INF/templates/page-layout.xhtml"
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:h="jakarta.faces.html"
-        xmlns:f="jakarta.faces.core"
-        xmlns:ui="jakarta.faces.facelets"
-        xmlns:p="http://primefaces.org/ui">
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
 
     <f:metadata>
         <f:viewParam
-                name="id"
-                value="#{supervisorTimesheetDetailBean.id}"/>
+            name="id"
+            value="#{supervisorTimesheetDetailBean.id}"/>
 
         <f:viewAction
-                action="#{supervisorTimesheetDetailBean.init}"/>
+            action="#{supervisorTimesheetDetailBean.init}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">
-        Review Timesheet
+        #{msg['supervisorTimesheetReview.title']}
     </ui:define>
 
     <ui:define name="pageHeadline">
-        Review Timesheet
+        #{msg['supervisorTimesheetReview.title']}
     </ui:define>
 
     <ui:define name="navigation">
-        <ui:include
-                src="/WEB-INF/components/navigation.xhtml"/>
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
 
     <ui:define name="content">
@@ -35,59 +34,58 @@
         <h:form id="supervisorTimesheetForm">
 
             <p:messages
-                    id="messages"
-                    showDetail="true"
-                    closable="true"/>
+                id="messages"
+                showDetail="true"
+                closable="true"/>
 
             <section class="page-section-header">
-
                 <div>
                     <h2>
                         <h:outputText
-                                value="#{supervisorTimesheetDetailBean.timesheet.startDate}">
+                            value="#{supervisorTimesheetDetailBean.timesheet.startDate}">
                             <f:convertDateTime
-                                    type="localDate"
-                                    pattern="dd.MM.yyyy"/>
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
 
                         –
 
                         <h:outputText
-                                value="#{supervisorTimesheetDetailBean.timesheet.endDate}">
+                            value="#{supervisorTimesheetDetailBean.timesheet.endDate}">
                             <f:convertDateTime
-                                    type="localDate"
-                                    pattern="dd.MM.yyyy"/>
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </h2>
-                    
+
                     <p class="text-muted">
-                        Employee:
+                        #{msg['timesheet.employee']}:
                         <strong>
                             #{supervisorTimesheetDetailBean.timesheet.employeeFullName}
                         </strong>
                     </p>
-
                 </div>
 
                 <span class="status-badge">
-                    #{supervisorTimesheetDetailBean.timesheet.status}
+                    #{msg['timesheet.status.'.concat(
+                        supervisorTimesheetDetailBean.timesheet.status.name()
+                    )]}
                 </span>
-
             </section>
 
             <section class="timesheet-summary">
 
                 <div class="statistic">
                     <span class="statistic-label">
-                        Hours due
+                        #{msg['timesheet.hoursDue']}
                     </span>
 
                     <strong class="statistic-value">
                         <h:outputText
-                                value="#{supervisorTimesheetDetailBean.timesheet.hoursDue}">
+                            value="#{supervisorTimesheetDetailBean.timesheet.hoursDue}">
                             <f:convertNumber
-                                    minFractionDigits="2"
-                                    maxFractionDigits="2"/>
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
                         </h:outputText>
                         h
                     </strong>
@@ -95,15 +93,15 @@
 
                 <div class="statistic">
                     <span class="statistic-label">
-                        Hours reported
+                        #{msg['timesheet.hoursReported']}
                     </span>
 
                     <strong class="statistic-value">
                         <h:outputText
-                                value="#{supervisorTimesheetDetailBean.reportedHours}">
+                            value="#{supervisorTimesheetDetailBean.reportedHours}">
                             <f:convertNumber
-                                    minFractionDigits="2"
-                                    maxFractionDigits="2"/>
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
                         </h:outputText>
                         h
                     </strong>
@@ -111,15 +109,15 @@
 
                 <div class="statistic">
                     <span class="statistic-label">
-                        Balance
+                        #{msg['timesheet.balance']}
                     </span>
 
                     <strong class="statistic-value">
                         <h:outputText
-                                value="#{supervisorTimesheetDetailBean.balance}">
+                            value="#{supervisorTimesheetDetailBean.balance}">
                             <f:convertNumber
-                                    minFractionDigits="2"
-                                    maxFractionDigits="2"/>
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
                         </h:outputText>
                         h
                     </strong>
@@ -131,56 +129,53 @@
 
                 <div class="page-section-header">
                     <div>
-                        <h3>Reported entries</h3>
+                        <h3>
+                            #{msg['supervisorTimesheetReview.reportedEntries']}
+                        </h3>
+
                         <p class="text-muted">
-                            Verify these entries before signing.
+                            #{msg['supervisorTimesheetReview.verifyEntries']}
                         </p>
                     </div>
                 </div>
 
                 <p:dataTable
-                        id="entriesTable"
-                        value="#{supervisorTimesheetDetailBean.timesheet.entries}"
-                        var="entry"
-                        stripedRows="true"
-                        emptyMessage="No entries reported.">
+                    id="entriesTable"
+                    value="#{supervisorTimesheetDetailBean.timesheet.entries}"
+                    var="entry"
+                    stripedRows="true"
+                    emptyMessage="#{msg['timesheet.noEntries']}">
 
-                    <p:column headerText="Date">
-                        <h:outputText
-                                value="#{entry.entryDate}">
+                    <p:column headerText="#{msg['timesheet.date']}">
+                        <h:outputText value="#{entry.entryDate}">
                             <f:convertDateTime
-                                    type="localDate"
-                                    pattern="dd.MM.yyyy"/>
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
 
-                    <p:column headerText="Start">
-                        <h:outputText
-                                value="#{entry.startTime}"/>
+                    <p:column headerText="#{msg['timesheet.start']}">
+                        <h:outputText value="#{entry.startTime}"/>
                     </p:column>
 
-                    <p:column headerText="End">
-                        <h:outputText
-                                value="#{entry.endTime}"/>
+                    <p:column headerText="#{msg['timesheet.end']}">
+                        <h:outputText value="#{entry.endTime}"/>
                     </p:column>
 
-                    <p:column headerText="Hours">
-                        <h:outputText
-                                value="#{entry.hours}">
+                    <p:column headerText="#{msg['timesheet.hours']}">
+                        <h:outputText value="#{entry.hours}">
                             <f:convertNumber
-                                    minFractionDigits="2"
-                                    maxFractionDigits="2"/>
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
                         </h:outputText>
                     </p:column>
 
-                    <p:column headerText="Type">
-                        <h:outputText
-                                value="#{entry.type}"/>
+                    <p:column headerText="#{msg['timesheet.type']}">
+                        <h:outputText value="#{entry.type}"/>
                     </p:column>
 
-                    <p:column headerText="Description">
-                        <h:outputText
-                                value="#{entry.description}"/>
+                    <p:column headerText="#{msg['timesheet.description.label']}">
+                        <h:outputText value="#{entry.description}"/>
                     </p:column>
 
                 </p:dataTable>
@@ -192,34 +187,35 @@
                 <div class="form-actions">
 
                     <p:commandButton
-                            value="Sign Timesheet"
-                            icon="pi pi-check"
-                            action="#{supervisorTimesheetDetailBean.signBySupervisor}"
-                            rendered="#{supervisorTimesheetDetailBean.canSign()}"
-                            process="@this"
-                            update="@form"
-                            styleClass="ui-button-success">
+                        value="#{msg['timesheet.sign']}"
+                        icon="pi pi-check"
+                        action="#{supervisorTimesheetDetailBean.signBySupervisor}"
+                        rendered="#{supervisorTimesheetDetailBean.canSign()}"
+                        process="@this"
+                        update="@form"
+                        styleClass="ui-button-success">
 
                         <p:confirm
-                                header="Sign Timesheet"
-                                message="Do you confirm that you reviewed and approve these entries?"
-                                icon="pi pi-exclamation-triangle"/>
+                            header="#{msg['timesheet.sign']}"
+                            message="#{msg['supervisorTimesheetReview.signConfirm']}"
+                            icon="pi pi-exclamation-triangle"/>
+
                     </p:commandButton>
 
                     <p:commandButton
-                            value="Request Changes"
-                            icon="pi pi-replay"
-                            action="#{supervisorTimesheetDetailBean.requestChanges}"
-                            rendered="#{supervisorTimesheetDetailBean.canRequestChanges()}"
-                            process="@this"
-                            update="@form"
-                            styleClass="ui-button-warning"/>
+                        value="#{msg['supervisorTimesheetReview.requestChanges']}"
+                        icon="pi pi-replay"
+                        action="#{supervisorTimesheetDetailBean.requestChanges}"
+                        rendered="#{supervisorTimesheetDetailBean.canRequestChanges()}"
+                        process="@this"
+                        update="@form"
+                        styleClass="ui-button-warning"/>
 
                     <p:button
-                            value="Back"
-                            icon="pi pi-arrow-left"
-                            outcome="/views/supervisor/timesheets.xhtml"
-                            styleClass="ui-button-secondary"/>
+                        value="#{msg['button.back']}"
+                        icon="pi pi-arrow-left"
+                        outcome="/views/supervisor/timesheets.xhtml"
+                        styleClass="ui-button-secondary"/>
 
                 </div>
 
@@ -228,16 +224,16 @@
             <p:confirmDialog global="true">
 
                 <p:commandButton
-                        value="Yes"
-                        type="button"
-                        styleClass="ui-confirmdialog-yes"
-                        icon="pi pi-check"/>
+                    value="#{msg['button.yes']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-yes"
+                    icon="pi pi-check"/>
 
                 <p:commandButton
-                        value="No"
-                        type="button"
-                        styleClass="ui-confirmdialog-no"
-                        icon="pi pi-times"/>
+                    value="#{msg['button.no']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-no"
+                    icon="pi pi-times"/>
 
             </p:confirmDialog>
 

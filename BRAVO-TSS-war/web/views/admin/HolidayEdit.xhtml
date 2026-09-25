@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <ui:composition
         template="/WEB-INF/templates/page-layout.xhtml"
         xmlns="http://www.w3.org/1999/xhtml"
@@ -9,34 +8,26 @@
         xmlns:p="http://primefaces.org/ui">
 
     <f:metadata>
-
         <f:viewParam
                 name="id"
                 value="#{EditHolidayBean.id}"/>
-
         <f:viewAction
                 action="#{EditHolidayBean.init}"/>
-
     </f:metadata>
 
-
     <ui:define name="pageTitle">
-        #{EditHolidayBean.newHoliday ? 'Add Holiday' : 'Edit Holiday'}
+        #{EditHolidayBean.newHoliday ? msg['holiday.add'] : msg['holiday.edit']}
     </ui:define>
-
 
     <ui:define name="pageHeadline">
-        #{EditHolidayBean.newHoliday ? 'Add Holiday' : 'Edit Holiday'}
+        #{EditHolidayBean.newHoliday ? msg['holiday.add'] : msg['holiday.edit']}
     </ui:define>
-
 
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
 
-
     <ui:define name="content">
-
         <section class="card holiday-form-card">
 
             <h:form id="holidayForm">
@@ -45,73 +36,63 @@
                         showDetail="true"
                         closable="true"/>
 
-
                 <div class="form-field">
-
                     <p:outputLabel
                             for="holidayName"
-                            value="Holiday name"/>
+                            value="#{msg['holiday.name']}"/>
 
                     <p:inputText
                             id="holidayName"
                             value="#{EditHolidayBean.holidaydto.holiday}"
                             required="true"
+                            placeholder="#{msg['holiday.name.placeholder']}"
                             styleClass="form-input"/>
-
                 </div>
 
-
                 <div class="form-field">
-
                     <p:outputLabel
                             for="date"
-                            value="Date"/>
+                            value="#{msg['holiday.date']}"/>
 
                     <p:datePicker
                             id="date"
                             value="#{EditHolidayBean.holidaydto.date}"
                             pattern="dd.MM.yyyy"
                             required="true"
+                            placeholder="#{msg['holiday.date.placeholder']}"
                             styleClass="form-input"/>
-
                 </div>
 
-
                 <div class="form-field">
-
                     <p:outputLabel
                             for="day"
-                            value="Day"/>
+                            value="#{msg['holiday.day']}"/>
 
                     <p:inputText
                             id="day"
                             value="#{EditHolidayBean.holidaydto.day}"
                             required="true"
+                            placeholder="#{msg['holiday.day.placeholder']}"
                             styleClass="form-input"/>
-
                 </div>
 
-
                 <div class="form-field">
-
                     <p:outputLabel
                             for="year"
-                            value="Year"/>
+                            value="#{msg['holiday.year']}"/>
 
                     <p:inputNumber
                             id="year"
                             value="#{EditHolidayBean.holidaydto.year}"
                             required="true"
+                            placeholder="#{msg['holiday.year.placeholder']}"
                             styleClass="form-input"/>
-
                 </div>
 
-
                 <div class="form-field">
-
                     <p:outputLabel
                             for="state"
-                            value="State"/>
+                            value="#{msg['holiday.state']}"/>
 
                     <p:selectOneMenu
                             id="state"
@@ -123,23 +104,20 @@
                                 var="state"
                                 itemValue="#{state}"
                                 itemLabel="#{state}"/>
-
                     </p:selectOneMenu>
-
                 </div>
-
 
                 <div class="form-actions">
 
                     <p:commandButton
-                            value="Save"
+                            value="#{msg['button.save']}"
                             icon="pi pi-save"
                             action="#{EditHolidayBean.save}"
                             ajax="false"
                             styleClass="action-btn"/>
 
                     <p:commandButton
-                            value="Cancel"
+                            value="#{msg['button.cancel']}"
                             icon="pi pi-times"
                             action="#{EditHolidayBean.cancel}"
                             immediate="true"
@@ -147,7 +125,7 @@
                             styleClass="ui-button-secondary action-btn"/>
 
                     <p:commandButton
-                            value="Delete"
+                            value="#{msg['button.delete']}"
                             icon="pi pi-trash"
                             action="#{EditHolidayBean.delete}"
                             ajax="false"
@@ -155,26 +133,24 @@
                             styleClass="ui-button-danger action-btn">
 
                         <p:confirm
-                                header="Delete holiday"
-                                message="Are you sure you want to delete this holiday?"
+                                header="#{msg['holiday.delete.header']}"
+                                message="#{msg['holiday.delete.message']}"
                                 icon="pi pi-exclamation-triangle"/>
-
                     </p:commandButton>
 
                     <p:confirmDialog global="true">
 
                         <p:commandButton
-                                value="Yes"
+                                value="#{msg['button.yes']}"
                                 type="button"
                                 styleClass="ui-confirmdialog-yes"
                                 icon="pi pi-check"/>
 
                         <p:commandButton
-                                value="No"
+                                value="#{msg['button.no']}"
                                 type="button"
                                 styleClass="ui-confirmdialog-no ui-button-secondary"
                                 icon="pi pi-times"/>
-
                     </p:confirmDialog>
 
                 </div>
@@ -182,7 +158,6 @@
             </h:form>
 
         </section>
-
     </ui:define>
 
 </ui:composition>
