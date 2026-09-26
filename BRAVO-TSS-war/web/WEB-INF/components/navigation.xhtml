@@ -50,8 +50,7 @@
             </ui:fragment>
 
             <ui:fragment
-                rendered="#{loginBean.hasRole('ASSISTANT')
-                            or loginBean.hasRole('SUPERVISOR')}">
+                rendered="#{loginBean.hasRole('ASSISTANT')}">
 
                 <li>
                     <h:link
@@ -61,7 +60,7 @@
                         <span>#{msg['contracts.title']}</span>
                     </h:link>
                 </li>
-
+                
                 <li>
                     <h:link
                         outcome="/views/shared/archive-contracts"
@@ -82,6 +81,26 @@
                         <span>#{msg['supervisionArchive.title']}</span>
                     </h:link>
                 </li>
+                
+                <li>
+                    <h:link
+                        outcome="/views/shared/archive-contracts"
+                        styleClass="navigation-link">
+                        <i class="pi pi-folder-open"></i>
+                        <span>#{msg['archive.contractArchive']}</span>
+                    </h:link>
+                </li>
+                
+                
+                <li>
+                    <h:link
+                        outcome="/views/supervisor/contracts"
+                        styleClass="navigation-link">
+                        <i class="pi pi-file"></i>
+                        <span>#{msg['contracts.title']}</span>
+                    </h:link>
+                </li>
+                
             </ui:fragment>
 
             <ui:fragment rendered="#{loginBean.hasRole('SECRETARY')}">
