@@ -65,16 +65,28 @@
                     DE
                 </p:commandLink>
 
-
                 <span class="language-separator">
                     |
                 </span>
+                
                 <p:commandLink
                     actionListener="#{localeBean.selectFrench}"
                     update="@all"
                     styleClass="language-link"
                     title="#{msg['language.switchToDE']}">
                     FR
+                </p:commandLink>
+                
+                <span class="language-separator">
+                    |
+                </span>
+                
+                <p:commandLink
+                    actionListener="#{localeBean.selectPolish}"
+                    update="@all"
+                    styleClass="language-link"
+                    title="#{msg['language.switchToPL']}">
+                    PL
                 </p:commandLink>
 
             </div>
