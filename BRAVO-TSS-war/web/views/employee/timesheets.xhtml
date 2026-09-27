@@ -167,47 +167,6 @@
 
         </section>
 
-        <section class="development-panel">
-
-            <h3>#{msg['timesheets.development']}</h3>
-
-            <p class="text-muted">
-                #{msg['timesheets.development.description']}
-            </p>
-
-            <h:form id="developmentForm">
-
-                <div class="development-actions">
-
-                    <p:selectOneMenu
-                        value="#{timesheetBean.selectedEmployeeId}"
-                        styleClass="form-input">
-
-                        <f:selectItem
-                            itemLabel="#{msg['timesheets.selectEmployee']}"
-                            itemValue=""
-                            noSelectionOption="true"/>
-
-                        <f:selectItems
-                            value="#{timesheetBean.persons}"
-                            var="person"
-                            itemValue="#{person.id}"
-                            itemLabel="#{person.firstName} #{person.lastName}"/>
-
-                    </p:selectOneMenu>
-
-                    <p:commandButton
-                        value="#{msg['timesheets.load']}"
-                        icon="pi pi-refresh"
-                        action="#{timesheetBean.loadSelectedEmployee}"
-                        ajax="false"/>
-
-                </div>
-
-            </h:form>
-
-        </section>
-
     </ui:define>
 
 </ui:composition>

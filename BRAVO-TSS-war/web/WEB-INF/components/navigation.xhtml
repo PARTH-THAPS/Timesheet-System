@@ -27,6 +27,17 @@
                 </h:link>
             </li>
 
+
+
+            <li>
+                <h:link
+                    outcome="/views/shared/mycontractView"
+                    styleClass="navigation-link">
+                    <i class="pi pi-file"></i>
+                    <span>#{msg['my.contract']}</span>
+                </h:link>
+            </li>
+
             <ui:fragment rendered="#{loginBean.hasRole('EMPLOYEE')}">
                 <li>
                     <h:link
@@ -36,6 +47,7 @@
                         <span>#{msg['timesheet.title']}</span>
                     </h:link>
                 </li>
+
             </ui:fragment>
 
             <ui:fragment rendered="#{loginBean.hasRole('SUPERVISOR')}">
@@ -60,7 +72,7 @@
                         <span>#{msg['contracts.title']}</span>
                     </h:link>
                 </li>
-                
+
                 <li>
                     <h:link
                         outcome="/views/shared/archive-contracts"
@@ -81,7 +93,7 @@
                         <span>#{msg['supervisionArchive.title']}</span>
                     </h:link>
                 </li>
-                
+
                 <li>
                     <h:link
                         outcome="/views/shared/archive-contracts"
@@ -90,8 +102,8 @@
                         <span>#{msg['archive.contractArchive']}</span>
                     </h:link>
                 </li>
-                
-                
+
+
                 <li>
                     <h:link
                         outcome="/views/supervisor/contracts"
@@ -100,7 +112,7 @@
                         <span>#{msg['contracts.title']}</span>
                     </h:link>
                 </li>
-                
+
             </ui:fragment>
 
             <ui:fragment rendered="#{loginBean.hasRole('SECRETARY')}">
@@ -112,6 +124,16 @@
                         <span>#{msg['archive.title']}</span>
                     </h:link>
                 </li>
+
+                <li>
+                    <h:link
+                        outcome="/views/secretary/contracts"
+                        styleClass="navigation-link">
+                        <i class="pi pi-print"></i>
+                        <span>#{msg['print.contract']}</span>
+                    </h:link>
+                </li>
+               
             </ui:fragment>
 
             <ui:fragment rendered="#{loginBean.hasRole('ADMIN')}">
