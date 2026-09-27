@@ -4,6 +4,7 @@ import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,14 +26,14 @@ public class ContractEditBean implements Serializable {
 
     @EJB
     private ContractLogic contractLogic;
-
     @EJB
     private PersonLogic personLogic;
+    @Inject
+    private loginBean loginBean;
 
     private Long id;
     private ContractDTO contract;
     private List<PersonDTO> persons;
-
     private List<Long> originalSecretaryIds;
     private List<Long> originalAssistantIds;
 
@@ -51,14 +52,40 @@ public class ContractEditBean implements Serializable {
             contract.setAssistantIds(new ArrayList<>());
         } else {
             contract = contractLogic.searchContract(id);
+            if (!isAuthorizedForContract(contract)) {
+                denyAccess();
+                return;
+            }
         }
-
         originalSecretaryIds = contract.getSecretaryIds() != null
                 ? new ArrayList<>(contract.getSecretaryIds())
                 : new ArrayList<>();
         originalAssistantIds = contract.getAssistantIds() != null
                 ? new ArrayList<>(contract.getAssistantIds())
                 : new ArrayList<>();
+    }
+
+    private boolean isAuthorizedForContract(ContractDTO contract) {
+        Long currentPersonId = loginBean.getUser().getId();
+        if (loginBean.hasRole("SUPERVISOR")) {
+            return currentPersonId.equals(contract.getSupervisorId());
+        }
+        if (loginBean.hasRole("ASSISTANT")) {
+            return contract.getAssistantIds() != null
+                    && contract.getAssistantIds().contains(currentPersonId);
+        }
+        return true; // e.g. ADMIN or other unrestricted roles
+    }
+
+    private void denyAccess() {
+        try {
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            String contextPath = facesContext.getExternalContext().getRequestContextPath();
+            facesContext.getExternalContext().redirect(contextPath + "/views/access-denied.xhtml");
+            facesContext.responseComplete();
+        } catch (IOException e) {
+            showError("Access denied", "You are not authorized to view this contract.");
+        }
     }
 
     public void save() {
@@ -97,9 +124,7 @@ public class ContractEditBean implements Serializable {
                     contractLogic.removeSupervisor(contractId);
                 }
             }
-
             syncSecretariesAndAssistants(contractId);
-
             redirectToContracts();
         } catch (Exception e) {
             showError(
@@ -211,18 +236,17 @@ public class ContractEditBean implements Serializable {
     }
 
     private void redirectToContracts() throws IOException {
-        FacesContext facesContext =
-                FacesContext.getCurrentInstance();
+        FacesContext facesContext = FacesContext.getCurrentInstance();
         String contextPath =
-                facesContext
-                        .getExternalContext()
-                        .getRequestContextPath();
-        facesContext
-                .getExternalContext()
-                .redirect(
-                        contextPath
-                                + "/views/assistant/contracts.xhtml"
-                );
+                facesContext.getExternalContext().getRequestContextPath();
+
+        String section = loginBean.hasRole("SUPERVISOR")
+                ? "supervisor"
+                : "assistant";
+
+        facesContext.getExternalContext().redirect(
+                contextPath + "/views/" + section + "/contracts.xhtml"
+        );
         facesContext.responseComplete();
     }
 
@@ -253,6 +277,15 @@ public class ContractEditBean implements Serializable {
         return contract != null
                 && contract.getStatus()
                 == ContractStatus.STARTED;
+    }
+
+    public boolean isHasUnresolvedInProgressTimesheets() {
+        if (contract == null || contract.getId() == null) {
+            return false;
+        }
+        return contractLogic.hasUnresolvedInProgressTimesheets(
+                contract.getId()
+        );
     }
 
     public boolean isEditable() {

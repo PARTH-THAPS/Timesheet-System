@@ -42,6 +42,7 @@ public interface ContractLogic {
     void addSupervisor(Long contractId, Long personId);
 
     void removeSupervisor(Long contractId);
+    public boolean hasUnresolvedInProgressTimesheets(Long contractId);
 
 //    Contract PrintContract();
 }

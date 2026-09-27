@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="pageTitle">
+        #{msg['accessDenied.title']}
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        #{msg['accessDenied.title']}
+    </ui:define>
+
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+    <ui:define name="content">
+        <section class="card">
+            <h2>#{msg['accessDenied.title']}</h2>
+            <p class="text-muted">
+                #{msg['accessDenied.description']}
+            </p>
+            <p:button
+                    value="#{msg['accessDenied.backHome']}"
+                    icon="pi pi-home"
+                    outcome="/views/portal/home.xhtml"/>
+        </section>
+    </ui:define>
+
+</ui:composition>

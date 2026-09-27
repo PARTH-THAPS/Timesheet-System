@@ -9,11 +9,11 @@
     xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
-        Contracts
+        #{msg['contracts.title']}
     </ui:define>
 
     <ui:define name="pageHeadline">
-        Contract Management
+        #{msg['contracts.management']}
     </ui:define>
 
     <ui:define name="navigation">
@@ -21,36 +21,35 @@
     </ui:define>
 
     <ui:define name="headerActions">
-
         <div class="user-info">
             <span class="user-name">
-                #{mockUserBean.fullName}
+                #{loginBean.user.firstName} #{loginBean.user.lastName}
             </span>
-
-            <span class="user-role">
-                #{mockUserBean.role}
-            </span>
+            <ui:repeat
+                value="#{loginBean.user.roles}"
+                var="role">
+                <span class="badge">
+                    #{msg['role.'.concat(role.name())]}
+                </span>
+            </ui:repeat>
         </div>
-
     </ui:define>
 
     <ui:define name="content">
 
         <section class="page-section-header">
-
             <div>
-                <h2>Contracts</h2>
+                <h2>#{msg['contracts.title']}</h2>
 
                 <p class="text-muted">
-                    Manage employment contracts.
+                    #{msg['contracts.description']}
                 </p>
             </div>
 
             <p:button
-                value="Add Contract"
+                value="#{msg['contract.add']}"
                 icon="pi pi-plus"
                 outcome="/views/assistant/edit-contract"/>
-
         </section>
 
         <section class="card">
@@ -66,10 +65,10 @@
                     rows="10"
                     stripedRows="true"
                     sortMode="single"
-                    emptyMessage="No contracts found.">
+                    emptyMessage="#{msg['contracts.noContracts']}">
 
                     <p:column
-                        headerText="Name"
+                        headerText="#{msg['contract.name']}"
                         sortBy="#{contract.name}"
                         filterBy="#{contract.name}"
                         filterMatchMode="contains">
@@ -79,7 +78,7 @@
                     </p:column>
 
                     <p:column
-                        headerText="Employee"
+                        headerText="#{msg['contract.employee']}"
                         sortBy="#{contractListBean.getPersonName(contract.personId)}"
                         filterBy="#{contractListBean.getPersonName(contract.personId)}"
                         filterMatchMode="contains">
@@ -90,7 +89,7 @@
                     </p:column>
 
                     <p:column
-                        headerText="Start"
+                        headerText="#{msg['contract.start']}"
                         sortBy="#{contract.startDate}">
 
                         <h:outputText value="#{contract.startDate}">
@@ -102,7 +101,7 @@
                     </p:column>
 
                     <p:column
-                        headerText="End"
+                        headerText="#{msg['contract.end']}"
                         sortBy="#{contract.endDate}">
 
                         <h:outputText value="#{contract.endDate}">
@@ -114,7 +113,7 @@
                     </p:column>
 
                     <p:column
-                        headerText="Frequency"
+                        headerText="#{msg['contract.frequency']}"
                         sortBy="#{contract.frequency}">
 
                         <h:outputText value="#{contract.frequency}"/>
@@ -122,14 +121,15 @@
                     </p:column>
 
                     <p:column
-                        headerText="Hours / Week"
+                        headerText="#{msg['contract.hoursPerWeek']}"
                         sortBy="#{contract.hoursPerWeek}">
 
                         <h:outputText value="#{contract.hoursPerWeek}"/>
+
                     </p:column>
 
                     <p:column
-                        headerText="Status"
+                        headerText="#{msg['contract.status']}"
                         sortBy="#{contract.status}"
                         filterBy="#{contract.status}"
                         filterMatchMode="exact">
@@ -140,14 +140,14 @@
                                 onchange="PF('contractsTable').filter()">
 
                                 <f:selectItem
-                                    itemLabel="All"
+                                    itemLabel="#{msg['common.all']}"
                                     itemValue="#{null}"
                                     noSelectionOption="true"/>
 
                                 <f:selectItems
                                     value="#{contractListBean.statuses}"
                                     var="status"
-                                    itemLabel="#{status}"
+                                    itemLabel="#{msg['contract.status.'.concat(status.name())]}"
                                     itemValue="#{status}"/>
 
                             </p:selectOneMenu>
@@ -155,18 +155,18 @@
                         </f:facet>
 
                         <span class="status-badge">
-                            #{contract.status}
+                            #{msg['contract.status.'.concat(contract.status.name())]}
                         </span>
 
                     </p:column>
 
                     <p:column
-                        headerText="Actions"
+                        headerText="#{msg['common.actions']}"
                         styleClass="table-actions-column">
 
                         <p:button
                             icon="pi pi-eye"
-                            title="View contract"
+                            title="#{msg['contract.view']}"
                             outcome="/views/assistant/edit-contract"
                             styleClass="ui-button-secondary">
 

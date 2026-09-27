@@ -38,5 +38,13 @@ public class LocaleBean implements Serializable {
     public void selectEnglish() {
         userLocale = Locale.ENGLISH;
     }
+    public void selectFrench()
+    {
+       userLocale=Locale.FRENCH;
+    }
+    public void selectPolish()
+    {
+       userLocale=Locale.of("pl", "PL");
+    }
      
 }

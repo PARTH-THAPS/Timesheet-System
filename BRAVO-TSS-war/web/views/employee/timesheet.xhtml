@@ -1,65 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ui:composition
-        template="/WEB-INF/templates/page-layout.xhtml"
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:h="jakarta.faces.html"
-        xmlns:f="jakarta.faces.core"
-        xmlns:ui="jakarta.faces.facelets"
-        xmlns:p="http://primefaces.org/ui">
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
 
     <f:metadata>
-
         <f:viewParam
-                name="id"
-                value="#{timesheetDetailBean.id}"/>
+            name="id"
+            value="#{timesheetDetailBean.id}"/>
 
         <f:viewAction
-                action="#{timesheetDetailBean.init}"/>
-
+            action="#{timesheetDetailBean.init}"/>
     </f:metadata>
 
-
     <ui:define name="pageTitle">
-        Timesheet
+        #{msg['timesheet.title']}
     </ui:define>
-
 
     <ui:define name="pageHeadline">
-        Timesheet
+        #{msg['timesheet.title']}
     </ui:define>
-
 
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
 
-
     <ui:define name="headerActions">
-
-        <div class="user-info">
-
-            <span class="user-name">
-                #{mockUserBean.fullName}
+    <div class="user-info">
+        <span class="user-name">
+            #{loginBean.user.firstName} #{loginBean.user.lastName}
+        </span>
+        <ui:repeat
+                value="#{loginBean.user.roles}"
+                var="role">
+            <span class="badge">
+                #{msg['role.'.concat(role.name())]}
             </span>
-
-            <span class="user-role">
-                #{mockUserBean.role}
-            </span>
-
-        </div>
-
-    </ui:define>
-
+        </ui:repeat>
+    </div>
+</ui:define>
 
     <ui:define name="content">
-        
-      
+
         <h:form id="timesheetForm">
 
-            <p:messages
-                    closable="true"/>
-
+            <p:messages closable="true"/>
 
             <section class="page-section-header">
 
@@ -67,81 +56,49 @@
 
                     <h2>
                         <h:outputText
-                                value="#{timesheetDetailBean.timesheet.startDate}">
-
+                            value="#{timesheetDetailBean.timesheet.startDate}">
                             <f:convertDateTime
-                                    type="localDate"
-                                    pattern="dd.MM.yyyy"/>
-
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
 
                         –
 
                         <h:outputText
-                                value="#{timesheetDetailBean.timesheet.endDate}">
-
+                            value="#{timesheetDetailBean.timesheet.endDate}">
                             <f:convertDateTime
-                                    type="localDate"
-                                    pattern="dd.MM.yyyy"/>
-
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </h2>
 
                     <p class="text-muted">
-                        Timesheet details and reported working time.
+                        #{msg['timesheet.description']}
                     </p>
 
                 </div>
 
-
                 <span class="status-badge">
-                    #{timesheetDetailBean.timesheet.status}
+                    #{msg['timesheet.status.'.concat(timesheetDetailBean.timesheet.status.name())]}
                 </span>
 
             </section>
-
 
             <section class="timesheet-summary">
 
                 <div class="statistic">
 
                     <span class="statistic-label">
-                        Hours due
+                        #{msg['timesheet.hoursDue']}
                     </span>
 
                     <strong class="statistic-value">
 
                         <h:outputText
-                                value="#{timesheetDetailBean.timesheet.hoursDue}">
-
+                            value="#{timesheetDetailBean.timesheet.hoursDue}">
                             <f:convertNumber
-                                    minFractionDigits="2"
-                                    maxFractionDigits="2"/>
-
-                        </h:outputText>
-
-                        h
-
-                    </strong>
-
-                </div>
-                
-
-                <div class="statistic">
-
-                    <span class="statistic-label">
-                        Hours reported
-                    </span>
-
-                    <strong class="statistic-value">
-
-                        <h:outputText
-                                value="#{timesheetDetailBean.reportedHours}">
-
-                            <f:convertNumber
-                                    minFractionDigits="2"
-                                    maxFractionDigits="2"/>
-
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
                         </h:outputText>
 
                         h
@@ -150,22 +107,40 @@
 
                 </div>
 
-
                 <div class="statistic">
 
                     <span class="statistic-label">
-                        Balance
+                        #{msg['timesheet.hoursReported']}
                     </span>
 
                     <strong class="statistic-value">
 
                         <h:outputText
-                                value="#{timesheetDetailBean.balance}">
-
+                            value="#{timesheetDetailBean.reportedHours}">
                             <f:convertNumber
-                                    minFractionDigits="2"
-                                    maxFractionDigits="2"/>
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
+                        </h:outputText>
 
+                        h
+
+                    </strong>
+
+                </div>
+
+                <div class="statistic">
+
+                    <span class="statistic-label">
+                        #{msg['timesheet.balance']}
+                    </span>
+
+                    <strong class="statistic-value">
+
+                        <h:outputText
+                            value="#{timesheetDetailBean.balance}">
+                            <f:convertNumber
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
                         </h:outputText>
 
                         h
@@ -175,19 +150,25 @@
                 </div>
 
             </section>
-            
+
             <section class="approval-card">
 
                 <div class="approval-card-header">
+
                     <div>
-                        <h3>Approval status</h3>
+
+                        <h3>
+                            #{msg['timesheet.approvalStatus']}
+                        </h3>
+
                         <p class="text-muted">
-                            Review your entries before signing.
+                            #{msg['timesheet.approvalDescription']}
                         </p>
+
                     </div>
 
                     <p:commandButton
-                        value="Sign Timesheet"
+                        value="#{msg['timesheet.sign']}"
                         icon="pi pi-check"
                         action="#{timesheetDetailBean.signByEmployee}"
                         rendered="#{timesheetDetailBean.canSignByEmployee}"
@@ -195,81 +176,100 @@
                         update="@form"
                         styleClass="signature-button signature-button-sign">
 
-                    <p:confirm
-                            header="Sign Timesheet"
-                            message="Do you want to sign this timesheet?"
+                        <p:confirm
+                            header="#{msg['timesheet.sign']}"
+                            message="#{msg['timesheet.sign.confirm']}"
                             icon="pi pi-exclamation-triangle"/>
+
                     </p:commandButton>
 
                     <p:commandButton
-                            value="Revoke Signature"
-                            icon="pi pi-undo"
-                            action="#{timesheetDetailBean.revokeEmployeeSignature}"
-                            rendered="#{timesheetDetailBean.canRevokeEmployeeSignature}"
-                            process="@this"
-                            update="@form"
-                            styleClass="signature-button signature-button-revoke">
+                        value="#{msg['timesheet.revokeSignature']}"
+                        icon="pi pi-undo"
+                        action="#{timesheetDetailBean.revokeEmployeeSignature}"
+                        rendered="#{timesheetDetailBean.canRevokeEmployeeSignature}"
+                        process="@this"
+                        update="@form"
+                        styleClass="signature-button signature-button-revoke">
 
                         <p:confirm
-                                header="Revoke Signature"
-                                message="Do you want to revoke your signature?"
-                                icon="pi pi-exclamation-triangle"/>
+                            header="#{msg['timesheet.revokeSignature']}"
+                            message="#{msg['timesheet.revokeSignature.confirm']}"
+                            icon="pi pi-exclamation-triangle"/>
+
                     </p:commandButton>
-                    
+
                 </div>
-                
-            <div class="approval-steps">
-                <div class="approval-step
-                    #{timesheetDetailBean.employeeSigned
-                        ? 'completed'
-                        : 'active'}">
 
-                   <span class="approval-step-icon">
-                       <i class="pi
-                          #{timesheetDetailBean.employeeSigned
-                              ? 'pi-check'
-                              : 'pi-user'}"/>
-                   </span>
+                <div class="approval-steps">
 
-                   <span>
-                       <strong>Employee review</strong>
+                    <div
+                        class="approval-step
+                        #{timesheetDetailBean.employeeSigned
+                          ? 'completed'
+                          : 'active'}">
 
-                       <small>
-                           #{timesheetDetailBean.employeeSigned
-                               ? 'Signed'
-                               : 'Current step'}
-                       </small>
-                   </span>
-               </div>
+                        <span class="approval-step-icon">
 
-                <div class="approval-step
-                    #{timesheetDetailBean.supervisorSigned
-                        ? 'completed'
-                        : (timesheetDetailBean.employeeSigned
-                            ? 'active'
-                            : '')}">
+                            <i class="pi
+                               #{timesheetDetailBean.employeeSigned
+                                 ? 'pi-check'
+                                 : 'pi-user'}"/>
 
-                   <span class="approval-step-icon">
-                       <i class="pi
-                          #{timesheetDetailBean.supervisorSigned
-                              ? 'pi-check'
-                              : 'pi-user-edit'}"/>
-                   </span>
+                        </span>
 
-                   <span>
-                       <strong>Supervisor review</strong>
+                        <span>
 
-                       <small>
-                           #{timesheetDetailBean.supervisorSigned
-                               ? 'Signed'
-                               : (timesheetDetailBean.employeeSigned
-                                   ? 'Current step'
-                                   : 'After employee signature')}
-                       </small>
-                   </span>
-               </div>
-            </div>
-               
+                            <strong>
+                                #{msg['timesheet.employeeReview']}
+                            </strong>
+
+                            <small>
+                                #{timesheetDetailBean.employeeSigned
+                                  ? msg['timesheet.signed']
+                                  : msg['timesheet.currentStep']}
+                            </small>
+
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="approval-step
+                        #{timesheetDetailBean.supervisorSigned
+                          ? 'completed'
+                          : (timesheetDetailBean.employeeSigned
+                          ? 'active'
+                          : '')}">
+
+                        <span class="approval-step-icon">
+
+                            <i class="pi
+                               #{timesheetDetailBean.supervisorSigned
+                                 ? 'pi-check'
+                                 : 'pi-user-edit'}"/>
+
+                        </span>
+
+                        <span>
+
+                            <strong>
+                                #{msg['timesheet.supervisorReview']}
+                            </strong>
+
+                            <small>
+                                #{timesheetDetailBean.supervisorSigned
+                                  ? msg['timesheet.signed']
+                                  : (timesheetDetailBean.employeeSigned
+                                  ? msg['timesheet.currentStep']
+                                  : msg['timesheet.afterEmployeeSignature'])}
+                            </small>
+
+                        </span>
+
+                    </div>
+
+                </div>
 
             </section>
 
@@ -278,119 +278,108 @@
                 <div class="page-section-header">
 
                     <div>
-                        <h3>Entries</h3>
+
+                        <h3>
+                            #{msg['timesheet.entries']}
+                        </h3>
 
                         <p class="text-muted">
-                            Reported work, vacation and other entries.
+                            #{msg['timesheet.entriesDescription']}
                         </p>
+
                     </div>
 
-
                     <p:commandButton
-                            value="Add Entry"
-                            icon="pi pi-plus"
-                            action="#{timesheetDetailBean.prepareNewEntry}"
-                            process="@this"
-                            update="entryDialog"
-                            oncomplete="PF('entryDialog').show()"
-                            rendered="#{timesheetDetailBean.editable}"/>
-                    
+                        value="#{msg['timesheet.addEntry']}"
+                        icon="pi pi-plus"
+                        action="#{timesheetDetailBean.prepareNewEntry}"
+                        process="@this"
+                        update="entryDialog"
+                        oncomplete="PF('entryDialog').show()"
+                        rendered="#{timesheetDetailBean.editable}"/>
+
                 </div>
 
-
                 <p:dataTable
-                        id="entriesTable"
-                        value="#{timesheetDetailBean.timesheet.entries}"
-                        var="entry"
-                        stripedRows="true"
-                        emptyMessage="No entries reported yet.">
+                    id="entriesTable"
+                    value="#{timesheetDetailBean.timesheet.entries}"
+                    var="entry"
+                    stripedRows="true"
+                    emptyMessage="#{msg['timesheet.noEntries']}">
 
                     <p:column
-                            headerText="Date"
-                            sortBy="#{entry.entryDate}">
+                        headerText="#{msg['timesheet.date']}"
+                        sortBy="#{entry.entryDate}">
 
                         <h:outputText value="#{entry.entryDate}">
                             <f:convertDateTime
-                                    type="localDate"
-                                    pattern="dd.MM.yyyy"/>
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
 
                     </p:column>
 
-
-                    <p:column
-                            headerText="Start">
-
+                    <p:column headerText="#{msg['timesheet.start']}">
                         <h:outputText value="#{entry.startTime}"/>
-
                     </p:column>
 
-
-                    <p:column
-                            headerText="End">
-
+                    <p:column headerText="#{msg['timesheet.end']}">
                         <h:outputText value="#{entry.endTime}"/>
-
                     </p:column>
 
-
-                    <p:column
-                            headerText="Hours">
+                    <p:column headerText="#{msg['timesheet.hours']}">
 
                         <h:outputText
-                                value="#{timesheetDetailBean.calculateEntryHours(entry)}">
+                            value="#{timesheetDetailBean.calculateEntryHours(entry)}">
 
                             <f:convertNumber
-                                    minFractionDigits="2"
-                                    maxFractionDigits="2"/>
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
 
                         </h:outputText>
 
                     </p:column>
 
-
                     <p:column
-                            headerText="Type"
-                            sortBy="#{entry.type}">
+                        headerText="#{msg['timesheet.type']}"
+                        sortBy="#{entry.type}">
+                        <h:outputText
+                            value="#{msg['timesheet.type.'.concat(entry.type)]}"/>
+                    </p:column>
 
-                        <h:outputText value="#{entry.type}"/>
+                    <p:column headerText="#{msg['timesheet.description.label']}">
+
+                        <h:outputText
+                            value="#{entry.description}"/>
 
                     </p:column>
 
-
                     <p:column
-                            headerText="Description">
+                        headerText="#{msg['common.actions']}"
+                        rendered="#{timesheetDetailBean.editable}"
+                        styleClass="table-actions-column">
 
-                        <h:outputText value="#{entry.description}"/>
-
-                    </p:column>
-
-
-                    <p:column
-                            headerText="Actions"
-                            rendered="#{timesheetDetailBean.editable}"
-                            styleClass="table-actions-column">
-                        
                         <p:commandButton
-                                icon="pi pi-pencil"
-                                title="Edit entry"
-                                action="#{timesheetDetailBean.prepareEditEntry(entry)}"
-                                process="@this"
-                                update=":timesheetForm:entryDialog"
-                                oncomplete="PF('entryDialog').show()"
-                                styleClass="ui-button-secondary ui-button-outlined"/>
+                            icon="pi pi-pencil"
+                            title="#{msg['timesheet.editEntry']}"
+                            action="#{timesheetDetailBean.prepareEditEntry(entry)}"
+                            process="@this"
+                            update=":timesheetForm:entryDialog"
+                            oncomplete="PF('entryDialog').show()"
+                            styleClass="ui-button-secondary ui-button-outlined"/>
+
                         <p:commandButton
-                                icon="pi pi-trash"
-                                title="Delete entry"
-                                action="#{timesheetDetailBean.deleteEntry(entry)}"
-                                process="@this"
-                                update="@form"
-                                styleClass="ui-button-danger ui-button-outlined">
+                            icon="pi pi-trash"
+                            title="#{msg['timesheet.deleteEntry']}"
+                            action="#{timesheetDetailBean.deleteEntry(entry)}"
+                            process="@this"
+                            update="@form"
+                            styleClass="ui-button-danger ui-button-outlined">
 
                             <p:confirm
-                                    header="Delete Entry"
-                                    message="Do you really want to delete this entry?"
-                                    icon="pi pi-exclamation-triangle"/>
+                                header="#{msg['timesheet.deleteEntry']}"
+                                message="#{msg['timesheet.deleteEntry.confirm']}"
+                                icon="pi pi-exclamation-triangle"/>
 
                         </p:commandButton>
 
@@ -400,41 +389,38 @@
 
             </section>
 
-
             <div class="form-actions">
 
                 <p:button
-                        value="Back"
-                        icon="pi pi-arrow-left"
-                        outcome="/views/employee/timesheets.xhtml"
-                        styleClass="ui-button-secondary"/>
+                    value="#{msg['button.back']}"
+                    icon="pi pi-arrow-left"
+                    outcome="/views/employee/timesheets.xhtml"
+                    styleClass="ui-button-secondary"/>
 
             </div>
-
 
             <p:confirmDialog global="true">
 
                 <p:commandButton
-                        value="Yes"
-                        type="button"
-                        styleClass="ui-confirmdialog-yes"
-                        icon="pi pi-check"/>
+                    value="#{msg['button.yes']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-yes"
+                    icon="pi pi-check"/>
 
                 <p:commandButton
-                        value="No"
-                        type="button"
-                        styleClass="ui-confirmdialog-no ui-button-secondary"
-                        icon="pi pi-times"/>
+                    value="#{msg['button.no']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-no ui-button-secondary"
+                    icon="pi pi-times"/>
 
             </p:confirmDialog>
-
 
             <p:dialog
                 id="entryDialog"
                 widgetVar="entryDialog"
                 header="#{timesheetDetailBean.editingEntry
-                    ? 'Edit Timesheet Entry'
-                    : 'Add Timesheet Entry'}"
+                          ? msg['timesheet.editEntry']
+                          : msg['timesheet.addEntry']}"
                 modal="true"
                 resizable="false"
                 width="500">
@@ -446,112 +432,107 @@
                         <div class="form-field form-field-wide">
 
                             <p:outputLabel
-                                    for="entryDate"
-                                    value="Date"/>
+                                for="entryDate"
+                                value="#{msg['timesheet.date']}"/>
 
                             <p:datePicker
-                                    id="entryDate"
-                                    value="#{timesheetDetailBean.entry.entryDate}"
-                                    pattern="dd.MM.yyyy"
-                                    required="true"
-                                    requiredMessage="Date is required."
-                                    showIcon="true"/>
+                                id="entryDate"
+                                value="#{timesheetDetailBean.entry.entryDate}"
+                                pattern="dd.MM.yyyy"
+                                required="true"
+                                requiredMessage="#{msg['timesheet.date.required']}"
+                                showIcon="true"/>
 
                         </div>
-
 
                         <div class="form-field">
 
                             <p:outputLabel
-                                    for="startTime"
-                                    value="Start time"/>
+                                for="startTime"
+                                value="#{msg['timesheet.startTime']}"/>
 
                             <p:datePicker
-                                    id="startTime"
-                                    value="#{timesheetDetailBean.entry.startTime}"
-                                    timeOnly="true"
-                                    pattern="HH:mm"
-                                    requiredMessage="Start time is required."
-                                    required="true"/>
+                                id="startTime"
+                                value="#{timesheetDetailBean.entry.startTime}"
+                                timeOnly="true"
+                                pattern="HH:mm"
+                                requiredMessage="#{msg['timesheet.startTime.required']}"
+                                required="true"/>
 
                         </div>
-
 
                         <div class="form-field">
 
                             <p:outputLabel
-                                    for="endTime"
-                                    value="End time"/>
+                                for="endTime"
+                                value="#{msg['timesheet.endTime']}"/>
 
                             <p:datePicker
-                                    id="endTime"
-                                    value="#{timesheetDetailBean.entry.endTime}"
-                                    timeOnly="true"
-                                    pattern="HH:mm"
-                                    requiredMessage="End time is required."
-                                    required="true"/>
+                                id="endTime"
+                                value="#{timesheetDetailBean.entry.endTime}"
+                                timeOnly="true"
+                                pattern="HH:mm"
+                                requiredMessage="#{msg['timesheet.endTime.required']}"
+                                required="true"/>
 
                         </div>
-
 
                         <div class="form-field form-field-wide">
 
                             <p:outputLabel
-                                    for="entryType"
-                                    value="Type"/>
+                                for="entryType"
+                                value="#{msg['timesheet.type']}"/>
 
                             <p:selectOneMenu
-                                    id="entryType"
-                                    value="#{timesheetDetailBean.entry.type}"
-                                    required="true"
-                                    requiredMessage="Type is required.">
+                                id="entryType"
+                                value="#{timesheetDetailBean.entry.type}"
+                                required="true"
+                                requiredMessage="#{msg['timesheet.type.required']}">
 
                                 <f:selectItems
-                                        value="#{timesheetDetailBean.reportTypes}"
-                                        var="type"
-                                        itemValue="#{type}"
-                                        itemLabel="#{type.name()}"/>
+                                    value="#{timesheetDetailBean.reportTypes}"
+                                    var="type"
+                                    itemValue="#{type}"
+                                    itemLabel="#{msg['timesheet.type.'.concat(type.name())]}"/>
 
                             </p:selectOneMenu>
 
                         </div>
 
-
                         <div class="form-field form-field-wide">
 
                             <p:outputLabel
-                                    for="description"
-                                    value="Description"/>
+                                for="description"
+                                value="#{msg['timesheet.description.label']}"/>
 
                             <p:inputTextarea
-                                    id="description"
-                                    value="#{timesheetDetailBean.entry.description}"
-                                    rows="4"
-                                    autoResize="false"/>
+                                id="description"
+                                value="#{timesheetDetailBean.entry.description}"
+                                rows="4"
+                                autoResize="false"/>
 
                         </div>
 
                     </div>
 
-
                     <div class="form-actions">
 
                         <p:commandButton
-                                value="#{timesheetDetailBean.editingEntry
-                                    ? 'Update Entry'
-                                    : 'Save Entry'}"
-                                icon="pi pi-save"
-                                action="#{timesheetDetailBean.saveEntry}"
-                                process="@this,entryDialogContent"
-                                update="@form"
-                                oncomplete="if (!args.validationFailed) PF('entryDialog').hide()"/>
+                            value="#{timesheetDetailBean.editingEntry
+                                     ? msg['timesheet.updateEntry']
+                                     : msg['timesheet.saveEntry']}"
+                            icon="pi pi-save"
+                            action="#{timesheetDetailBean.saveEntry}"
+                            process="@this,entryDialogContent"
+                            update="@form"
+                            oncomplete="if (!args.validationFailed) PF('entryDialog').hide()"/>
 
                         <p:commandButton
-                                value="Cancel"
-                                type="button"
-                                icon="pi pi-times"
-                                onclick="PF('entryDialog').hide()"
-                                styleClass="ui-button-secondary"/>
+                            value="#{msg['button.cancel']}"
+                            type="button"
+                            icon="pi pi-times"
+                            onclick="PF('entryDialog').hide()"
+                            styleClass="ui-button-secondary"/>
 
                     </div>
 

@@ -19,38 +19,32 @@
 
     </f:metadata>
 
-
     <ui:define name="pageTitle">
-        #{adminUserBean.newUser ? 'Add User' : 'Edit User'}
+        #{adminUserBean.newUser ? msg['user.add'] : msg['user.edit']}
     </ui:define>
-
 
     <ui:define name="pageHeadline">
-        #{adminUserBean.newUser ? 'Add User' : 'Edit User'}
+        #{adminUserBean.newUser ? msg['user.add'] : msg['user.edit']}
     </ui:define>
-
 
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
 
-
     <ui:define name="headerActions">
-
         <div class="user-info">
-
             <span class="user-name">
-                #{mockUserBean.fullName}
+                #{loginBean.user.firstName} #{loginBean.user.lastName}
             </span>
-
-            <span class="user-role">
-                #{mockUserBean.role}
-            </span>
-
+            <ui:repeat
+                value="#{loginBean.user.roles}"
+                var="role">
+                <span class="badge">
+                    #{msg['role.'.concat(role.name())]}
+                </span>
+            </ui:repeat>
         </div>
-
     </ui:define>
-
 
     <ui:define name="content">
 
@@ -62,73 +56,81 @@
                     showDetail="true"
                     closable="true"/>
 
-
+                <!-- First Name -->
                 <div class="form-field">
 
                     <p:outputLabel
                         for="firstName"
-                        value="First name"/>
+                        value="#{msg['user.firstName']}"/>
 
                     <p:inputText
                         id="firstName"
                         value="#{adminUserBean.person.firstName}"
                         required="true"
+                        placeholder="#{msg['user.firstName.placeholder']}"
                         styleClass="form-input"/>
 
                 </div>
 
-
+                <!-- Last Name -->
                 <div class="form-field">
 
                     <p:outputLabel
                         for="lastName"
-                        value="Last name"/>
+                        value="#{msg['user.lastName']}"/>
 
                     <p:inputText
                         id="lastName"
                         value="#{adminUserBean.person.lastName}"
                         required="true"
+                        placeholder="#{msg['user.lastName.placeholder']}"
                         styleClass="form-input"/>
 
                 </div>
 
-
+                <!-- Email -->
                 <div class="form-field">
 
                     <p:outputLabel
                         for="email"
-                        value="Email"/>
+                        value="#{msg['user.email']}"/>
 
                     <p:inputText
                         id="email"
                         value="#{adminUserBean.person.emailAddress}"
                         required="true"
+                        placeholder="#{msg['user.email.placeholder']}"
                         styleClass="form-input"/>
 
                 </div>
 
-
+                <!-- Initial Password -->
                 <ui:fragment rendered="#{adminUserBean.newUser}">
 
                     <div class="form-field">
 
                         <p:outputLabel
                             for="password"
-                            value="Initial password"/>
+                            value="#{msg['user.initialPassword']}"/>
 
                         <p:password
                             id="password"
                             value="#{adminUserBean.person.password}"
                             required="true"
                             feedback="false"
+                            placeholder="#{msg['user.initialPassword.placeholder']}"
                             styleClass="form-input"/>
 
                     </div>
 
                 </ui:fragment>
 
-
+                <!-- Roles -->
                 <div class="form-field">
+
+                    <p:outputLabel
+                        for="role"
+                        value="#{msg['user.roles']}"/>
 
                     <p:selectManyCheckbox
                         id="role"
@@ -141,13 +143,13 @@
                             value="#{adminUserBean.roles}"
                             var="role"
                             itemValue="#{role.name()}"
-                            itemLabel="#{role}"/>
+                            itemLabel="#{msg['role.'.concat(role.name())]}"/>
 
                     </p:selectManyCheckbox>
 
                 </div>
 
-
+                <!-- Consent -->
                 <div class="form-checkbox">
 
                     <p:selectBooleanCheckbox
@@ -156,21 +158,21 @@
 
                     <p:outputLabel
                         for="consent"
-                        value="Data processing consent"/>
+                        value="#{msg['user.dataProcessingConsent']}"/>
 
                 </div>
 
-
+                <!-- Actions -->
                 <div class="form-actions">
 
                     <p:commandButton
-                        value="Save"
+                        value="#{msg['button.save']}"
                         icon="pi pi-save"
                         action="#{adminUserBean.save}"
                         ajax="false"/>
 
                     <p:commandButton
-                        value="Cancel"
+                        value="#{msg['button.cancel']}"
                         icon="pi pi-times"
                         action="#{adminUserBean.cancel}"
                         immediate="true"
@@ -178,7 +180,7 @@
                         styleClass="ui-button-secondary"/>
 
                     <p:commandButton
-                        value="Delete"
+                        value="#{msg['button.delete']}"
                         icon="pi pi-trash"
                         action="#{adminUserBean.delete}"
                         ajax="false"
@@ -186,8 +188,8 @@
                         styleClass="ui-button-danger">
 
                         <p:confirm
-                            header="Delete user"
-                            message="Are you sure you want to delete this user?"
+                            header="#{msg['user.delete.header']}"
+                            message="#{msg['user.delete.message']}"
                             icon="pi pi-exclamation-triangle"/>
 
                     </p:commandButton>
@@ -195,13 +197,13 @@
                     <p:confirmDialog global="true">
 
                         <p:commandButton
-                            value="Yes"
+                            value="#{msg['button.yes']}"
                             type="button"
                             styleClass="ui-confirmdialog-yes"
                             icon="pi pi-check"/>
 
                         <p:commandButton
-                            value="No"
+                            value="#{msg['button.no']}"
                             type="button"
                             styleClass="ui-confirmdialog-no ui-button-secondary"
                             icon="pi pi-times"/>

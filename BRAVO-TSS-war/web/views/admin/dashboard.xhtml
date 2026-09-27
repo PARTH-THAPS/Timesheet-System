@@ -1,203 +1,196 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <ui:composition
-   template="/WEB-INF/templates/page-layout.xhtml"
-   xmlns="http://www.w3.org/1999/xhtml"
-   xmlns:h="jakarta.faces.html"
-   xmlns:f="jakarta.faces.core"
-   xmlns:ui="jakarta.faces.facelets"
-   xmlns:p="http://primefaces.org/ui">
+        template="/WEB-INF/templates/page-layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui">
 
-   <!-- Page Title -->
-   <ui:define name="pageTitle">
-       Dashboard
-   </ui:define>
+    <!-- Page Title -->
+    <ui:define name="pageTitle">
+        #{msg['dashboard.title']}
+    </ui:define>
 
-   <!-- Page Headline -->
-   <ui:define name="pageHeadline">
-       Dashboard
-   </ui:define>
+    <!-- Page Headline -->
+    <ui:define name="pageHeadline">
+        #{msg['dashboard.title']}
+    </ui:define>
 
-   <!-- Navigation -->
-   <ui:define name="navigation">
-       <ui:include src="/WEB-INF/components/navigation.xhtml"/>
-   </ui:define>
+    <!-- Navigation -->
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
 
-   <!-- Header Actions -->
-   <ui:define name="headerActions">
+    <!-- Header Actions -->
+    <ui:define name="headerActions">
 
-       <div class="user-info">
+        <div class="user-info">
 
-           <span class="user-name">
-               #{loginBean.user.firstName} #{loginBean.user.lastName}
-           </span>
+            <span class="user-name">
+                #{loginBean.user.firstName} #{loginBean.user.lastName}
+            </span>
 
-           <ui:repeat
-               value="#{loginBean.user.roles}"
-               var="role">
+            <ui:repeat
+                    value="#{loginBean.user.roles}"
+                    var="role">
 
-               <span class="badge">
-                   #{role}
-               </span>
+                <span class="badge">
+                    #{role}
+                </span>
 
-           </ui:repeat>
+            </ui:repeat>
 
-       </div>
+        </div>
 
-       <h:form>
 
-           <h:commandButton
-               value="Logout"
-               styleClass="button-logout"
-               action="#{loginBean.logout}"/>
+    </ui:define>
 
-       </h:form>
+    <!-- Main Content -->
+    <ui:define name="content">
 
-   </ui:define>
+        <!-- Section Header -->
+        <section class="page-section-header">
 
-   <!-- Main Content -->
-   <ui:define name="content">
+            <div>
 
-       <!-- Section Header -->
-       <section class="page-section-header">
+                <h2>
+                    #{msg['dashboard.systemOverview']}
+                </h2>
 
-           <div>
+                <p class="text-muted">
+                    #{msg['dashboard.systemOverview.description']}
+                </p>
 
-               <h2>
-                   System overview
-               </h2>
+            </div>
 
-               <p class="text-muted">
-                   A snapshot of users, roles and contracts across the system.
-               </p>
+        </section>
 
-           </div>
+        <!-- Statistics -->
+        <section
+                class="statistics-grid"
+                style="margin-bottom: 2rem;">
 
-       </section>
+            <div class="statistic">
 
-       <!-- Statistics -->
-       <section
-           class="statistics-grid"
-           style="margin-bottom: 2rem;">
+                <span class="statistic-label">
+                    #{msg['dashboard.totalUsers']}
+                </span>
 
-           <div class="statistic">
+                <span class="statistic-value">
+                    #{adminDashboardBean.totalUsers}
+                </span>
 
-               <span class="statistic-label">
-                   Total users
-               </span>
+            </div>
 
-               <span class="statistic-value">
-                   #{adminDashboardBean.totalUsers}
-               </span>
+            <div class="statistic">
 
-           </div>
+                <span class="statistic-label">
+                    #{msg['dashboard.consentedUsers']}
+                </span>
 
-           <div class="statistic">
+                <span class="statistic-value">
+                    #{adminDashboardBean.consentedUserCount}
+                </span>
 
-               <span class="statistic-label">
-                   Consented users
-               </span>
+            </div>
 
-               <span class="statistic-value">
-                   #{adminDashboardBean.consentedUserCount}
-               </span>
+            <div class="statistic">
 
-           </div>
+                <span class="statistic-label">
+                    #{msg['dashboard.activeContracts']}
+                </span>
 
-           <div class="statistic">
+                <span class="statistic-value">
+                    #{adminDashboardBean.activeContractCount}
+                </span>
 
-               <span class="statistic-label">
-                   Active contracts
-               </span>
+            </div>
 
-               <span class="statistic-value">
-                   #{adminDashboardBean.activeContractCount}
-               </span>
+            <div class="statistic">
 
-           </div>
+                <span class="statistic-label">
+                    #{msg['dashboard.totalContracts']}
+                </span>
 
-           <div class="statistic">
+                <span class="statistic-value">
+                    #{adminDashboardBean.totalContractCount}
+                </span>
 
-               <span class="statistic-label">
-                   Total contracts
-               </span>
+            </div>
 
-               <span class="statistic-value">
-                   #{adminDashboardBean.totalContractCount}
-               </span>
+        </section>
 
-           </div>
+        <!-- Users by Role -->
+        <section
+                class="card"
+                style="margin-bottom: 2rem;">
 
-       </section>
+            <h3 style="margin-top: 0;">
+                #{msg['dashboard.usersByRole']}
+            </h3>
 
-       <!-- Users by Role -->
-       <section
-           class="card"
-           style="margin-bottom: 2rem;">
+            <table
+                    class="table-responsive-wrapper"
+                    style="width: 100%; border-collapse: collapse;">
 
-           <h3 style="margin-top: 0;">
-               Users by role
-           </h3>
+                <thead>
 
-           <table
-               class="table-responsive-wrapper"
-               style="width: 100%; border-collapse: collapse;">
+                    <tr>
 
-               <thead>
+                        <th
+                                style="text-align: left; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
 
-                   <tr>
+                            #{msg['dashboard.role']}
 
-                       <th
-                           style="text-align: left; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                        </th>
 
-                           Role
+                        <th
+                                style="text-align: right; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
 
-                       </th>
+                            #{msg['dashboard.users']}
 
-                       <th
-                           style="text-align: right; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                        </th>
 
-                           Users
+                    </tr>
 
-                       </th>
+                </thead>
 
-                   </tr>
+                <tbody>
 
-               </thead>
+                    <ui:repeat
+                            value="#{adminDashboardBean.roleCounts.entrySet().toArray()}"
+                            var="entry">
 
-               <tbody>
+                        <tr>
 
-                   <ui:repeat
-                       value="#{adminDashboardBean.roleCounts.entrySet().toArray()}"
-                       var="entry">
+                            <td
+                                    style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
 
-                       <tr>
+                                <span class="role-badge">
+                                    #{entry.key}
+                                </span>
 
-                           <td
-                               style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
+                            </td>
 
-                               <span class="role-badge">
-                                   #{entry.key}
-                               </span>
+                            <td
+                                    style="text-align: right; padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
 
-                           </td>
+                                #{entry.value}
 
-                           <td
-                               style="text-align: right; padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
+                            </td>
 
-                               #{entry.value}
+                        </tr>
 
-                           </td>
+                    </ui:repeat>
 
-                       </tr>
+                </tbody>
 
-                   </ui:repeat>
+            </table>
 
-               </tbody>
+        </section>
 
-           </table>
-
-       </section>
-
-   </ui:define>
+    </ui:define>
 
 </ui:composition>
