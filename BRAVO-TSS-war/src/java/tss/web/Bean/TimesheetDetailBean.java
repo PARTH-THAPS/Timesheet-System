@@ -6,10 +6,12 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
+import tss.dto.ContractDTO;
 import tss.dto.TimesheetDTO;
 import tss.dto.TimesheetEntryDTO;
 import tss.entity.ReportType;
 import tss.entity.TimesheetStatus;
+import tss.logic.ContractLogic;
 import tss.logic.TimesheetLogic;
 
 @Named
@@ -20,6 +22,9 @@ public class TimesheetDetailBean implements Serializable {
 
     @EJB
     private TimesheetLogic timesheetLogic;
+    
+    @EJB
+    private ContractLogic contractLogic;
 
     private Long id;
 
@@ -28,6 +33,9 @@ public class TimesheetDetailBean implements Serializable {
     private TimesheetEntryDTO entry = new TimesheetEntryDTO();
     
     private Long editingEntryId;
+    
+    private Double vacationHoursTotal;
+    private Double vacationHoursUsed;
 
     public void init() {
         if (timesheet != null) {
@@ -47,6 +55,8 @@ public class TimesheetDetailBean implements Serializable {
                     "No timesheet found with id: " + id
             );
         }
+        
+        loadVacationSummary();
     }
 
     public void prepareNewEntry() {
@@ -121,6 +131,18 @@ public class TimesheetDetailBean implements Serializable {
         }
     }
     
+    private void loadVacationSummary() {
+        if (timesheet == null || timesheet.getContractId() == null) {
+            vacationHoursTotal = 0.0;
+            vacationHoursUsed = 0.0;
+            return;
+        }
+
+        ContractDTO contract = contractLogic.searchContract(timesheet.getContractId());
+        vacationHoursTotal = contract != null ? contract.getVacationHours() : 0.0;
+        vacationHoursUsed = timesheetLogic.getUsedVacationHours(timesheet.getContractId());
+    }
+    
     public void signByEmployee() {
     if (timesheet == null || timesheet.getId() == null) {
         showError("Could not sign", "No timesheet is loaded.");
@@ -166,6 +188,7 @@ public class TimesheetDetailBean implements Serializable {
 
     private void reload() {
         timesheet = timesheetLogic.getTimesheetById(id);
+        loadVacationSummary();
     }
 
    
@@ -185,7 +208,7 @@ public class TimesheetDetailBean implements Serializable {
             return 0;
         }
 
-        return getReportedHours() - timesheet.getHoursDue();
+        return timesheet.getHoursDue()- getReportedHours();
     }
 
     public boolean isEditable() {
@@ -275,5 +298,17 @@ public class TimesheetDetailBean implements Serializable {
 
     public TimesheetEntryDTO getEntry() {
         return entry;
+    }
+    
+    public double getVacationHoursTotal() {
+        return vacationHoursTotal != null ? vacationHoursTotal : 0.0;
+    }
+
+    public double getVacationHoursUsed() {
+        return vacationHoursUsed != null ? vacationHoursUsed : 0.0;
+    }
+
+    public double getVacationHoursRemaining() {
+        return getVacationHoursTotal() - getVacationHoursUsed();
     }
 }
