@@ -150,6 +150,46 @@
                 </div>
 
             </section>
+            
+            <section class="timesheet-summary">
+
+                <div class="statistic">
+                    <span class="statistic-label">
+                        #{msg['timesheet.vacationTotal']}
+                    </span>
+                    <strong class="statistic-value">
+                        <h:outputText value="#{timesheetDetailBean.vacationHoursTotal}">
+                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                        </h:outputText>
+                        h
+                    </strong>
+                </div>
+
+                <div class="statistic">
+                    <span class="statistic-label">
+                        #{msg['timesheet.vacationUsed']}
+                    </span>
+                    <strong class="statistic-value">
+                        <h:outputText value="#{timesheetDetailBean.vacationHoursUsed}">
+                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                        </h:outputText>
+                        h
+                    </strong>
+                </div>
+
+                <div class="statistic">
+                    <span class="statistic-label">
+                        #{msg['timesheet.vacationRemaining']}
+                    </span>
+                    <strong class="statistic-value">
+                        <h:outputText value="#{timesheetDetailBean.vacationHoursRemaining}">
+                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                        </h:outputText>
+                        h
+                    </strong>
+                </div>
+
+            </section>
 
             <section class="approval-card">
 

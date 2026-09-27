@@ -22,6 +22,8 @@ public interface TimesheetLogic {
     List<TimesheetDTO> getTimesheetsForContract(Long contractId);
 
     TimesheetDTO getTimesheetById(Long timesheetId);
+    
+    double getUsedVacationHours(Long contractId);
 
     TimesheetDTO signByEmployee(Long timesheetId);
 

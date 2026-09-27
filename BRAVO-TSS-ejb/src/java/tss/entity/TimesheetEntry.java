@@ -15,7 +15,8 @@ public class TimesheetEntry extends AbstractEntity {
     
     @Enumerated(EnumType.STRING)
     private ReportType type;
-    private String description;       
+    private String description; 
+    private double hours;
     private LocalTime startTime;
     private LocalTime endTime;
     private LocalDate entryDate;
@@ -28,13 +29,13 @@ public class TimesheetEntry extends AbstractEntity {
         super(true);
     }
     
-    @Transient
-    public double getHours() {
-        if (startTime != null && endTime != null) {
-            return Duration.between(startTime, endTime).toMinutes() / 60.0;
-        }
-        return 0.0;
+    public double getHours(){
+        return hours;
     }
+    
+    public void setHours(double hours){
+        this.hours= hours;
+     }
 
     public ReportType getType() {
         return type;

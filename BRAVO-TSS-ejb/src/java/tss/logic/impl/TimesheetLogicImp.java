@@ -57,6 +57,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         LocalDate startDate = contract.getStartDate();
         LocalDate endDate = contract.getEndDate();
+        double totalHoursDue = 0.0;
 
         while (!startDate.isAfter(endDate)) {
             LocalDate periodEnd = calculatePeriodEnd(startDate, contract.getFrequency(), endDate);
@@ -66,7 +67,11 @@ public class TimesheetLogicImp implements TimesheetLogic {
             ts.setStartDate(startDate);
             ts.setEndDate(periodEnd);
             ts.setContract(contract);
-            ts.setHoursDue(calculateHoursDue(startDate, periodEnd, contract.getHoursPerWeek(), contract.getWorkingDaysPerWeek(), contract));
+            //ts.setHoursDue(calculateHoursDue(startDate, periodEnd, contract.getHoursPerWeek(), contract.getWorkingDaysPerWeek(), contract));
+            double timesheetHoursDue = calculateHoursDue(startDate, periodEnd, contract.getHoursPerWeek(),contract.getWorkingDaysPerWeek(), contract);
+            ts.setHoursDue(timesheetHoursDue);
+            totalHoursDue += timesheetHoursDue;
+            
             ts.setSignedByEmployee(null);
             ts.setSignedBySupervisor(null);
 
@@ -74,6 +79,9 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
             startDate = periodEnd.plusDays(1);
         }
+        
+        contract.setHoursDue(totalHoursDue);
+        contractsDao.UpdateContract(contract);
     }
 
     private LocalDate calculatePeriodEnd(LocalDate startDate, TimesheetFrequency frequency, LocalDate endDate) {
@@ -110,14 +118,19 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         TimesheetEntry entry = toEntity(entryDTO);
 
-        if (entry.getEntryDate().isBefore(start_date)|| entry.getEntryDate().isAfter(end_date)) {
+        double computedHours = computeHours(entry.getStartTime(), entry.getEndTime());
+        entry.setHours(computedHours);
 
-            throw new IllegalArgumentException("Selected date is outside the timesheet period.");}
+        if (entry.getEntryDate().isBefore(start_date) || entry.getEntryDate().isAfter(end_date)) {
+            throw new IllegalArgumentException(
+                    "The entry date must fall between " + start_date + " and " + end_date + "."
+            );
+        }
 
         validateNoOverlap(timesheet, entry, null);
 
         if (entry.getType() == ReportType.VACATION) {
-                validateVacationCap(timesheet.getContract(), entry.getHours(), null);
+            validateVacationCap(timesheet.getContract(), computedHours, null);
         }
 
         entry.setTimesheet(timesheet);
@@ -169,6 +182,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
         existing.setEntryDate(updatedEntryDTO.getEntryDate());
         existing.setStartTime(updatedEntryDTO.getStartTime());
         existing.setEndTime(updatedEntryDTO.getEndTime());
+        existing.setHours(updatedHours);
         existing.setDescription(updatedEntryDTO.getDescription());
         existing.setType(updatedType);
 
@@ -231,6 +245,15 @@ public class TimesheetLogicImp implements TimesheetLogic {
             throw new IllegalArgumentException("No timesheet found with id: " + timesheetId);
         }
         return toDTO(timesheet);
+    }
+    
+    @Override
+    public double getUsedVacationHours(Long contractId) {
+        Contract contract = contractsDao.findContract(contractId);
+        if (contract == null) {
+            throw new IllegalArgumentException("No contract found with id: " + contractId);
+        }
+        return calculateUsedVacationHours(contract, null);
     }
 
     @Override
