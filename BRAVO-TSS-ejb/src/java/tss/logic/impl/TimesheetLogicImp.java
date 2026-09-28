@@ -325,51 +325,49 @@ public class TimesheetLogicImp implements TimesheetLogic {
     }
     
    @Override
-    public List<TimesheetDTO> findTimesheetsForSupervisor(
-            String emailAddress
-    ) {
-        List<Timesheet> entities =
-                timesheetDAO.findBySupervisor(
-                        emailAddress
-                );
+    public List<TimesheetDTO> findByEmployeeId(Long personId) {
+        List<Timesheet> entities = timesheetDAO.findByEmployeeId(personId);
+        return entities.stream().map(this::toDTO).collect(Collectors.toList());
+    }
 
-        if (entities == null) {
-            return List.of();
+    @Override
+    public List<TimesheetDTO> findTimesheetsForSupervisor(Long supervisorId) {
+        List<Timesheet> entities = timesheetDAO.findBySupervisorId(supervisorId);
+        if (entities == null) return List.of();
+        return entities.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public TimesheetDTO getTimesheetForSupervisor(Long timesheetId, Long supervisorId) {
+        Timesheet timesheet = timesheetDAO.findByIdForSupervisorId(timesheetId, supervisorId);
+        return toDTO(timesheet);
+    }
+
+    @Override
+    public TimesheetDTO requestChangesBySupervisor(Long timesheetId, Long supervisorId) {
+        Timesheet timesheet = timesheetDAO.findByIdForSupervisorId(timesheetId, supervisorId);
+
+        if (timesheet.getStatus() != TimesheetStatus.SIGNED_BY_EMPLOYEE) {
+            throw new IllegalStateException(
+                    "Changes can only be requested when status is SIGNED_BY_EMPLOYEE"
+            );
         }
 
-        return entities.stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
-    }    
-    @Override
-    public TimesheetDTO getTimesheetForSupervisor(
-            Long timesheetId,
-            String supervisorEmail
-    ) {
-        Timesheet timesheet =
-                timesheetDAO.findByIdForSupervisor(
-                        timesheetId,
-                        supervisorEmail
-                );
+        timesheet.setSignedByEmployee(null);
+        timesheet.setStatus(TimesheetStatus.IN_PROGRESS);
+        timesheetDAO.updateTimesheet(timesheet);
 
         return toDTO(timesheet);
     }
     
     @Override
-    public boolean canSupervisorAccessTimesheet(
-            Long timesheetId,
-            String supervisorEmail
-    ) {
-        if (timesheetId == null || supervisorEmail == null) {
+    public boolean canSupervisorAccessTimesheet(Long timesheetId,Long supervisorId) {
+        if (timesheetId == null || supervisorId == null) {
             return false;
         }
 
         try {
-            timesheetDAO.findByIdForSupervisor(
-                    timesheetId,
-                    supervisorEmail
-            );
-
+            timesheetDAO.findByIdForSupervisorId(timesheetId,supervisorId);
             return true;
 
         } catch (IllegalArgumentException e) {
@@ -378,13 +376,25 @@ public class TimesheetLogicImp implements TimesheetLogic {
     }
 
     @Override
-    public TimesheetDTO requestChanges(Long timesheetId) {
-        Timesheet timesheet = timesheetDAO.findById(timesheetId);
-        if (timesheet == null) {
-            throw new IllegalArgumentException("No timesheet found with id: " + timesheetId);
-        }
+    public List<TimesheetDTO> findTimesheetsForAssistant(Long assistantId) {
+        List<Timesheet> entities = timesheetDAO.findByAssistantId(assistantId);
+        return entities.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public TimesheetDTO getTimesheetForAssistant(Long timesheetId, Long assistantId) {
+        Timesheet timesheet = timesheetDAO.findByIdForAssistantId(timesheetId, assistantId);
+        return toDTO(timesheet);
+    }
+
+    @Override
+    public TimesheetDTO requestChanges(Long timesheetId, Long assistantId) {
+        Timesheet timesheet = timesheetDAO.findByIdForAssistantId(timesheetId, assistantId);
+
         if (timesheet.getStatus() != TimesheetStatus.SIGNED_BY_EMPLOYEE) {
-            throw new IllegalStateException("Changes can only be requested when status is SIGNED_BY_EMPLOYEE");
+            throw new IllegalStateException(
+                    "Changes can only be requested when status is SIGNED_BY_EMPLOYEE"
+            );
         }
 
         timesheet.setSignedByEmployee(null);
@@ -392,7 +402,18 @@ public class TimesheetLogicImp implements TimesheetLogic {
         timesheetDAO.updateTimesheet(timesheet);
 
         return toDTO(timesheet);
+    }
 
+    @Override
+    public List<TimesheetDTO> findTimesheetsForSecretary(Long secretaryId) {
+        List<Timesheet> entities = timesheetDAO.findBySecretaryId(secretaryId);
+        return entities.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public TimesheetDTO getTimesheetForSecretary(Long timesheetId, Long secretaryId) {
+        Timesheet timesheet = timesheetDAO.findByIdForSecretaryId(timesheetId, secretaryId);
+        return toDTO(timesheet);
     }
 
     private double calculateHoursDue(LocalDate startDate, LocalDate endDate, double hoursPerWeek,
@@ -554,28 +575,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
         throw new IllegalArgumentException("No entry found with id: " + entryId);
     }
 
-    @Override
-    public List<TimesheetDTO> findByEmployeeUsername(String emailAddress) {
-        List<Timesheet> entities = timesheetDAO.findByEmployeeUsername(emailAddress);
-
-        List<TimesheetDTO> dtos = new ArrayList<>();
-
-        for (Timesheet t : entities) {
-            TimesheetDTO dto = new TimesheetDTO();
-            dto.setStartDate(t.getStartDate());
-            dto.setEndDate(t.getEndDate());
-            dto.setStatus(t.getStatus());
-            dto.setHoursDue(t.getHoursDue());
-            dto.setSignedByEmployee(t.getSignedByEmployee());
-            dto.setSignedBySupervisor(t.getSignedBySupervisor());
-            dto.setId(t.getId());
-
-            dtos.add(dto);
-        }
-
-        return dtos;
-    }
-
+    
     @Override
     public List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress) {
         List<Timesheet> entities = timesheetDAO.findPendingArchivesForSecretary(emailAddress);

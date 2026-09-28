@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="pageTitle">Employee Timesheets</ui:define>
+    <ui:define name="pageHeadline">Employee Timesheets</ui:define>
+
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="assistantTimesheetsForm">
+
+            <p:messages closable="true"/>
+
+            <section class="page-section-header">
+                <div>
+                    <p class="text-muted">
+                        View timesheets of employees assigned to you and request changes if needed.
+                    </p>
+                </div>
+            </section>
+
+            <section class="card">
+
+                <p:dataTable
+                        id="assistantTimesheets"
+                        value="#{assistantTimesheetsBean.timesheetList}"
+                        var="timesheet"
+                        paginator="true"
+                        rows="10"
+                        stripedRows="true"
+                        emptyMessage="No timesheets are assigned to you.">
+
+                    <p:column headerText="Employee">
+                        <h:outputText value="#{timesheet.employeeFullName}"/>
+                    </p:column>
+
+                    <p:column headerText="Period">
+                        <h:outputText value="#{timesheet.startDate}">
+                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                        –
+                        <h:outputText value="#{timesheet.endDate}">
+                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Status">
+                        <span class="status-badge">#{timesheet.status}</span>
+                    </p:column>
+
+                    <p:column headerText="Hours Due">
+                        <h:outputText value="#{timesheet.hoursDue}">
+                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                        </h:outputText>
+                        h
+                    </p:column>
+
+                    <p:column headerText="Actions" styleClass="table-actions-column">
+                        <p:button
+                                value="Open"
+                                icon="pi pi-folder-open"
+                                outcome="/views/assistant/timesheet"
+                                styleClass="ui-button-secondary">
+                            <f:param name="id" value="#{timesheet.id}"/>
+                        </p:button>
+                    </p:column>
+
+                </p:dataTable>
+
+            </section>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import tss.dto.PersonDTO;
 import tss.dto.TimesheetDTO;
+import tss.dto.User;
 import tss.logic.PersonLogic;
 import tss.logic.TimesheetLogic;
 
@@ -23,26 +25,25 @@ public class TimesheetBean implements Serializable {
 
     @EJB
     private TimesheetLogic tl;
+    @Inject
+    private loginBean loginBean;
 
     private List<TimesheetDTO> timesheetList = List.of();
 
     @PostConstruct
     public void init() {
-        Principal principal = FacesContext.getCurrentInstance()
-                .getExternalContext()
-                .getUserPrincipal();
+        User user = loginBean.getUser();
 
-        if (principal != null) {
-            String emailAddress = principal.getName();
-            loadTimesheetsForUser(emailAddress);
+        if (user != null) {
+            loadTimesheetsForUser(user.getId());
         }
 
         // Temporary development functionality
         persons = personLogic.findAllPersons();
     }
 
-    public void loadTimesheetsForUser(String emailAddress) {
-        timesheetList = tl.findByEmployeeUsername(emailAddress);
+    public void loadTimesheetsForUser(Long employeeId) {
+        timesheetList = tl.findByEmployeeId(employeeId);
     }
 
     public List<TimesheetDTO> getTimesheetList() {
@@ -74,7 +75,7 @@ public class TimesheetBean implements Serializable {
                         )
                 );
 
-        loadTimesheetsForUser(person.getEmailAddress());
+        loadTimesheetsForUser(person.getId());
     }
 
     public List<PersonDTO> getPersons() {

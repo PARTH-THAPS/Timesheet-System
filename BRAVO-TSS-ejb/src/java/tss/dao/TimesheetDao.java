@@ -153,44 +153,6 @@ public class TimesheetDao {
                 .executeUpdate();
     }
     
-    public List<Timesheet> findBySupervisor(String emailAddress) {
-        return em.createQuery(
-                "SELECT DISTINCT t "
-                + "FROM Timesheet t "
-                + "JOIN FETCH t.contract c "
-                + "JOIN FETCH c.employee e "
-                + "JOIN c.supervisor s "
-                + "WHERE s.emailAddress = :emailAddress "
-                + "ORDER BY t.startDate DESC",
-                Timesheet.class
-        )
-        .setParameter("emailAddress", emailAddress)
-        .getResultList();
-    }
-    
-    public Timesheet findByIdForSupervisor(Long timesheetId,String supervisorEmail) {
-        try {
-            return em.createQuery(
-                    "SELECT DISTINCT t "
-                    + "FROM Timesheet t "
-                    + "JOIN FETCH t.entries "
-                    + "JOIN FETCH t.contract c "
-                    + "JOIN FETCH c.employee e "
-                    + "JOIN c.supervisor s "
-                    + "WHERE t.id = :timesheetId "
-                    + "AND s.emailAddress = :supervisorEmail",
-                    Timesheet.class
-            )
-            .setParameter("timesheetId", timesheetId)
-            .setParameter("supervisorEmail", supervisorEmail)
-            .getSingleResult();
-        } catch (NoResultException e) {
-            throw new IllegalArgumentException(
-                    "This timesheet does not belong to you."
-            );
-        }
-    }
-    
     public List<Timesheet> findPendingSignaturesForSupervisor(String emailAddress) {
         return em.createQuery(
                 "SELECT DISTINCT t "
@@ -208,6 +170,127 @@ public class TimesheetDao {
         .getResultList();
     }
     
+    public List<Timesheet> findByEmployeeId(Long personId) {
+        return em.createQuery(
+                "SELECT DISTINCT t "
+                + "FROM Timesheet t "
+                + "LEFT JOIN FETCH t.entries "
+                + "JOIN t.contract c "
+                + "JOIN c.employee p "
+                + "WHERE p.id = :personId "
+                + "ORDER BY t.startDate",
+                Timesheet.class
+        )
+        .setParameter("personId", personId)
+        .getResultList();
+    }
+
+    public List<Timesheet> findBySupervisorId(Long supervisorId) {
+        return em.createQuery(
+                "SELECT DISTINCT t "
+                + "FROM Timesheet t "
+                + "JOIN FETCH t.contract c "
+                + "JOIN FETCH c.employee e "
+                + "WHERE c.supervisor.id = :supervisorId "
+                + "ORDER BY t.startDate DESC",
+                Timesheet.class
+        )
+        .setParameter("supervisorId", supervisorId)
+        .getResultList();
+    }
+
+    public List<Timesheet> findByAssistantId(Long assistantId) {
+        return em.createQuery(
+                "SELECT DISTINCT t "
+                + "FROM Timesheet t "
+                + "JOIN FETCH t.contract c "
+                + "JOIN FETCH c.employee e "
+                + "JOIN c.assistants a "
+                + "WHERE a.id = :assistantId "
+                + "ORDER BY t.startDate DESC",
+                Timesheet.class
+        )
+        .setParameter("assistantId", assistantId)
+        .getResultList();
+    }
+
+    public List<Timesheet> findBySecretaryId(Long secretaryId) {
+        return em.createQuery(
+                "SELECT DISTINCT t "
+                + "FROM Timesheet t "
+                + "JOIN FETCH t.contract c "
+                + "JOIN FETCH c.employee e "
+                + "JOIN c.secretaries s "
+                + "WHERE s.id = :secretaryId "
+                + "ORDER BY t.startDate DESC",
+                Timesheet.class
+        )
+        .setParameter("secretaryId", secretaryId)
+        .getResultList();
+    }
+
+    public Timesheet findByIdForSupervisorId(Long timesheetId, Long supervisorId) {
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT t "
+                    + "FROM Timesheet t "
+                    + "LEFT JOIN FETCH t.entries "
+                    + "JOIN FETCH t.contract c "
+                    + "JOIN FETCH c.employee e "
+                    + "WHERE t.id = :timesheetId "
+                    + "AND c.supervisor.id = :supervisorId",
+                    Timesheet.class
+            )
+            .setParameter("timesheetId", timesheetId)
+            .setParameter("supervisorId", supervisorId)
+            .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public Timesheet findByIdForAssistantId(Long timesheetId, Long assistantId) {
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT t "
+                    + "FROM Timesheet t "
+                    + "LEFT JOIN FETCH t.entries "
+                    + "JOIN FETCH t.contract c "
+                    + "JOIN FETCH c.employee e "
+                    + "JOIN c.assistants a "
+                    + "WHERE t.id = :timesheetId "
+                    + "AND a.id = :assistantId",
+                    Timesheet.class
+            )
+            .setParameter("timesheetId", timesheetId)
+            .setParameter("assistantId", assistantId)
+            .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public Timesheet findByIdForSecretaryId(Long timesheetId, Long secretaryId) {
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT t "
+                    + "FROM Timesheet t "
+                    + "LEFT JOIN FETCH t.entries "
+                    + "JOIN FETCH t.contract c "
+                    + "JOIN FETCH c.employee e "
+                    + "JOIN c.secretaries s "
+                    + "WHERE t.id = :timesheetId "
+                    + "AND s.id = :secretaryId",
+                    Timesheet.class
+            )
+            .setParameter("timesheetId", timesheetId)
+            .setParameter("secretaryId", secretaryId)
+            .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+   
     public Timesheet findByIdWithEntries(Long id) {
     if (id == null) {
         throw new IllegalArgumentException(
