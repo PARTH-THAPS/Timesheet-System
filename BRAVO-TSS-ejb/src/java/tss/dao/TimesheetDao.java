@@ -321,5 +321,17 @@ public class TimesheetDao {
     .setParameter("id", id)
     .getSingleResult();
 }
+     public List<Timesheet> findPendingRemindersByStatus(TimesheetStatus status) {
+        try {
+            return em.createQuery(
+                            "SELECT t FROM Timesheet t WHERE t.status = :status AND t.endDate <= CURRENT_DATE ORDER BY t.startDate",
+                            Timesheet.class)
+                    .setParameter("status", status)
+                    .getResultList();
+        } catch (NoResultException e) {
+            return new ArrayList<>();
+        }
+    }
+
 }
 

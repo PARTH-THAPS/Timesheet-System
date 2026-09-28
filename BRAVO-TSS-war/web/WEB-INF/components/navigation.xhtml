@@ -26,9 +26,15 @@
                     <span>#{msg['navigation.myProfile']}</span>
                 </h:link>
             </li>
-
-
-
+            
+            <li>
+                <h:link
+                    outcome="/views/shared/mycontractView"
+                    styleClass="navigation-link">
+                    <i class="pi pi-file"></i>
+                    <span>#{msg['my.contract']}</span>
+                </h:link>
+            </li>
 
             <ui:fragment rendered="#{loginBean.hasRole('EMPLOYEE')}">
                 <li>
@@ -160,6 +166,15 @@
                         styleClass="navigation-link">
                         <i class="pi pi-inbox"></i>
                         <span>#{msg['archive.title']}</span>
+                    </h:link>
+                </li>
+                
+                <li>
+                    <h:link
+                        outcome="/views/secretary/contracts"
+                        styleClass="navigation-link">
+                        <i class="pi pi-print"></i>
+                        <span>#{msg['print.contract']}</span>
                     </h:link>
                 </li>
                      
