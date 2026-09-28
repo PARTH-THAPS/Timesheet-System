@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <ui:composition
     template="/WEB-INF/templates/page-layout.xhtml"
     xmlns="http://www.w3.org/1999/xhtml"
@@ -9,11 +8,11 @@
     xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
-        #{msg['archive.contractArchive']}
+        Contract Archive
     </ui:define>
 
     <ui:define name="pageHeadline">
-        #{msg['archive.contractArchive']}
+        Contract Archive
     </ui:define>
 
     <ui:define name="navigation">
@@ -23,140 +22,102 @@
     <ui:define name="headerActions">
         <div class="user-info">
             <span class="user-name">
-                #{loginBean.user.firstName} #{loginBean.user.lastName}
+                #{mockUserBean.fullName}
             </span>
-            <ui:repeat
-                value="#{loginBean.user.roles}"
-                var="role">
-                <span class="badge">
-                    #{msg['role.'.concat(role.name())]}
-                </span>
-            </ui:repeat>
+            <span class="user-role">
+                #{mockUserBean.role}
+            </span>
         </div>
     </ui:define>
 
     <ui:define name="content">
-
         <section class="page-section-header">
-
             <div>
-
-                <h2>
-                    #{msg['archive.allContracts']}
-                </h2>
-
+                <h2>All Contracts</h2>
                 <p class="text-muted">
-                    #{msg['archive.selectContract']}
+                    Select a contract to review its timesheets.
                 </p>
-
             </div>
-
         </section>
 
         <section class="card">
-
             <h:form id="archiveContractsForm">
-
                 <p:dataTable
                     id="contractsTable"
                     widgetVar="contractsTable"
-                    value="#{contractListBean.contracts}"
+                    value="#{archiveContractsBean.archivedContracts}"
                     var="contract"
                     paginator="true"
                     rows="10"
                     stripedRows="true"
                     sortMode="single"
-                    emptyMessage="#{msg['contracts.noContracts']}">
+                    emptyMessage="No contracts found.">
 
                     <p:column
-                        headerText="#{msg['contract.name']}"
+                        headerText="Name"
                         sortBy="#{contract.name}"
                         filterBy="#{contract.name}"
                         filterMatchMode="contains">
-
                         <h:outputText value="#{contract.name}"/>
-
                     </p:column>
 
                     <p:column
-                        headerText="#{msg['contract.employee']}"
-                        sortBy="#{contractListBean.getPersonName(contract.personId)}"
-                        filterBy="#{contractListBean.getPersonName(contract.personId)}"
-                        filterMatchMode="contains">
-
-                        <h:outputText
-                            value="#{contractListBean.getPersonName(contract.personId)}"/>
-
+                            headerText="Employee"
+                            sortBy="#{archiveContractsBean.getPersonName(contract.personId)}"
+                            filterBy="#{archiveContractsBean.getPersonName(contract.personId)}"
+                            filterMatchMode="contains">
+                        <h:outputText value="#{archiveContractsBean.getPersonName(contract.personId)}"/>
                     </p:column>
 
                     <p:column
-                        headerText="#{msg['contract.start']}"
+                        headerText="Start"
                         sortBy="#{contract.startDate}">
-
                         <h:outputText value="#{contract.startDate}">
-                            <f:convertDateTime
-                                type="localDate"
-                                pattern="dd.MM.yyyy"/>
+                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
                         </h:outputText>
-
                     </p:column>
 
                     <p:column
-                        headerText="#{msg['contract.end']}"
+                        headerText="End"
                         sortBy="#{contract.endDate}">
-
                         <h:outputText value="#{contract.endDate}">
-                            <f:convertDateTime
-                                type="localDate"
-                                pattern="dd.MM.yyyy"/>
+                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
                         </h:outputText>
-
                     </p:column>
 
                     <p:column
-                        headerText="#{msg['contract.status']}"
+                        headerText="Status"
                         sortBy="#{contract.status}"
                         filterBy="#{contract.status}"
                         filterMatchMode="exact">
-
                         <span class="status-badge">
-                            #{msg['contract.status.'.concat(contract.status.name())]}
+                            #{contract.status}
                         </span>
-
                     </p:column>
 
                     <p:column
-                        headerText="#{msg['contract.hoursPerWeek']}"
+                        headerText="Hours / Week"
                         sortBy="#{contract.hoursPerWeek}">
-
                         <h:outputText value="#{contract.hoursPerWeek}"/>
-
                     </p:column>
 
                     <p:column
-                        headerText="#{msg['common.actions']}"
+                        headerText="Actions"
                         styleClass="table-actions-column">
-
                         <p:button
                             icon="pi pi-folder-open"
-                            title="#{msg['archive.openTimesheets']}"
+                            title="Open timesheets"
                             outcome="/views/shared/archive-contract-timesheets"
                             styleClass="ui-button-secondary">
-
                             <f:param
                                 name="id"
                                 value="#{contract.id}"/>
-
                         </p:button>
-
                     </p:column>
 
                 </p:dataTable>
-
             </h:form>
-
         </section>
-
     </ui:define>
-
 </ui:composition>
+

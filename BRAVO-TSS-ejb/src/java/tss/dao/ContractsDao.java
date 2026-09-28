@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import tss.entity.Contract;
+import tss.entity.ContractStatus;
 
 @Stateless
 public class ContractsDao {
@@ -34,5 +35,24 @@ public class ContractsDao {
     
     public List<Contract> findAllContracts() {
         return em.createNamedQuery("getAllContracts", Contract.class).getResultList();
-    }       
+    }
+
+    public List<Contract> findAllArchivedContracts() {
+        return em.createQuery(
+                        "SELECT c FROM Contract c WHERE c.status = :status",
+                        Contract.class
+                )
+                .setParameter("status", ContractStatus.ARCHIVED)
+                .getResultList();
+    }
+
+    public List<Contract> findAllArchivedContractsForSupervisor(long id) {
+        return em.createQuery(
+                        "SELECT c FROM Contract c WHERE c.status = :status AND c.supervisor.id = :supId",
+                        Contract.class
+                )
+                .setParameter("status", ContractStatus.ARCHIVED)
+                .setParameter("supId", id)
+                .getResultList();
+    }
 }

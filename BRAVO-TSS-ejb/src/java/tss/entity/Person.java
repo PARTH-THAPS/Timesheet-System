@@ -25,6 +25,10 @@ public class Person extends AbstractEntity implements Serializable {
     @CollectionTable(name = "PERSON_ROLE", joinColumns = @JoinColumn(name = "PERSON_ID"))
     private Set<Role> roles;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "PREFERRED_LANGUAGE")
+    private Language preferredLanguage = Language.EN;
+
     @OneToMany(mappedBy = "employee")
     private Set<Contract> employeeContract;
 
@@ -133,4 +137,8 @@ public class Person extends AbstractEntity implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public void setPreferredLanguage(Language preferredLanguage) { this.preferredLanguage = preferredLanguage; }
+
+    public Language getPreferredLanguage() { return preferredLanguage; }
 }

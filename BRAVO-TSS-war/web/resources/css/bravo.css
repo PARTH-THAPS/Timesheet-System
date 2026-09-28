@@ -954,3 +954,69 @@ body {
 .language-separator {
    color: #d1d5db;
 }
+/* =========================
+ Print Secretary
+  ========================= */
+
+.print-cover {
+    font-family: Arial, sans-serif;
+    color: #1a1a1a;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.print-header {
+    text-align: center;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+}
+
+.print-header h1 {
+    margin: 0 0 4px 0;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    row-gap: 12px;
+    margin-bottom: 24px;
+}
+
+.info-grid dt {
+    font-weight: bold;
+}
+
+.info-grid dd {
+    margin: 0;
+}
+
+.section-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4px;
+}
+
+.print-actions {
+    margin-bottom: 24px;
+}
+
+
+@media print {
+    .app-header,
+    .app-body > nav,
+    .app-body nav,
+    .print-actions {
+        display: none !important;
+    }
+    .page-container {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .print-cover {
+        margin: 0 auto;
+    }
+}

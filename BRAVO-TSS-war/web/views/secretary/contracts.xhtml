@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="pageTitle">
+        #{msg['contracts.title']}
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        #{msg['contracts.title']}
+    </ui:define>
+
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+    <ui:define name="headerActions">
+        <div class="user-info">
+            <span class="user-name">
+                #{loginBean.user.firstName} #{loginBean.user.lastName}
+            </span>
+            <ui:repeat
+                value="#{loginBean.user.roles}"
+                var="role">
+                <span class="badge">
+                    #{msg['role.'.concat(role.name())]}
+                </span>
+            </ui:repeat>
+        </div>
+    </ui:define>
+
+    <ui:define name="content">
+        <section class="page-section-header">
+            <div>
+                <h2>#{msg['contracts.title']}</h2>
+                <p class="text-muted">
+                    #{msg['contracts.secretaryDescription']}
+                </p>
+            </div>
+        </section>
+
+        <section class="card">
+            <p:dataTable
+                id="secretaryContractsTable"
+                value="#{secretaryContractBean.contracts}"
+                var="contract"
+                paginator="true"
+                rows="10"
+                stripedRows="true"
+                sortMode="single"
+                emptyMessage="#{msg['contracts.noContracts']}">
+
+                <p:column
+                    headerText="#{msg['contract.name']}"
+                    sortBy="#{contract.name}">
+                    <h:outputText value="#{contract.name}"/>
+                </p:column>
+
+                <p:column
+                    headerText="#{msg['contracts.period']}"
+                    sortBy="#{contract.startDate}">
+                    <h:outputText value="#{contract.startDate}">
+                        <f:convertDateTime
+                            type="localDate"
+                            pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                    <span class="timesheet-period-separator"> &#8211; </span>
+                    <h:outputText value="#{contract.endDate}">
+                        <f:convertDateTime
+                            type="localDate"
+                            pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column
+                    headerText="#{msg['contract.status']}"
+                    sortBy="#{contract.status}">
+                    <span class="status-badge status-#{contract.status.name().toLowerCase()}">
+                        #{msg['contract.status.'.concat(contract.status.name())]}
+                    </span>
+                </p:column>
+
+                <p:column
+                    headerText="#{msg['common.actions']}"
+                    styleClass="table-actions-column">
+                    <p:button
+                        icon="pi pi-print"
+                        value="#{msg['contract.print.button']}"
+                        title="#{msg['contract.print.button']}"
+                        outcome="/views/secretary/print"
+                        target="_blank"
+                        styleClass="ui-button-secondary">
+                        <f:param
+                            name="id"
+                            value="#{contract.id}"/>
+                    </p:button>
+                </p:column>
+
+            </p:dataTable>
+        </section>
+    </ui:define>
+
+</ui:composition>

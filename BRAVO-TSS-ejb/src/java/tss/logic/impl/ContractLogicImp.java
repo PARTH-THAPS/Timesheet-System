@@ -141,6 +141,22 @@ public class ContractLogicImp implements ContractLogic {
                 .toList();
     }
 
+    @Override
+    public List<ContractDTO> findAllArchivedContractsForSupervisor(long id) {
+        return contractsDao.findAllArchivedContractsForSupervisor(id)
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<ContractDTO> findAllArchivedContracts() {
+        return contractsDao.findAllArchivedContracts()
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
     public void CheckForArchivedTimesheet(Contract contract) {
         boolean allArchivedTimesheet = contract.getTimesheet().stream().allMatch(ts -> ts.getStatus() == TimesheetStatus.ARCHIVED);
         if (allArchivedTimesheet) {
@@ -218,42 +234,43 @@ public class ContractLogicImp implements ContractLogic {
     }
 
     private ContractDTO toDTO(Contract c) {
-        ContractDTO dto = new ContractDTO();
-        dto.setId(c.getId());
-        dto.setUuid(c.getUuid());
-        dto.setJpaVersion(c.getJpaVersion());
-        dto.setName(c.getName());
-        dto.setStartDate(c.getStartDate());
-        dto.setEndDate(c.getEndDate());
-        dto.setFrequency(c.getFrequency());
-        dto.setHoursPerWeek(c.getHoursPerWeek());
-        dto.setHoursDue(c.getHoursDue());
-        dto.setVacationHours(c.getVacationHours());
-        dto.setWorkingDaysPerWeek(c.getWorkingDaysPerWeek());
-        dto.setVacationDaysPerYear(c.getVacationDaysPerYear());
-        dto.setState(c.getState());
-        dto.setStatus(c.getStatus());
-        dto.setTerminationDate(c.getTerminationDate());
-        if (c.getEmployee() != null) {
-            dto.setPersonId(c.getEmployee().getId());
-            dto.setPersonUuid(c.getEmployee().getUuid());
-        }
-        if (c.getSupervisor() != null) {
-            dto.setSupervisorId(c.getSupervisor().getId());
-        }
-
-        dto.setSecretaryIds(
-                c.getSecretaries().stream()
-                        .map(Person::getId)
-                        .toList()
-        );
-        dto.setAssistantIds(
-                c.getAssistants().stream()
-                        .map(Person::getId)
-                        .toList()
-        );
-
-        return dto;
+ContractDTO dto = new ContractDTO();
+    dto.setId(c.getId());
+    dto.setUuid(c.getUuid());
+    dto.setJpaVersion(c.getJpaVersion());
+    dto.setName(c.getName());
+    dto.setStartDate(c.getStartDate());
+    dto.setEndDate(c.getEndDate());
+    dto.setFrequency(c.getFrequency());
+    dto.setHoursPerWeek(c.getHoursPerWeek());
+    dto.setHoursDue(c.getHoursDue());
+    dto.setVacationHours(c.getVacationHours());
+    dto.setWorkingDaysPerWeek(c.getWorkingDaysPerWeek());
+    dto.setVacationDaysPerYear(c.getVacationDaysPerYear());
+    dto.setState(c.getState());
+    dto.setStatus(c.getStatus());
+    dto.setTerminationDate(c.getTerminationDate());
+    dto.setArchiveDuration(c.getArchiveDuration());
+    if (c.getEmployee() != null) {
+        dto.setPersonId(c.getEmployee().getId());
+        dto.setPersonUuid(c.getEmployee().getUuid());
+    }
+    if (c.getSupervisor() != null) {
+        dto.setSupervisorId(c.getSupervisor().getId());
+    }
+    
+    dto.setSecretaryIds(
+            c.getSecretaries().stream()
+                    .map(Person::getId)
+                    .toList()
+    );
+    dto.setAssistantIds(
+            c.getAssistants().stream()
+                    .map(Person::getId)
+                    .toList()
+    );
+    
+    return dto;
     }
 
     @Override

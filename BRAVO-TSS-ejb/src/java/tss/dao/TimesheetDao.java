@@ -6,6 +6,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import tss.entity.Contract;
@@ -144,13 +145,25 @@ public class TimesheetDao {
     }
 
     public int deleteArchiveOldRecords() {
-        return em.createQuery(
-                        "DELETE FROM Timesheet t " +
-                                "WHERE t.status = :status " +
-                                "AND t.endDate < :cutoffDate")
+        List<Timesheet> archivedTimesheets = em.createQuery(
+                        "SELECT t FROM Timesheet t JOIN FETCH t.contract WHERE t.status = :status",
+                        Timesheet.class)
                 .setParameter("status", TimesheetStatus.ARCHIVED)
-                .setParameter("cutoffDate", LocalDateTime.now().minusYears(2).toLocalDate())
-                .executeUpdate();
+                .getResultList();
+
+        int deletedCount = 0;
+        java.time.LocalDate today = java.time.LocalDate.now();
+
+        for (Timesheet t : archivedTimesheets) {
+            int duration = t.getContract().getArchiveDuration();
+
+            if (t.getEndDate().plusYears(duration).isBefore(today)) {
+                em.remove(t);
+                deletedCount++;
+            }
+        }
+
+        return deletedCount;
     }
     
     public List<Timesheet> findPendingSignaturesForSupervisor(String emailAddress) {

@@ -54,10 +54,7 @@ public class SupervisorArchivedContractsBean implements Serializable {
             return;
         }
 
-        archivedContracts = contractLogic.findAllContracts().stream()
-                .filter(contract -> ContractStatus.ARCHIVED.equals(contract.getStatus()))
-                .filter(contract -> supervisorId.equals(contract.getSupervisorId()))
-                .toList();
+        archivedContracts = contractLogic.findAllArchivedContractsForSupervisor(supervisorId);
     }
 
     private void loadPersonNames() {

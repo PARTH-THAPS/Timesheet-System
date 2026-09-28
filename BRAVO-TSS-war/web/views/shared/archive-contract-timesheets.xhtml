@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <ui:composition
         template="/WEB-INF/templates/page-layout.xhtml"
         xmlns="http://www.w3.org/1999/xhtml"
@@ -9,75 +8,30 @@
         xmlns:p="http://primefaces.org/ui">
 
     <f:metadata>
-        <f:viewParam
-                name="id"
-                value="#{contractArchiveTimesheetsBean.id}"
-                required="true"/>
-
-        <f:viewAction
-                action="#{contractArchiveTimesheetsBean.init}"/>
+        <f:viewParam name="id" value="#{contractArchiveTimesheetsBean.id}" required="true" />
+        <f:viewAction action="#{contractArchiveTimesheetsBean.init}" />
     </f:metadata>
 
-    <ui:define name="pageTitle">
-        #{msg['archive.archivedTimesheets']}
-    </ui:define>
-
-    <ui:define name="pageHeadline">
-        #{msg['archive.archivedTimesheets']}
-    </ui:define>
+    <ui:define name="pageTitle">Archived Timesheets</ui:define>
+    <ui:define name="pageHeadline">Archived Timesheets</ui:define>
 
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
-    
-    
-    <ui:define name="headerActions">
-            <div class="user-info">
-                <span class="user-name">
-                    #{loginBean.user.firstName} #{loginBean.user.lastName}
-                </span>
-                <ui:repeat
-                    value="#{loginBean.user.roles}"
-                    var="role">
-                    <span class="badge">
-                        #{msg['role.'.concat(role.name())]}
-                    </span>
-                </ui:repeat>
-            </div>
-        </ui:define>
 
     <ui:define name="content">
-
         <section class="page-section-header">
-
             <div>
-
-                <h2>
-                    #{msg['archive.timesheetsFor']}:
-                    #{contractArchiveTimesheetsBean.contract.name}
-                </h2>
-
+                <h2>Timesheets for: #{contractArchiveTimesheetsBean.contract.name}</h2>
                 <p class="text-muted">
-                    #{msg['contract.employee']}:
-                    #{contractArchiveTimesheetsBean.getPersonName(
-                        contractArchiveTimesheetsBean.contract.personId
-                    )}
+                    Employee: #{contractArchiveTimesheetsBean.getPersonName(contractArchiveTimesheetsBean.contract.personId)}
                 </p>
-
             </div>
-
-            <p:button
-                    value="#{msg['archive.backToArchive']}"
-                    outcome="/views/supervisor/archived-contracts"
-                    icon="pi pi-arrow-left"
-                    styleClass="ui-button-secondary"/>
-
+            <p:button value="Back to Archive" outcome="/views/shared/archive-contracts" icon="pi pi-arrow-left" styleClass="ui-button-secondary" />
         </section>
 
         <section class="card">
-
             <h:form id="archivedTimesheetsForm">
-
                 <p:dataTable
                         id="timesheetsTable"
                         value="#{contractArchiveTimesheetsBean.timesheets}"
@@ -85,47 +39,25 @@
                         paginator="true"
                         rows="10"
                         stripedRows="true"
-                        emptyMessage="#{msg['archive.noContractTimesheets']}">
+                        emptyMessage="No timesheets found for this contract.">
 
-                    <p:column
-                            headerText="#{msg['timesheet.startDate']}"
-                            sortBy="#{ts.startDate}">
-
+                    <p:column headerText="Start Date" sortBy="#{ts.startDate}">
                         <h:outputText value="#{ts.startDate}">
-                            <f:convertDateTime
-                                    type="localDate"
-                                    pattern="dd.MM.yyyy"/>
+                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
                         </h:outputText>
-
                     </p:column>
 
-                    <p:column
-                            headerText="#{msg['timesheet.endDate']}"
-                            sortBy="#{ts.endDate}">
-
+                    <p:column headerText="End Date" sortBy="#{ts.endDate}">
                         <h:outputText value="#{ts.endDate}">
-                            <f:convertDateTime
-                                    type="localDate"
-                                    pattern="dd.MM.yyyy"/>
+                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
                         </h:outputText>
-
                     </p:column>
 
-                    <p:column
-                            headerText="#{msg['timesheet.approvalStatus']}">
-
-                        <span class="status-badge">
-                            #{msg['timesheet.status.'.concat(ts.status.name())]}
-                        </span>
-
+                    <p:column headerText="Status">
+                        <span class="status-badge">#{ts.status}</span>
                     </p:column>
-
                 </p:dataTable>
-
             </h:form>
-
         </section>
-
     </ui:define>
-
 </ui:composition>

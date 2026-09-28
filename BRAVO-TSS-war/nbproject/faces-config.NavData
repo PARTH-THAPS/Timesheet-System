@@ -14,8 +14,8 @@
         <Node id="views/admin/usersmgmt.xhtml" x="1400" y="150" zoom="true"/>
         <Node id="views/employee/timesheets.xhtml" x="400" y="600" zoom="true"/>
         <Node id="views/admin/HolidayList.xhtml" x="400" y="150" zoom="true"/>
-        <Node id="views/assistant/contracts.xhtml" x="150" y="600" zoom="true"/>
         <Node id="views/employee/timesheet.xhtml" x="150" y="750" zoom="true"/>
+        <Node id="views/assistant/contracts.xhtml" x="150" y="600" zoom="true"/>
         <Node id="EditPerson.xhtml" x="900" y="150" zoom="true"/>
         <Node id="PersonList.xhtml" x="650" y="450" zoom="true"/>
     </Scope>
