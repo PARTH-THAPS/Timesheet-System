@@ -5,6 +5,7 @@ import jakarta.ejb.Stateless;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 import tss.dao.ContractsDao;
 import tss.dao.PersonDao;
 import tss.dto.ContractDTO;
@@ -262,12 +263,12 @@ ContractDTO dto = new ContractDTO();
     dto.setSecretaryIds(
             c.getSecretaries().stream()
                     .map(Person::getId)
-                    .toList()
+                    .collect(Collectors.toList())
     );
     dto.setAssistantIds(
             c.getAssistants().stream()
                     .map(Person::getId)
-                    .toList()
+                    .collect(Collectors.toList())
     );
     
     return dto;

@@ -527,27 +527,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
     }
 
     private double calculateUsedVacationHours(Contract contract, Long excludingEntryId) {
-        double total = 0.0;
-
-        if (contract.getTimesheet() == null) {
-            return total;
-        }
-
-        for (Timesheet timesheet : contract.getTimesheet()) {
-            if (timesheet.getEntries() == null) {
-                continue;
-            }
-            for (TimesheetEntry entry : timesheet.getEntries()) {
-                if (entry.getType() != ReportType.VACATION) {
-                    continue;
-                }
-                if (isExcluded(entry, excludingEntryId)) {
-                    continue;
-                }
-                total += entry.getHours();
-            }
-        }
-        return total;
+        return timesheetEntriesDao.sumVacationHoursForContract(contract.getId(), excludingEntryId);
     }
 
     private boolean isExcluded(TimesheetEntry entry, Long excludingEntryId) {
