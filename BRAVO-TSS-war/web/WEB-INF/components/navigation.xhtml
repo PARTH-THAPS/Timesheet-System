@@ -51,13 +51,20 @@
             </li>
 
             </ui:fragment>
-
-            <ui:fragment rendered="#{loginBean.hasRole('SUPERVISOR')}">
+            
+            <ui:fragment
+                rendered="#{loginBean.hasRole('SUPERVISOR')
+                            or loginBean.hasRole('ASSISTANT')
+                            or loginBean.hasRole('SECRETARY')}">
                 <li>
                     <h:link
-                        outcome="/views/supervisor/timesheets"
+                        outcome="#{loginBean.hasRole('SUPERVISOR')
+                                   ? '/views/supervisor/timesheets'
+                                   : (loginBean.hasRole('SECRETARY')
+                                      ? '/views/secretary/timesheets'
+                                      : '/views/assistant/timesheets')}"
                         styleClass="navigation-link">
-                        <i class="pi pi-file-edit"></i>
+                        <i class="pi pi-clock"></i>
                         <span>#{msg['timesheet.title']}</span>
                     </h:link>
                 </li>
@@ -112,15 +119,6 @@
                     </h:link>
                 </li>
                 
-                <li>
-                <h:link
-                    outcome="/views/shared/mycontractView"
-                    styleClass="navigation-link">
-                    <i class="pi pi-file"></i>
-                    <span>#{msg['my.contract']}</span>
-                </h:link>
-            </li>
-
             </ui:fragment>
 
             <ui:fragment rendered="#{loginBean.hasRole('SUPERVISOR')}">
@@ -164,16 +162,7 @@
                         <span>#{msg['archive.title']}</span>
                     </h:link>
                 </li>
-
-                <li>
-                    <h:link
-                        outcome="/views/secretary/contracts"
-                        styleClass="navigation-link">
-                        <i class="pi pi-print"></i>
-                        <span>#{msg['print.contract']}</span>
-                    </h:link>
-                </li>
-               
+                     
             </ui:fragment>
 
             <ui:fragment rendered="#{loginBean.hasRole('ADMIN')}">
@@ -204,6 +193,8 @@
                         <span>#{msg['dashboard.title']}</span>
                     </h:link>
                 </li>
+                
+                
 
             </ui:fragment>
 

@@ -30,7 +30,8 @@ public interface TimesheetLogic {
     void archiveTimesheet(Long timesheetId);
     
     int archiveOldRecords();
-    List<TimesheetDTO> findByEmployeeUsername(String emailAddress);
+    
+    //List<TimesheetDTO> findByEmployeeUsername(String emailAddress);
 
     List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress);
 
@@ -40,12 +41,26 @@ public interface TimesheetLogic {
     
     List<TimesheetDTO> findPendingSignaturesForSupervisor(String emailAddress);
 
-    TimesheetDTO requestChanges(Long timesheetId);
+    List<TimesheetDTO> findByEmployeeId(Long personId);
+
+    List<TimesheetDTO> findTimesheetsForSupervisor(Long supervisorId);
     
-    boolean canSupervisorAccessTimesheet(Long timesheetId,String supervisorEmai);
+    TimesheetDTO getTimesheetForSupervisor(Long timesheetId, Long supervisorId);
     
-    List<TimesheetDTO> findTimesheetsForSupervisor(String emailAddress);
+    TimesheetDTO requestChangesBySupervisor(Long timesheetId, Long supervisorId);
     
-    TimesheetDTO getTimesheetForSupervisor(Long timesheetId,String supervisorEmail);
+    boolean canSupervisorAccessTimesheet(Long timesheetId, Long supervisorId);
+
+    List<TimesheetDTO> findTimesheetsForAssistant(Long assistantId);
+    
+    TimesheetDTO getTimesheetForAssistant(Long timesheetId, Long assistantId);
+    
+    TimesheetDTO requestChanges(Long timesheetId, Long assistantId);
+
+    List<TimesheetDTO> findTimesheetsForSecretary(Long secretaryId);
+    
+    TimesheetDTO getTimesheetForSecretary(Long timesheetId, Long secretaryId);
+
+
 
 }

@@ -5,6 +5,7 @@ import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import tss.dto.TimesheetDTO;
+import tss.dto.User;
 import tss.logic.TimesheetLogic;
 
 @Named("supervisorSignBean")
@@ -24,6 +26,8 @@ public class SupervisorSignBean
 
     @EJB
     private TimesheetLogic timesheetLogic;
+    @Inject
+    private loginBean loginBean;
 
     private List<TimesheetDTO> timesheetList =Collections.emptyList();
 
@@ -32,9 +36,9 @@ public class SupervisorSignBean
         reload();
     }
 
-    public void loadPendingTimesheets(String emailAddress) {
-
-        List<TimesheetDTO> result =timesheetLogic.findPendingSignaturesForSupervisor(emailAddress);
+    public void loadTimesheets(Long supervisorId) {
+        List<TimesheetDTO> result =
+                timesheetLogic.findTimesheetsForSupervisor(supervisorId);
 
         timesheetList = result != null
                 ? result
@@ -63,75 +67,57 @@ public class SupervisorSignBean
         }
     }
 
-    public void requestChanges(Long timesheetId) {
+  public void requestChanges(Long timesheetId) {
         if (timesheetId == null) {
-            showError(
-                    "Could not request changes","No timesheet was selected.");
+            showError("Could Not Request Changes", "No timesheet was selected.");
+            return;
+        }
+
+        User user = loginBean.getUser();
+
+        if (user == null) {
+            showError("Could Not Request Changes", "No authenticated supervisor was found.");
             return;
         }
 
         try {
-            timesheetLogic.requestChanges(timesheetId);
-
-            showInfo(
-                    "Changes requested","The employee can edit this timesheet again.");
-
+            timesheetLogic.requestChangesBySupervisor(timesheetId, user.getId());
+            showInfo("Changes Requested", "The employee can edit this timesheet again.");
             reload();
 
-        } catch (IllegalArgumentException
-                | IllegalStateException e) {
-
-            showError(
-                    "Could not request changes",messageOf(e));
+        } catch (IllegalArgumentException| IllegalStateException e) {
+            showError("Could Not Request Changes", messageOf(e));
         }
     }
 
-    private void reload() {
-        Principal principal = FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getUserPrincipal();
 
-        if (principal != null) {
-            loadPendingTimesheets(
-                    principal.getName()
-            );
+     private void reload() {
+        User user = loginBean.getUser();
+
+        if (user != null) {
+            loadTimesheets(user.getId());
         } else {
             timesheetList = Collections.emptyList();
         }
     }
 
     private String messageOf(Exception e) {
-        return e.getMessage() != null
-                ? e.getMessage()
-                : "The operation could not be completed.";
+        return e.getMessage() != null ? e.getMessage(): "The operation could not be completed.";
     }
 
-    private void showInfo(
-            String summary,
-            String detail) {
+    private void showInfo(String summary,String detail) {
 
         FacesContext.getCurrentInstance().addMessage(
                 null,
-                new FacesMessage(
-                        FacesMessage.SEVERITY_INFO,
-                        summary,
-                        detail
-                )
+                new FacesMessage(FacesMessage.SEVERITY_INFO,summary,detail)
         );
     }
 
-    private void showError(
-            String summary,
-            String detail) {
+    private void showError(String summary,String detail) {
 
         FacesContext.getCurrentInstance().addMessage(
                 null,
-                new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        summary,
-                        detail
-                )
+                new FacesMessage(FacesMessage.SEVERITY_ERROR,summary,detail)
         );
     }
 

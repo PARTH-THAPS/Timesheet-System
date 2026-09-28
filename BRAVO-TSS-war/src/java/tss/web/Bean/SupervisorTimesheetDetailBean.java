@@ -4,6 +4,7 @@ import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.security.Principal;
 
 import tss.dto.TimesheetDTO;
 import tss.dto.TimesheetEntryDTO;
+import tss.dto.User;
 import tss.logic.TimesheetLogic;
 
 @Named("supervisorTimesheetDetailBean")
@@ -22,6 +24,9 @@ public class SupervisorTimesheetDetailBean
 
     @EJB
     private TimesheetLogic timesheetLogic;
+    @Inject
+    private loginBean loginBean;
+
 
     private Long id;
     private TimesheetDTO timesheet;
@@ -37,22 +42,15 @@ public class SupervisorTimesheetDetailBean
             return;
         }
 
-        Principal principal = FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getUserPrincipal();
+        User user = loginBean.getUser();
 
-        if (principal == null) {
-            showError("Could not load timesheet","No authenticated supervisor was found.");
+        if (user == null) {
+            showError("Could Not Load Timesheet", "No authenticated supervisor was found.");
             return;
         }
 
         try {
-            timesheet =
-                    timesheetLogic.getTimesheetForSupervisor(
-                            id,
-                            principal.getName()
-                    );
+            timesheet =timesheetLogic.getTimesheetForSupervisor(id,user.getId());
         } catch (IllegalArgumentException e) {
             showError("Could not load timesheet",e.getMessage()
             );
@@ -61,68 +59,47 @@ public class SupervisorTimesheetDetailBean
 
     public void signBySupervisor() {
         if (timesheet == null || timesheet.getId() == null) {
-            showError(
-                    "Could not sign",
-                    "No timesheet is loaded."
-            );
+            showError("Could not sign","No timesheet is loaded.");
             return;
         }
 
         try {
-            timesheet =
-                    timesheetLogic.signBySupervisor(
-                            timesheet.getId()
-                    );
-
-            showInfo(
-                    "Timesheet signed",
-                    "The timesheet was signed successfully."
-            );
+            timesheet =timesheetLogic.signBySupervisor(timesheet.getId());
+            showInfo("Timesheet signed","The timesheet was signed successfully.");
         } catch (IllegalArgumentException
                 | IllegalStateException e) {
-            showError(
-                    "Could not sign",
-                    messageOf(e)
-            );
+            showError("Could not sign",messageOf(e));
         }
     }
 
     public void requestChanges() {
         if (timesheet == null || timesheet.getId() == null) {
-            showError(
-                    "Could not request changes",
-                    "No timesheet is loaded."
-            );
+            showError("Could Not Request Changes", "No timesheet is loaded.");
+            return;
+        }
+
+        User user = loginBean.getUser();
+
+        if (user == null) {
+            showError("Could Not Request Changes", "No authenticated supervisor was found.");
             return;
         }
 
         try {
-            timesheet =
-                    timesheetLogic.requestChanges(
-                            timesheet.getId()
-                    );
-
-            showInfo(
-                    "Changes requested",
-                    "The employee can edit this timesheet again."
-            );
-        } catch (IllegalArgumentException
-                | IllegalStateException e) {
-            showError(
-                    "Could not request changes",
-                    messageOf(e)
-            );
+            timesheet = timesheetLogic.requestChangesBySupervisor(timesheet.getId(), user.getId());
+            showInfo("Changes Requested", "The employee can edit this timesheet again.");
+        } 
+        catch (IllegalArgumentException| IllegalStateException e) {
+            showError("Could Not Request Changes", messageOf(e));
         }
     }
     
     public boolean isEmployeeSigned() {
-    return timesheet != null
-            && timesheet.getSignedByEmployee() != null;
+    return timesheet != null&& timesheet.getSignedByEmployee() != null;
     }
 
     public boolean isSupervisorSigned() {
-        return timesheet != null
-                && timesheet.getSignedBySupervisor() != null;
+        return timesheet != null&& timesheet.getSignedBySupervisor() != null;
     }
 
     public boolean isEmployeeReviewActive() {
@@ -130,13 +107,11 @@ public class SupervisorTimesheetDetailBean
     }
 
     public boolean isSupervisorReviewActive() {
-        return isEmployeeSigned()
-                && !isSupervisorSigned();
+        return isEmployeeSigned()&& !isSupervisorSigned();
     }
 
     public double getReportedHours() {
-        if (timesheet == null
-                || timesheet.getEntries() == null) {
+        if (timesheet == null|| timesheet.getEntries() == null) {
             return 0.0;
         }
 
@@ -151,14 +126,11 @@ public class SupervisorTimesheetDetailBean
             return 0.0;
         }
 
-        return getReportedHours()
-                - timesheet.getHoursDue();
+        return getReportedHours()- timesheet.getHoursDue();
     }
 
     public boolean canSign() {
-        return timesheet != null
-                && timesheet.getStatus()
-                        == tss.entity.TimesheetStatus.SIGNED_BY_EMPLOYEE;
+        return timesheet != null&& timesheet.getStatus()== tss.entity.TimesheetStatus.SIGNED_BY_EMPLOYEE;
     }
 
     public boolean canRequestChanges() {
@@ -173,26 +145,12 @@ public class SupervisorTimesheetDetailBean
 
     private void showInfo(String summary, String detail) {
         FacesContext.getCurrentInstance()
-                .addMessage(
-                        null,
-                        new FacesMessage(
-                                FacesMessage.SEVERITY_INFO,
-                                summary,
-                                detail
-                        )
+                .addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,summary,detail)
                 );
     }
 
     private void showError(String summary, String detail) {
-        FacesContext.getCurrentInstance()
-                .addMessage(
-                        null,
-                        new FacesMessage(
-                                FacesMessage.SEVERITY_ERROR,
-                                summary,
-                                detail
-                        )
-                );
+        FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,summary,detail));
     }
 
     public Long getId() {
