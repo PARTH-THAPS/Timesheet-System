@@ -286,7 +286,9 @@
                                     #{msg['contract.hoursDue']}
                                 </span>
                                 <strong class="statistic-value">
-                                    #{contractEditBean.contract.hoursDue} h
+                                    <h:outputText value="#{contractEditBean.contract.hoursDue}">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                    </h:outputText> h
                                 </strong>
                             </div>
                             <div class="statistic">
@@ -294,7 +296,9 @@
                                     #{msg['contract.vacationHours']}
                                 </span>
                                 <strong class="statistic-value">
-                                    #{contractEditBean.contract.vacationHours} h
+                                    <h:outputText value="#{contractEditBean.contract.vacationHours}">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                                    </h:outputText> h
                                 </strong>
                             </div>
                             <ui:fragment
