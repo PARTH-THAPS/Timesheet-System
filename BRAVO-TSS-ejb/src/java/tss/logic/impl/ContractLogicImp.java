@@ -63,6 +63,8 @@ public class ContractLogicImp implements ContractLogic {
         }
 
         contractsDao.createContract(contract);
+        personEnt.setRoles(Role.EMPLOYEE);
+        personDao.updatePerson(personEnt);
         return toDTO(contract);
     }
 
@@ -96,6 +98,8 @@ public class ContractLogicImp implements ContractLogic {
                     + updatedContract.getPersonId()
             );
         }
+        
+        Person previousEmployee = contract.getEmployee();
 
         contract.setName(updatedContract.getName());
         contract.setStartDate(updatedContract.getStartDate());
@@ -122,6 +126,21 @@ public class ContractLogicImp implements ContractLogic {
         );
 
         contractsDao.UpdateContract(contract);
+        
+        
+        
+        person.setRoles(Role.EMPLOYEE);
+        personDao.updatePerson(person);
+
+       
+        if (previousEmployee != null && !previousEmployee.getId().equals(person.getId())) {
+            boolean stillEmployeeElsewhere = previousEmployee.getEmployeeContract().stream()
+                    .anyMatch(c -> !c.getId().equals(updatedContract.getId()));
+            if (!stillEmployeeElsewhere) {
+                previousEmployee.removeRole(Role.EMPLOYEE);
+                personDao.updatePerson(previousEmployee);
+            }
+        }
         return toDTO(contract);
     }
 

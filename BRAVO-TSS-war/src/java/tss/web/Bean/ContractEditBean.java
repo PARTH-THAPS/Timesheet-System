@@ -386,37 +386,33 @@ public class ContractEditBean implements Serializable {
         updateDateOfBirthRequired();
     }
 
-    private void updateDateOfBirthRequired() {
-        dateOfBirthRequired = false;
+   private void updateDateOfBirthRequired() {
+    dateOfBirthRequired = false;   
+    dateOfBirth = null;
 
-        if (contract == null || contract.getPersonId() == null) {
-            return;
-        }
-        PersonDTO employee = persons.stream()
-                .filter(p -> contract.getPersonId().equals(p.getId()))
-                .findFirst()
-                .orElse(null);
-        if (employee == null) {
-            return;
-        }
-
-        // Required if this person already has a contract in the system
-        dateOfBirthRequired = contractLogic.countContractsByEmployee(employee.getId()) > 0;
-
-        if (dateOfBirthRequired) {
-            dateOfBirth = employee.getDateOfBirth();   // prefill if already stored
-        }
+    if (contract == null || contract.getPersonId() == null) {
+        return;
+    }
+    PersonDTO employee = persons.stream()
+            .filter(p -> contract.getPersonId().equals(p.getId()))
+            .findFirst()
+            .orElse(null);
+    if (employee == null) {
+        return;
     }
 
-    private void validateDateOfBirth() {
-        if (dateOfBirthRequired && dateOfBirth == null) {
-            PersonDTO employee = findSelectedPerson();
-            throw new IllegalArgumentException(
-                    "Date of birth is required for " + employee.getFirstName()
-                    + " " + employee.getLastName()
-                    + " because this person already has a contract.");
-        }
+    dateOfBirth = employee.getDateOfBirth();   
+    dateOfBirthRequired = true;                
+}
+
+private void validateDateOfBirth() {
+    if (dateOfBirthRequired && dateOfBirth == null) {
+        PersonDTO employee = findSelectedPerson();
+        throw new IllegalArgumentException(
+                "Date of birth is required for " + employee.getFirstName()
+                + " " + employee.getLastName() + ".");
     }
+}
 
     public boolean isNewContract() {
         return id == null;

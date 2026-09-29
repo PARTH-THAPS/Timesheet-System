@@ -109,7 +109,7 @@
                     </div>
 
                
-                    <p:outputPanel id="dobPanel" styleClass="form-field form-field-wide">
+                    <p:outputPanel id="dobPanel" layout="block" styleClass="form-field form-field-wide">
                         <ui:fragment rendered="#{contractEditBean.dateOfBirthRequired}">
                             <p:outputLabel
                                 for="dateOfBirth"
@@ -118,7 +118,9 @@
                                 id="dateOfBirth"
                                 value="#{contractEditBean.dateOfBirth}"
                                 pattern="dd.MM.yyyy"
+                                required="#{contractEditBean.editable}"
                                 maxdate="#{contractEditBean.today}"
+                                disabled="#{not contractEditBean.editable}"
                                 showIcon="true"/>
                         </ui:fragment>
                     </p:outputPanel>
