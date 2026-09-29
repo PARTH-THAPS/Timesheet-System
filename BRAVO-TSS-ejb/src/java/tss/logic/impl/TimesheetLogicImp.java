@@ -301,6 +301,10 @@ public class TimesheetLogicImp implements TimesheetLogic {
         if (timesheet.getStatus() != TimesheetStatus.SIGNED_BY_EMPLOYEE) {
             throw new IllegalStateException("Timesheet can only be signed by supervisor when SIGNED_BY_EMPLOYEE");
         }
+        
+        if (LocalDate.now().isBefore(timesheet.getStartDate())) {
+            throw new IllegalStateException("Timesheet cannot be signed for a future period (starts "+ timesheet.getStartDate() + ").");
+        }
 
         timesheet.setSignedBySupervisor(LocalDate.now());
         timesheet.setStatus(TimesheetStatus.SIGNED_BY_SUPERVISOR);
@@ -416,8 +420,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
         return toDTO(timesheet);
     }
 
-    private double calculateHoursDue(LocalDate startDate, LocalDate endDate, double hoursPerWeek,
-            int workingDaysPerWeek, Contract contract) {
+    private double calculateHoursDue(LocalDate startDate, LocalDate endDate, double hoursPerWeek,int workingDaysPerWeek, Contract contract) {
         if (contract == null) {
             throw new IllegalStateException("Timesheet must be linked to a contract");
         }
@@ -425,11 +428,11 @@ public class TimesheetLogicImp implements TimesheetLogic {
             throw new IllegalStateException("Contract workingDaysPerWeek must be greater than zero");
         }
 
-        int workingDaysInPeriod = countWorkingDays(startDate, endDate);
+        int workingDaysInPeriod = countWorkingDays(startDate, endDate, workingDaysPerWeek);
 
         List<HolidayDTO> holidays = checkForHolidays(startDate, endDate, contract.getState());
         List<HolidayDTO> holidaysInWeekdays = holidays.stream()
-                .filter(h -> isWorkingDay(h.getDate()))
+                .filter(h -> isWorkingDay(h.getDate(), workingDaysPerWeek))
                 .toList();
 
         int publicHolidaysInPeriod = holidaysInWeekdays.size();
@@ -437,7 +440,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
         return (workingDaysInPeriod - publicHolidaysInPeriod) * hoursPerWeek / workingDaysPerWeek;
     }
 
-    private int countWorkingDays(LocalDate startDate, LocalDate endDate) {
+    private int countWorkingDays(LocalDate startDate, LocalDate endDate, int workingDaysPerWeek) {
         if (startDate == null || endDate == null) {
             throw new IllegalStateException("startDate and endDate must be set before calculating hours due");
         }
@@ -448,7 +451,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
         int count = 0;
         LocalDate current = startDate;
         while (!current.isAfter(endDate)) {
-            if (isWorkingDay(current)) {
+            if (isWorkingDay(current, workingDaysPerWeek)) {
                 count++;
             }
             current = current.plusDays(1);
@@ -456,9 +459,9 @@ public class TimesheetLogicImp implements TimesheetLogic {
         return count;
     }
 
-    private boolean isWorkingDay(LocalDate date) {
-        DayOfWeek day = date.getDayOfWeek();
-        return day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY;
+    private boolean isWorkingDay(LocalDate date, int workingDaysPerWeek) {
+        int dayOfWeekValue = date.getDayOfWeek().getValue();
+        return dayOfWeekValue <= workingDaysPerWeek;
     }
 
     private void validateEntryModification(Timesheet timesheet) {
@@ -469,6 +472,11 @@ public class TimesheetLogicImp implements TimesheetLogic {
         Contract contract = timesheet.getContract();
         if (contract == null || contract.getStatus() != ContractStatus.STARTED) {
             throw new IllegalStateException("Entries can only be modified when Contract is STARTED");
+        }
+        LocalDate today = LocalDate.now();
+        if (today.isBefore(timesheet.getStartDate())) {
+            throw new IllegalStateException(
+                    "Entries can only be modified for the current period ("+ timesheet.getStartDate() + " - " + timesheet.getEndDate() + ").");
         }
     }
 
