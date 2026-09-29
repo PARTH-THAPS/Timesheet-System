@@ -332,6 +332,14 @@ public class TimesheetDao {
             return new ArrayList<>();
         }
     }
+     
+     public List<Timesheet> findByContractId(Long contractId) {
+    return em.createQuery(
+            "SELECT t FROM Timesheet t WHERE t.contract.id = :contractId",
+            Timesheet.class)
+            .setParameter("contractId", contractId)
+            .getResultList();
+}
 
 }
 

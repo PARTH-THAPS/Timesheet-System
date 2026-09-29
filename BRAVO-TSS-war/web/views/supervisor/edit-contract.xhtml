@@ -344,15 +344,18 @@
                         icon="pi pi-stop"
                         action="#{contractEditBean.terminate}"
                         ajax="false"
+                        disabled="#{contractEditBean.terminateBlocked}"
                         rendered="#{contractEditBean.started}"
                         styleClass="ui-button-warning">
                         <p:confirm
                             header="#{msg['contract.terminate']}"
-                            message="#{contractEditBean.hasUnresolvedInProgressTimesheets
-                                       ? msg['contract.terminate.confirm.warning']
-                                       : msg['contract.terminate.confirm']}"
+                            message="#{msg[contractEditBean.terminateConfirmMessageKey]}"
                             icon="pi pi-exclamation-triangle"/>
                     </p:commandButton>
+                    <h:outputText
+                        rendered="#{contractEditBean.terminateBlocked}"
+                        styleClass="text-danger"
+                        value="#{msg['contract.terminate.blocked.pendingSignature']}"/>
 
                     <p:commandButton
                         value="#{msg['button.delete']}"

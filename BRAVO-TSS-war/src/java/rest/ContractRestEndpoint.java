@@ -5,20 +5,25 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
-import tss.logic.ContractLogic;
-import tss.entity.Contract;
-import tss.entity.Person;
+import java.util.Map;
 import java.util.logging.Logger;
 import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
+import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
+
+import tss.logic.TerminationBlockedException;
 
 @Stateless
 @LocalBean
@@ -27,6 +32,7 @@ public class ContractRestEndpoint {
 
     @EJB
     ContractLogic contractlogic;
+
     @EJB
     PersonLogic personLogic;
 
@@ -36,9 +42,7 @@ public class ContractRestEndpoint {
     @Path("/createContract")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-
     public ContractDTO createContract(ContractDTO contractDto) {
-
         PersonDTO persondto = personLogic.findPerson(contractDto.getPersonId());
         return contractlogic.createContract(
                 contractDto.getName(),
@@ -52,17 +56,22 @@ public class ContractRestEndpoint {
                 persondto,
                 contractDto.getState()
         );
-
     }
 
-    @POST
-    @Path("/{contractId}/status")
-    @Consumes(MediaType.APPLICATION_JSON)
+   
+
+    // Read-only check the UI calls before terminating, to decide which message or dialog to show.
+    @GET
+    @Path("/{contractId}/termination-check")
     @Produces(MediaType.APPLICATION_JSON)
-    public ContractDTO updateContractStatus(@PathParam("contractId") Long contractId) {
-        return contractlogic.updateContractStatus(contractId, ContractStatus.STARTED);
-
+    public Map<String, Boolean> terminationCheck(@PathParam("contractId") Long contractId) {
+        return Map.of(
+                "blockedBySupervisorSignature", contractlogic.hasTimesheetsPendingSupervisorSignature(contractId),
+                "hasInProgressWithEntries", contractlogic.hasUnresolvedInProgressTimesheets(contractId),
+                "hasEmptyInProgress", contractlogic.hasEmptyInProgressTimesheets(contractId));
     }
+
+   
 
     @POST
     @Path("{id}/secretaries")

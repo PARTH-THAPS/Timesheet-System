@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
@@ -20,7 +21,7 @@ import tss.entity.Role;
 import tss.entity.TimesheetFrequency;
 import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
-import java.util.Set;
+import tss.logic.TerminationBlockedException;
 
 @Named
 @ViewScoped
@@ -30,8 +31,10 @@ public class ContractEditBean implements Serializable {
 
     @EJB
     private ContractLogic contractLogic;
+
     @EJB
     private PersonLogic personLogic;
+
     @Inject
     private loginBean loginBean;
 
@@ -41,11 +44,17 @@ public class ContractEditBean implements Serializable {
     private List<Long> originalSecretaryIds;
     private List<Long> originalAssistantIds;
 
+    // Termination flags, loaded once per state change instead of on every JSF render
+    private boolean terminateBlocked;
+    private boolean hasUnresolvedInProgress;
+    private boolean hasEmptyInProgress;
+
     public void init() {
         if (contract != null) {
             return;
         }
         persons = personLogic.findAllPersons();
+
         if (id == null) {
             contract = new ContractDTO();
             contract.setFrequency(TimesheetFrequency.MONTHLY);
@@ -67,6 +76,8 @@ public class ContractEditBean implements Serializable {
         originalAssistantIds = contract.getAssistantIds() != null
                 ? new ArrayList<>(contract.getAssistantIds())
                 : new ArrayList<>();
+
+        refreshTerminationFlags();
     }
 
     private boolean isAuthorizedForContract(ContractDTO contract) {
@@ -92,93 +103,113 @@ public class ContractEditBean implements Serializable {
         }
     }
 
+    
+
     public void save() {
-    try {
-        validateNoOverlap();
+        try {
+            validateNoOverlap();
 
-        Long contractId;
-        if (isNewContract()) {
-            PersonDTO person = findSelectedPerson();
-            ContractDTO created = contractLogic.createContract(
-                    contract.getName(),
-                    contract.getStartDate(),
-                    contract.getEndDate(),
-                    contract.getFrequency(),
-                    contract.getHoursPerWeek(),
-                    contract.getHoursDue(),
-                    contract.getWorkingDaysPerWeek(),
-                    contract.getVacationDaysPerYear(),
-                    person,
-                    contract.getState()
-            );
-            contractId = created.getId();
-            if (contract.getSupervisorId() != null) {
-                contractLogic.addSupervisor(contractId, contract.getSupervisorId());
-            }
-        } else {
-            contractLogic.updateContract(contract);
-            contractId = contract.getId();
-            if (contract.getSupervisorId() != null) {
-                contractLogic.addSupervisor(contractId, contract.getSupervisorId());
+            Long contractId;
+
+            if (isNewContract()) {
+                PersonDTO person = findSelectedPerson();
+
+                ContractDTO created = contractLogic.createContract(
+                        contract.getName(),
+                        contract.getStartDate(),
+                        contract.getEndDate(),
+                        contract.getFrequency(),
+                        contract.getHoursPerWeek(),
+                        contract.getHoursDue(),
+                        contract.getWorkingDaysPerWeek(),
+                        contract.getVacationDaysPerYear(),
+                        person,
+                        contract.getState()
+                );
+
+                contractId = created.getId();
+
+                if (contract.getSupervisorId() != null) {
+                    contractLogic.addSupervisor(contractId, contract.getSupervisorId());
+                }
             } else {
-                contractLogic.removeSupervisor(contractId);
+                contractLogic.updateContract(contract);
+                contractId = contract.getId();
+
+                if (contract.getSupervisorId() != null) {
+                    contractLogic.addSupervisor(contractId, contract.getSupervisorId());
+                } else {
+                    contractLogic.removeSupervisor(contractId);
+                }
+            }
+
+            syncSecretariesAndAssistants(contractId);
+            redirectToContracts();
+
+        } catch (Exception e) {
+            showError("Could not save contract", e.getMessage());
+        }
+    }
+
+    private void validateNoOverlap() {
+        Long employeeId = contract.getPersonId();
+        Long supervisorId = contract.getSupervisorId();
+        List<Long> secretaryIds = contract.getSecretaryIds() != null
+                ? contract.getSecretaryIds() : List.of();
+        List<Long> assistantIds = contract.getAssistantIds() != null
+                ? contract.getAssistantIds() : List.of();
+
+        if (secretaryIds.isEmpty()) {
+            throw new IllegalArgumentException("At least one secretary is required.");
+        }
+
+        // Collect every (role label, personId) pair that was actually assigned
+        List<Map.Entry<String, Long>> assignments = new ArrayList<>();
+        if (employeeId != null) {
+            assignments.add(Map.entry("employee", employeeId));
+        }
+        if (supervisorId != null) {
+            assignments.add(Map.entry("supervisor", supervisorId));
+        }
+        for (Long id : secretaryIds) {
+            assignments.add(Map.entry("secretary", id));
+        }
+        for (Long id : assistantIds) {
+            assignments.add(Map.entry("assistant", id));
+        }
+
+        Set<Long> seen = new HashSet<>();
+        for (Map.Entry<String, Long> entry : assignments) {
+            if (!seen.add(entry.getValue())) {
+                throw new IllegalArgumentException(
+                        "Each person may only have one role on this contract. "
+                        + personNameOrId(entry.getValue())
+                        + " is assigned to more than one role."
+                );
             }
         }
-        syncSecretariesAndAssistants(contractId);
-        redirectToContracts();
-    } catch (Exception e) {
-        showError("Could not save contract", e.getMessage());
-    }
-}
-
-private void validateNoOverlap() {
-    Long employeeId = contract.getPersonId();
-    Long supervisorId = contract.getSupervisorId();
-    List<Long> secretaryIds = contract.getSecretaryIds() != null
-            ? contract.getSecretaryIds() : List.of();
-    List<Long> assistantIds = contract.getAssistantIds() != null
-            ? contract.getAssistantIds() : List.of();
-
-    if (secretaryIds.isEmpty()) {
-        throw new IllegalArgumentException("At least one secretary is required.");
     }
 
-    // Collect every (role label, personId) pair that was actually assigned
-    List<Map.Entry<String, Long>> assignments = new ArrayList<>();
-    if (employeeId != null) assignments.add(Map.entry("employee", employeeId));
-    if (supervisorId != null) assignments.add(Map.entry("supervisor", supervisorId));
-    for (Long id : secretaryIds) assignments.add(Map.entry("secretary", id));
-    for (Long id : assistantIds) assignments.add(Map.entry("assistant", id));
-
-    Set<Long> seen = new HashSet<>();
-    for (Map.Entry<String, Long> entry : assignments) {
-        if (!seen.add(entry.getValue())) {
-            throw new IllegalArgumentException(
-                    "Each person may only have one role on this contract. "
-                    + personNameOrId(entry.getValue())
-                    + " is assigned to more than one role."
-            );
-        }
+    private String personNameOrId(Long id) {
+        return persons.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst()
+                .map(p -> p.getFirstName() + " " + p.getLastName())
+                .orElse("Person #" + id);
     }
-}
-
-private String personNameOrId(Long id) {
-    return persons.stream()
-            .filter(p -> p.getId().equals(id))
-            .findFirst()
-            .map(p -> p.getFirstName() + " " + p.getLastName())
-            .orElse("Person #" + id);
-}
 
     private void syncSecretariesAndAssistants(Long contractId) {
         List<Long> selectedSecretaries = contract.getSecretaryIds() != null
                 ? contract.getSecretaryIds() : List.of();
+
         List<Long> secretariesToAdd = selectedSecretaries.stream()
                 .filter(pid -> !originalSecretaryIds.contains(pid))
                 .toList();
+
         List<Long> secretariesToRemove = originalSecretaryIds.stream()
                 .filter(pid -> !selectedSecretaries.contains(pid))
                 .toList();
+
         if (!secretariesToAdd.isEmpty()) {
             contractLogic.addSecretary(contractId, secretariesToAdd);
         }
@@ -188,12 +219,15 @@ private String personNameOrId(Long id) {
 
         List<Long> selectedAssistants = contract.getAssistantIds() != null
                 ? contract.getAssistantIds() : List.of();
+
         List<Long> assistantsToAdd = selectedAssistants.stream()
                 .filter(pid -> !originalAssistantIds.contains(pid))
                 .toList();
+
         List<Long> assistantsToRemove = originalAssistantIds.stream()
                 .filter(pid -> !selectedAssistants.contains(pid))
                 .toList();
+
         if (!assistantsToAdd.isEmpty()) {
             contractLogic.addAssistant(contractId, assistantsToAdd);
         }
@@ -208,6 +242,7 @@ private String personNameOrId(Long id) {
                     contract.getId(),
                     ContractStatus.STARTED
             );
+            refreshTerminationFlags();
         } catch (Exception e) {
             showError(
                     "Could not start contract",
@@ -215,20 +250,46 @@ private String personNameOrId(Long id) {
             );
         }
     }
+private void refreshTerminationFlags() {
+    if (contract == null || contract.getId() == null
+            || contract.getStatus() != ContractStatus.STARTED) {
+        terminateBlocked = false;
+        hasUnresolvedInProgress = false;
+        hasEmptyInProgress = false;
+        return;
+    }
+    Long contractId = contract.getId();
+
+    // Only an employee-signed timesheet blocks the button
+    terminateBlocked = contractLogic.hasTimesheetsPendingSupervisorSignature(contractId);
+
+    // These two only choose the text of the confirm dialog
+    hasUnresolvedInProgress = contractLogic.hasUnresolvedInProgressTimesheets(contractId);
+    hasEmptyInProgress = contractLogic.hasEmptyInProgressTimesheets(contractId);
+}
+    
 
     public void terminate() {
-        try {
-            contract = contractLogic.updateContractStatus(
-                    contract.getId(),
-                    ContractStatus.TERMINATED
-            );
-        } catch (Exception e) {
-            showError(
-                    "Could not terminate contract",
-                    e.getMessage()
-            );
-        }
+   
+    if (!isStarted()) {
+        showError("Could not terminate contract",
+                "Only a started contract can be terminated.");
+        return;
     }
+    try {
+        // The confirm dialog (contract.terminate.confirm.*) has already been accepted
+        // by the user, so deleting IN_PROGRESS timesheets is confirmed here.
+        contract = contractLogic.terminateContract(contract.getId(), true);
+    } catch (TerminationBlockedException e) {
+        // A timesheet was signed by the employee after the page was rendered
+        showError("Contract cannot be terminated", e.getMessage());
+    }  catch (Exception e) {
+        showError("Could not terminate contract", e.getMessage());
+    } finally {
+        
+        refreshTerminationFlags();
+    }
+}
 
     public void delete() {
         try {
@@ -259,22 +320,23 @@ private String personNameOrId(Long id) {
                     "Please select an employee."
             );
         }
+
         return persons.stream()
-                .filter(person ->
-                        contract.getPersonId().equals(person.getId())
+                .filter(person
+                        -> contract.getPersonId().equals(person.getId())
                 )
                 .findFirst()
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Selected employee could not be found."
-                        )
+                .orElseThrow(()
+                        -> new IllegalArgumentException(
+                        "Selected employee could not be found."
+                )
                 );
     }
 
     private void redirectToContracts() throws IOException {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        String contextPath =
-                facesContext.getExternalContext().getRequestContextPath();
+        String contextPath
+                = facesContext.getExternalContext().getRequestContextPath();
 
         String section = loginBean.hasRole("SUPERVISOR")
                 ? "supervisor"
@@ -315,32 +377,42 @@ private String personNameOrId(Long id) {
                 == ContractStatus.STARTED;
     }
 
+    // Cached values, so the getters below do not hit the database on every render
     public boolean isHasUnresolvedInProgressTimesheets() {
-        if (contract == null || contract.getId() == null) {
-            return false;
-        }
-        return contractLogic.hasUnresolvedInProgressTimesheets(
-                contract.getId()
-        );
+        return hasUnresolvedInProgress;
     }
-    
+
+    public boolean isTerminateBlocked() {
+        return terminateBlocked;
+    }
+
+    public String getTerminateConfirmMessageKey() {
+        if (hasUnresolvedInProgress) {
+            return "contract.terminate.confirm.warning";
+        }
+        if (hasEmptyInProgress) {
+            return "contract.terminate.confirm.emptyWillBeDeleted";
+        }
+        return "contract.terminate.confirm";
+    }
+
     public List<PersonDTO> getSupervisors() {
-    return persons.stream()
-            .filter(p -> p.getRole() != null && p.getRole().contains(Role.SUPERVISOR))
-            .toList();
-}
+        return persons.stream()
+                .filter(p -> p.getRole() != null && p.getRole().contains(Role.SUPERVISOR))
+                .toList();
+    }
 
-public List<PersonDTO> getSecretaries() {
-    return persons.stream()
-            .filter(p -> p.getRole() != null && p.getRole().contains(Role.SECRETARY))
-            .toList();
-}
+    public List<PersonDTO> getSecretaries() {
+        return persons.stream()
+                .filter(p -> p.getRole() != null && p.getRole().contains(Role.SECRETARY))
+                .toList();
+    }
 
-public List<PersonDTO> getAssistants() {
-    return persons.stream()
-            .filter(p -> p.getRole() != null && p.getRole().contains(Role.ASSISTANT))
-            .toList();
-}
+    public List<PersonDTO> getAssistants() {
+        return persons.stream()
+                .filter(p -> p.getRole() != null && p.getRole().contains(Role.ASSISTANT))
+                .toList();
+    }
 
     public boolean isEditable() {
         return isNewContract() || isPrepared();
