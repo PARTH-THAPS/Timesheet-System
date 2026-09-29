@@ -35,82 +35,55 @@
         </div>
     </ui:define>
 
-
     <ui:define name="content">
-
-
-
-
         <h:form id="personalInfoForm">
+            <h:messages infoStyle="color:green;" errorStyle="color:red;"/>
 
-            <h:messages
-                globalOnly="true"
-                style="color:red;"/>
+            <h:outputText value="#{personalDataBean.user}" style="display:none;"/>
 
-            <h:outputText
-                value="#{personalDataBean.user}"
-                style="display:none;"/>
+            <h:panelGrid columns="3">
+                <h:outputLabel for="firstName" value="#{msg['person.firstName']}:"/>
+                <h:inputText id="firstName"
+                             value="#{personalDataBean.personDTO.firstName}"
+                             required="true"
+                             requiredMessage="#{msg['personalInfo.firstName.required']}"/>
+                <h:message for="firstName" style="color:red;"/>
 
-            <table>
+                <h:outputLabel for="lastName" value="#{msg['person.lastName']}:"/>
+                <h:inputText id="lastName"
+                             value="#{personalDataBean.personDTO.lastName}"
+                             required="true"
+                             requiredMessage="#{msg['personalInfo.lastName.required']}"/>
+                <h:message for="lastName" style="color:red;"/>
 
-                <tr>
-                    <td>
-                        <h:outputLabel
-                            for="firstName"
-                            value="#{msg['person.firstName']}:"/>
-                    </td>
+                <h:outputLabel for="email" value="#{msg['person.email']}:"/>
+                <h:inputText id="email"
+                             value="#{personalDataBean.personDTO.emailAddress}"
+                             required="true"
+                             requiredMessage="#{msg['personalInfo.email.required']}" readonly="true"/>
+                <h:message for="email" style="color:red;"/>
 
-                    <td>
-                        <h:inputText
-                            id="firstName"
-                            value="#{personalDataBean.personDTO.firstName}"
-                            required="true"
-                            requiredMessage="#{msg['personalInfo.firstName.required']}"/>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <h:outputLabel
-                            for="lastName"
-                            value="#{msg['person.lastName']}:"/>
-                    </td>
-
-                    <td>
-                        <h:inputText
-                            id="lastName"
-                            value="#{personalDataBean.personDTO.lastName}"
-                            required="true"
-                            requiredMessage="#{msg['personalInfo.lastName.required']}"/>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <h:outputLabel
-                            for="email"
-                            value="#{msg['person.email']}:"/>
-                    </td>
-
-                    <td>
-                        <h:inputText
-                            id="email"
-                            value="#{personalDataBean.personDTO.emailAddress}"
-                            required="true"
-                            requiredMessage="#{msg['personalInfo.email.required']}"/>
-                    </td>
-                </tr>
-
-            </table>
+                <h:outputLabel for="preferredLanguage"
+                               value="#{msg['personalInfo.PreferedLanguage.ForReminder']}:"/>
+                <h:selectOneMenu id="preferredLanguage"
+                                 value="#{personalDataBean.personDTO.preferredLanguage}"
+                                 required="true"
+                                 requiredMessage="#{msg['personalInfo.preferredLanguage.required']}">
+                    <f:selectItem itemLabel="#{msg['select.pleaseChoose']}"
+                                  itemValue="#{null}"
+                                  noSelectionOption="true"/>
+                    <f:selectItems value="#{personalDataBean.languages}"
+                                   var="l"
+                                   itemValue="#{l}"
+                                   itemLabel="#{msg['language.'.concat(l.name())]}"/>
+                </h:selectOneMenu>
+                <h:message for="preferredLanguage" style="color:red;"/>
+            </h:panelGrid>
 
             <br/>
-
-            <h:commandButton
-                value="#{msg['button.save']}"
-                action="#{personalDataBean.save}"/>
-
+            <h:commandButton value="#{msg['button.save']}" action="#{personalDataBean.save}"/>
         </h:form>
-
     </ui:define>
+
 
 </ui:composition>

@@ -27,8 +27,6 @@ public interface ContractLogic {
 
     List<ContractDTO> findAllArchivedContracts();
 
-    ContractDTO updateContractStatus(Long contrcatId, ContractStatus contractStatus);
-
     void CheckForArchivedTimesheet(Contract contract);
 
     void addSecretary(Long contractId, List<Long> personIds);
@@ -42,7 +40,17 @@ public interface ContractLogic {
     void addSupervisor(Long contractId, Long personId);
 
     void removeSupervisor(Long contractId);
+
     public boolean hasUnresolvedInProgressTimesheets(Long contractId);
 
-//    Contract PrintContract();
+    boolean hasTimesheetsPendingSupervisorSignature(Long contractId);
+
+    boolean hasEmptyInProgressTimesheets(Long contractId);
+
+    // PREPARED -> STARTED and TERMINATED -> ARCHIVED. TERMINATED is not allowed here.
+    ContractDTO updateContractStatus(Long contractId, ContractStatus contractStatus);
+
+// STARTED -> TERMINATED. confirmed = true allows deleting IN_PROGRESS timesheets that contain entries.
+    ContractDTO terminateContract(Long contractId, boolean confirmed);
+
 }

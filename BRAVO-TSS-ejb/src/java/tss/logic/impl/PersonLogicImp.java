@@ -67,6 +67,7 @@ public class PersonLogicImp implements PersonLogic {
     person.setEmailAddress(dto.getEmailAddress());
     person.setConsent(dto.isConsent());
     person.setRoles(dto.getRole());
+    person.setPreferredLanguage(dto.getPreferredLanguage());
     return personDto(personDao.updatePerson(person));
     }
 
