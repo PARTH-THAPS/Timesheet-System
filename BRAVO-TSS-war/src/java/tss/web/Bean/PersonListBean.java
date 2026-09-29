@@ -31,6 +31,22 @@ public class PersonListBean implements Serializable {
     }
     
     public Role[] getRoles() {
-    return Role.values();
-}
+        return Role.values();
+    }
+    
+    public String getFullName(PersonDTO person) {
+        return person.getFirstName() + " " + person.getLastName();
+    }
+
+    public String getRoleNames(PersonDTO person) {
+        if (person.getRole() == null || person.getRole().isEmpty()) {
+            return "";
+        }
+
+        return person.getRole().stream()
+                .map(Role::name)
+                .sorted()
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("");
+    }
 }

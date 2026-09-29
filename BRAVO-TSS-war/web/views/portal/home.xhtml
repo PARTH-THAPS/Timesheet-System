@@ -17,471 +17,647 @@
     </ui:define>
 
     <ui:define name="navigation">
-        <ui:include src="/WEB-INF/components/navigation.xhtml" />
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
 
     <ui:define name="headerActions">
-
-        <div class="user-info">
-
-            <span class="user-name">
-                #{loginBean.user.firstName}
-                #{loginBean.user.lastName}
-            </span>
-
-            <ui:repeat
-                value="#{loginBean.user.roles}"
-                var="role">
-
-                <span class="badge">
-                    #{msg['role.'.concat(role.name())]}
-                </span>
-
-            </ui:repeat>
-
-        </div>
-
-        <h:form>
-
-            <div class="language-switch">
-
-                <p:commandLink
-                    actionListener="#{localeBean.selectEnglish}"
-                    update="@all"
-                    styleClass="language-link"
-                    title="#{msg['language.switchToEN']}">
-                    EN
-                </p:commandLink>
-
-                <span class="language-separator">
-                    |
-                </span>
-
-                <p:commandLink
-                    actionListener="#{localeBean.selectGerman}"
-                    update="@all"
-                    styleClass="language-link"
-                    title="#{msg['language.switchToDE']}">
-                    DE
-                </p:commandLink>
-
-                <span class="language-separator">
-                    |
-                </span>
-                
-                <p:commandLink
-                    actionListener="#{localeBean.selectFrench}"
-                    update="@all"
-                    styleClass="language-link"
-                    title="#{msg['language.switchToDE']}">
-                    FR
-                </p:commandLink>
-                
-                <span class="language-separator">
-                    |
-                </span>
-                
-                <p:commandLink
-                    actionListener="#{localeBean.selectPolish}"
-                    update="@all"
-                    styleClass="language-link"
-                    title="#{msg['language.switchToPL']}">
-                    PL
-                </p:commandLink>
-
-            </div>
-
-        </h:form>
-
-        <h:form>
-
-            <h:commandButton
-                value="#{msg['button.logout']}"
-                styleClass="button-logout"
-                action="#{loginBean.logout}" />
-
-        </h:form>
-
+        <ui:include src="/WEB-INF/components/header-actions.xhtml"/>
     </ui:define>
 
     <ui:define name="content">
 
+        <!-- =========================================================
+             Welcome
+             ========================================================= -->
+
         <section class="home-welcome">
 
             <h2>
-                #{msg['home.welcome']}, #{loginBean.user.firstName}
+                #{msg['home.welcome']},
+                #{loginBean.user.firstName}
             </h2>
 
             <p class="text-muted">
-                #{msg['home.description']}
+
+                <ui:fragment
+                    rendered="#{loginBean.isActiveRole('EMPLOYEE')}">
+                    #{msg['home.employee.description']}
+                </ui:fragment>
+
+                <ui:fragment
+                    rendered="#{loginBean.isActiveRole('SUPERVISOR')}">
+                    #{msg['home.supervisor.description']}
+                </ui:fragment>
+
+                <ui:fragment
+                    rendered="#{loginBean.isActiveRole('ASSISTANT')}">
+                    #{msg['home.assistant.description']}
+                </ui:fragment>
+
+                <ui:fragment
+                    rendered="#{loginBean.isActiveRole('SECRETARY')}">
+                    #{msg['home.secretary.description']}
+                </ui:fragment>
+
+                <ui:fragment
+                    rendered="#{loginBean.isActiveRole('ADMIN')}">
+                    #{msg['home.admin.description']}
+                </ui:fragment>
+
+                <ui:fragment
+                    rendered="#{loginBean.isActiveRole('GUEST')}">
+                    #{msg['dashboard.GUEST.DESCRIPTION']}
+                </ui:fragment>
+
             </p>
 
         </section>
 
-        <section
-            class="statistics-grid"
-            style="margin-bottom: 2rem;">
 
-            <div class="statistic">
+        <!-- =========================================================
+             Employee Dashboard
+             ========================================================= -->
 
-                <span class="statistic-label">
-                    #{msg['home.signedInAs']}
-                </span>
+        <ui:fragment
+            rendered="#{loginBean.isActiveRole('EMPLOYEE')}">
 
-                <span class="statistic-value">
-                    #{loginBean.user.firstName}
-                    #{loginBean.user.lastName}
-                </span>
-
-            </div>
-
-            <div class="statistic">
-
-                <span class="statistic-label">
-                    #{msg['home.assignedRoles']}
-                </span>
-
-                <span class="statistic-value">
-                    #{loginBean.user.roles.size()}
-                </span>
-
-            </div>
-
-        </section>
-
-        <section class="dashboard-grid">
-
-            <!-- Employee -->
             <ui:fragment
-                rendered="#{loginBean.hasRole('EMPLOYEE')}">
+                rendered="#{homeDashboardBean.hasCurrentEmployeeTimesheets}">
 
-                <div
-                    class="dashboard-card"
-                    onclick="PF('dlgMyTimesheets').show()">
+                <section class="dashboard-section">
 
-                    <i class="pi pi-clock dashboard-icon"></i>
+                    <div class="dashboard-section-header">
 
-                    <div>
+                        <div>
 
-                        <h3>
-                            #{msg['home.myTimesheets.title']}
-                        </h3>
+                            <h2>
+                                #{msg['home.currentTimesheet']}
+                            </h2>
 
-                        <p>
-                            #{msg['home.myTimesheets.description']}
-                        </p>
+                            <p class="text-muted">
+                                #{msg['home.currentTimesheet.description']}
+                            </p>
 
-                    </div>
+                        </div>
 
-                    <i class="pi pi-info-circle dashboard-card-help"></i>
-
-                </div>
-
-                <div
-                    class="dashboard-card"
-                    onclick="PF('dlgHolidays').show()">
-
-                    <i class="pi pi-calendar dashboard-icon"></i>
-
-                    <div>
-
-                        <h3>
-                            #{msg['home.holidays.title']}
-                        </h3>
-
-                        <p>
-                            #{msg['home.holidays.description']}
-                        </p>
+                        <p:button
+                            value="#{msg['timesheets.title']}"
+                            icon="pi pi-list"
+                            outcome="/views/employee/timesheets"
+                            styleClass="ui-button-secondary"/>
 
                     </div>
 
-                    <i class="pi pi-info-circle dashboard-card-help"></i>
 
-                </div>
+                    <ui:repeat
+                        value="#{homeDashboardBean.currentEmployeeTimesheets}"
+                        var="timesheet">
+
+                        <article class="dashboard-timesheet-card">
+
+                            <div class="dashboard-timesheet-header">
+
+                                <div>
+
+                                    <span class="statistic-label">
+                                        #{msg['timesheet.period']}
+                                    </span>
+
+                                    <div class="dashboard-timesheet-period">
+
+                                        <h:outputText
+                                            value="#{timesheet.startDate}">
+
+                                            <f:convertDateTime
+                                                type="localDate"
+                                                pattern="dd.MM.yyyy"/>
+
+                                        </h:outputText>
+
+                                        <span class="timesheet-period-separator">
+                                            –
+                                        </span>
+
+                                        <h:outputText
+                                            value="#{timesheet.endDate}">
+
+                                            <f:convertDateTime
+                                                type="localDate"
+                                                pattern="dd.MM.yyyy"/>
+
+                                        </h:outputText>
+
+                                    </div>
+
+                                </div>
+
+                                <span
+                                    class="status-badge status-#{timesheet.status}">
+
+                                    #{msg[
+                                        'timesheet.status.'.concat(
+                                            timesheet.status
+                                        )
+                                    ]}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="dashboard-timesheet-statistics">
+
+                                <div class="statistic">
+
+                                    <span class="statistic-label">
+                                        #{msg['timesheet.hoursDue']}
+                                    </span>
+
+                                    <strong class="statistic-value">
+
+                                        <h:outputText
+                                            value="#{timesheet.hoursDue}">
+
+                                            <f:convertNumber
+                                                minFractionDigits="2"
+                                                maxFractionDigits="2"/>
+
+                                        </h:outputText>
+
+                                        h
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="statistic">
+
+                                    <span class="statistic-label">
+                                        #{msg['timesheet.hoursWorked']}
+                                    </span>
+
+                                    <strong class="statistic-value">
+
+                                        <h:outputText
+                                            value="#{timesheet.hoursWorked}">
+
+                                            <f:convertNumber
+                                                minFractionDigits="2"
+                                                maxFractionDigits="2"/>
+
+                                        </h:outputText>
+
+                                        h
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="statistic">
+
+                                    <span class="statistic-label">
+                                        #{msg['timesheet.balance']}
+                                    </span>
+
+                                    <strong
+                                        class="statistic-value
+                                            #{timesheet.balance gt 0
+                                                ? 'text-success'
+                                                : timesheet.balance lt 0
+                                                    ? 'text-warning'
+                                                    : ''}">
+
+                                        <h:outputText
+                                            value="#{timesheet.balance}">
+
+                                            <f:convertNumber
+                                                minFractionDigits="2"
+                                                maxFractionDigits="2"/>
+
+                                        </h:outputText>
+
+                                        h
+
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="dashboard-timesheet-actions">
+
+                                <p:button
+                                    value="#{msg['timesheet.addEntry']}"
+                                    icon="pi pi-plus"
+                                    outcome="/views/employee/timesheet"
+                                    rendered="#{timesheet.status eq 'IN_PROGRESS'}">
+
+                                    <f:param
+                                        name="id"
+                                        value="#{timesheet.id}"/>
+
+                                    <f:param
+                                        name="newEntry"
+                                        value="true"/>
+
+                                </p:button>
+
+
+                                <p:button
+                                    value="#{msg['timesheet.open']}"
+                                    icon="pi pi-folder-open"
+                                    outcome="/views/employee/timesheet"
+                                    styleClass="ui-button-secondary">
+
+                                    <f:param
+                                        name="id"
+                                        value="#{timesheet.id}"/>
+
+                                </p:button>
+
+                            </div>
+
+                        </article>
+
+                    </ui:repeat>
+
+                </section>
 
             </ui:fragment>
 
-            <!-- Supervisor -->
+
             <ui:fragment
-                rendered="#{loginBean.hasRole('SUPERVISOR')}">
+                rendered="#{not homeDashboardBean.hasCurrentEmployeeTimesheets}">
 
-                <div
-                    class="dashboard-card"
-                    onclick="PF('dlgTimesheetApproval').show()">
+                <section class="dashboard-empty-state">
 
-                    <i class="pi pi-check-circle dashboard-icon"></i>
+                    <i class="pi pi-calendar-times"></i>
+
+                    <h3>
+                        #{msg['home.noCurrentTimesheet']}
+                    </h3>
+
+                    <p class="text-muted">
+                        #{msg['home.noCurrentTimesheet.description']}
+                    </p>
+
+                    <p:button
+                        value="#{msg['timesheets.title']}"
+                        icon="pi pi-list"
+                        outcome="/views/employee/timesheets"
+                        styleClass="ui-button-secondary"/>
+
+                </section>
+
+            </ui:fragment>
+
+        </ui:fragment>
+
+
+        <!-- =========================================================
+             Supervisor Dashboard
+             ========================================================= -->
+
+        <ui:fragment
+            rendered="#{loginBean.isActiveRole('SUPERVISOR')}">
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
 
                     <div>
 
-                        <h3>
+                        <h2>
                             #{msg['home.timesheetApproval.title']}
-                        </h3>
+                        </h2>
 
-                        <p>
+                        <p class="text-muted">
                             #{msg['home.timesheetApproval.description']}
                         </p>
 
                     </div>
 
-                    <i class="pi pi-info-circle dashboard-card-help"></i>
+                    <p:button
+                        value="#{msg['timesheets.title']}"
+                        icon="pi pi-list"
+                        outcome="/views/supervisor/timesheets"
+                        styleClass="ui-button-secondary"/>
 
                 </div>
 
-            </ui:fragment>
 
-            <!-- Guest -->
-            <ui:fragment
-                rendered="#{loginBean.hasOnlyRole('GUEST')}">
-
-                <div
-                    class="dashboard-card"
-                    onclick="PF('dlgGuest').show()">
-
-                    <i class="pi pi-check-circle dashboard-icon"></i>
+                <div class="dashboard-summary-card">
 
                     <div>
 
-                        <h3>
-                            #{msg['dashboard.GUEST.TITLE']}
-                        </h3>
+                        <span class="statistic-label">
+                            #{msg['home.pendingTimesheets']}
+                        </span>
 
-                        <p>
-                            #{msg['dashboard.GUEST.DESCRIPTION']}
-                        </p>
+                        <strong class="dashboard-summary-value">
+                            #{homeDashboardBean.pendingSupervisorCount}
+                        </strong>
 
                     </div>
 
-                    <i class="pi pi-info-circle dashboard-card-help"></i>
+                    <p:button
+                        value="#{msg['home.reviewTimesheets']}"
+                        icon="pi pi-check-circle"
+                        outcome="/views/supervisor/timesheets"/>
 
                 </div>
 
-            </ui:fragment>
 
-            <!-- Assistant -->
-            <ui:fragment
-                rendered="#{loginBean.hasRole('ASSISTANT')}">
+                <ui:fragment
+                    rendered="#{
+                        not empty homeDashboardBean.supervisorTimesheets
+                    }">
 
-                <div
-                    class="dashboard-card"
-                    onclick="PF('dlgEmployees').show()">
+                    <div class="card">
 
-                    <i class="pi pi-users dashboard-icon"></i>
+                        <p:dataTable
+                            value="#{
+                                homeDashboardBean.supervisorTimesheets
+                            }"
+                            var="timesheet"
+                            rows="5">
+
+                            <p:column
+                                headerText="#{msg['timesheet.employee']}">
+
+                                <h:outputText
+                                    value="#{
+                                        timesheet.employeeFirstName
+                                    } #{timesheet.employeeLastName}"/>
+
+                            </p:column>
+
+
+                            <p:column
+                                headerText="#{msg['timesheet.period']}">
+
+                                <h:outputText
+                                    value="#{timesheet.startDate}">
+
+                                    <f:convertDateTime
+                                        type="localDate"
+                                        pattern="dd.MM.yyyy"/>
+
+                                </h:outputText>
+
+                                <span class="timesheet-period-separator">
+                                    –
+                                </span>
+
+                                <h:outputText
+                                    value="#{timesheet.endDate}">
+
+                                    <f:convertDateTime
+                                        type="localDate"
+                                        pattern="dd.MM.yyyy"/>
+
+                                </h:outputText>
+
+                            </p:column>
+
+
+                            <p:column
+                                headerText="#{msg['timesheet.balance']}">
+
+                                <h:outputText
+                                    value="#{timesheet.balance}">
+
+                                    <f:convertNumber
+                                        minFractionDigits="2"
+                                        maxFractionDigits="2"/>
+
+                                </h:outputText>
+
+                                <span> h</span>
+
+                            </p:column>
+
+
+                            <p:column
+                                headerText="#{msg['common.actions']}"
+                                exportable="false"
+                                styleClass="table-actions-column">
+
+                                <p:button
+                                    icon="pi pi-eye"
+                                    outcome="/views/supervisor/timesheet"
+                                    styleClass="ui-button-secondary">
+
+                                    <f:param
+                                        name="id"
+                                        value="#{timesheet.id}"/>
+
+                                </p:button>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+
+                </ui:fragment>
+
+            </section>
+
+        </ui:fragment>
+
+
+        <!-- =========================================================
+             Assistant Dashboard
+             ========================================================= -->
+
+        <ui:fragment
+            rendered="#{loginBean.isActiveRole('ASSISTANT')}">
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
 
                     <div>
 
-                        <h3>
+                        <h2>
                             #{msg['home.employees.title']}
-                        </h3>
+                        </h2>
 
-                        <p>
+                        <p class="text-muted">
                             #{msg['home.employees.description']}
                         </p>
 
                     </div>
 
-                    <i class="pi pi-info-circle dashboard-card-help"></i>
+                </div>
+
+
+                <div class="dashboard-action-grid">
+
+                    <p:button
+                        value="#{msg['contracts.title']}"
+                        icon="pi pi-file"
+                        outcome="/views/assistant/contracts"
+                        styleClass="dashboard-primary-action"/>
+
+                    <p:button
+                        value="#{msg['timesheets.title']}"
+                        icon="pi pi-clock"
+                        outcome="/views/assistant/timesheets"
+                        styleClass="ui-button-secondary"/>
 
                 </div>
 
-            </ui:fragment>
+            </section>
 
-            <!-- Secretary -->
-            <ui:fragment
-                rendered="#{loginBean.hasRole('SECRETARY')}">
+        </ui:fragment>
 
-                <div
-                    class="dashboard-card"
-                    onclick="PF('dlgTimesheetArchive').show()">
 
-                    <i class="pi pi-folder dashboard-icon"></i>
+        <!-- =========================================================
+             Secretary Dashboard
+             ========================================================= -->
+
+        <ui:fragment
+            rendered="#{loginBean.isActiveRole('SECRETARY')}">
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
 
                     <div>
 
-                        <h3>
+                        <h2>
                             #{msg['home.timesheetArchive.title']}
-                        </h3>
+                        </h2>
 
-                        <p>
+                        <p class="text-muted">
                             #{msg['home.timesheetArchive.description']}
                         </p>
 
                     </div>
 
-                    <i class="pi pi-info-circle dashboard-card-help"></i>
-
                 </div>
 
-            </ui:fragment>
 
-            <!-- Admin -->
-            <ui:fragment
-                rendered="#{loginBean.hasRole('ADMIN')}">
-
-                <div
-                    class="dashboard-card"
-                    onclick="PF('dlgAdministration').show()">
-
-                    <i class="pi pi-cog dashboard-icon"></i>
+                <div class="dashboard-summary-card">
 
                     <div>
 
-                        <h3>
-                            #{msg['home.administration.title']}
-                        </h3>
+                        <span class="statistic-label">
+                            #{msg['home.pendingArchives']}
+                        </span>
 
-                        <p>
+                        <strong class="dashboard-summary-value">
+                            #{homeDashboardBean.pendingArchiveCount}
+                        </strong>
+
+                    </div>
+
+                    <p:button
+                        value="#{msg['archive.title']}"
+                        icon="pi pi-inbox"
+                        outcome="/views/secretary/secretary-archive"/>
+
+                </div>
+
+
+                <div class="dashboard-action-grid">
+
+                    <p:button
+                        value="#{msg['timesheets.title']}"
+                        icon="pi pi-clock"
+                        outcome="/views/secretary/timesheets"
+                        styleClass="ui-button-secondary"/>
+
+                    <p:button
+                        value="#{msg['contracts.title']}"
+                        icon="pi pi-file"
+                        outcome="/views/secretary/contracts"
+                        styleClass="ui-button-secondary"/>
+
+                </div>
+
+            </section>
+
+        </ui:fragment>
+
+
+        <!-- =========================================================
+             Administrator Dashboard
+             ========================================================= -->
+
+        <ui:fragment
+            rendered="#{loginBean.isActiveRole('ADMIN')}">
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
+
+                    <div>
+
+                        <h2>
+                            #{msg['home.administration.title']}
+                        </h2>
+
+                        <p class="text-muted">
                             #{msg['home.administration.description']}
                         </p>
 
                     </div>
 
-                    <i class="pi pi-info-circle dashboard-card-help"></i>
+                </div>
+
+
+                <div class="dashboard-action-grid">
+
+                    <p:button
+                        value="#{msg['users.title']}"
+                        icon="pi pi-users"
+                        outcome="/views/admin/usersmgmt"/>
+
+                    <p:button
+                        value="#{msg['holiday.list']}"
+                        icon="pi pi-calendar"
+                        outcome="/views/admin/HolidayList"
+                        styleClass="ui-button-secondary"/>
+
+                    <p:button
+                        value="#{msg['dashboard.title']}"
+                        icon="pi pi-chart-bar"
+                        outcome="/views/admin/dashboard"
+                        styleClass="ui-button-secondary"/>
 
                 </div>
 
-            </ui:fragment>
-
-        </section>
-
-        <!-- Dialogs -->
-
-        <ui:fragment
-            rendered="#{loginBean.hasRole('EMPLOYEE')}">
-
-            <p:dialog
-                header="#{msg['home.myTimesheets.title']}"
-                widgetVar="dlgMyTimesheets"
-                modal="true"
-                closable="true"
-                resizable="false"
-                appendTo="@(body)"
-                width="420">
-
-                <p>
-                    #{msg['home.myTimesheets.dialog']}
-                </p>
-
-            </p:dialog>
-
-            <p:dialog
-                header="#{msg['home.holidays.title']}"
-                widgetVar="dlgHolidays"
-                modal="true"
-                closable="true"
-                resizable="false"
-                appendTo="@(body)"
-                width="420">
-
-                <p>
-                    #{msg['home.holidays.dialog']}
-                </p>
-
-            </p:dialog>
+            </section>
 
         </ui:fragment>
 
-        <!-- Supervisor Dialog -->
+
+        <!-- =========================================================
+             Guest Dashboard
+             ========================================================= -->
+
         <ui:fragment
-            rendered="#{loginBean.hasRole('SUPERVISOR')}">
+            rendered="#{loginBean.isActiveRole('GUEST')}">
 
-            <p:dialog
-                header="#{msg['home.timesheetApproval.title']}"
-                widgetVar="dlgTimesheetApproval"
-                modal="true"
-                closable="true"
-                resizable="false"
-                appendTo="@(body)"
-                width="420">
+            <section class="dashboard-empty-state">
 
-                <p>
-                    #{msg['home.timesheetApproval.dialog']}
-                </p>
+                <i class="pi pi-clock"></i>
 
-            </p:dialog>
+                <h3>
+                    #{msg['dashboard.GUEST.TITLE']}
+                </h3>
 
-        </ui:fragment>
-
-        <!-- Guest Dialog -->
-        <ui:fragment
-            rendered="#{loginBean.hasOnlyRole('GUEST')}">
-
-            <p:dialog
-                header="#{msg['dashboard.GUEST.TITLE']}"
-                widgetVar="dlgGuest"
-                modal="true"
-                closable="true"
-                resizable="false"
-                appendTo="@(body)"
-                width="420">
-
-                <p>
+                <p class="text-muted">
                     #{msg['dashboard.GUEST.DESCRIPTION']}
                 </p>
 
-            </p:dialog>
-
-        </ui:fragment>
-
-        <!-- Assistant Dialog -->
-        <ui:fragment
-            rendered="#{loginBean.hasRole('ASSISTANT')}">
-
-            <p:dialog
-                header="#{msg['home.employees.title']}"
-                widgetVar="dlgEmployees"
-                modal="true"
-                closable="true"
-                resizable="false"
-                appendTo="@(body)"
-                width="420">
-
-                <p>
-                    #{msg['home.employees.dialog']}
-                </p>
-
-            </p:dialog>
-
-        </ui:fragment>
-
-        <!-- Secretary Dialog -->
-        <ui:fragment
-            rendered="#{loginBean.hasRole('SECRETARY')}">
-
-            <p:dialog
-                header="#{msg['home.timesheetArchive.title']}"
-                widgetVar="dlgTimesheetArchive"
-                modal="true"
-                closable="true"
-                resizable="false"
-                appendTo="@(body)"
-                width="420">
-
-                <p>
-                    #{msg['home.timesheetArchive.dialog']}
-                </p>
-
-            </p:dialog>
-
-        </ui:fragment>
-
-        <!-- Admin Dialog -->
-        <ui:fragment
-            rendered="#{loginBean.hasRole('ADMIN')}">
-
-            <p:dialog
-                header="#{msg['home.administration.title']}"
-                widgetVar="dlgAdministration"
-                modal="true"
-                closable="true"
-                resizable="false"
-                appendTo="@(body)"
-                width="420">
-
-                <p>
-                    #{msg['home.administration.dialog']}
-                </p>
-
-            </p:dialog>
+            </section>
 
         </ui:fragment>
 

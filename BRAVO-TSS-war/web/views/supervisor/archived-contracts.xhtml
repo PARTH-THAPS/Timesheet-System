@@ -20,18 +20,7 @@
     </ui:define>
 
     <ui:define name="headerActions">
-        <div class="user-info">
-            <span class="user-name">
-                #{loginBean.user.firstName} #{loginBean.user.lastName}
-            </span>
-            <ui:repeat
-                value="#{loginBean.user.roles}"
-                var="role">
-                <span class="badge">
-                    #{msg['role.'.concat(role.name())]}
-                </span>
-            </ui:repeat>
-        </div>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
 
     <ui:define name="content">
@@ -51,6 +40,7 @@
 
                 <p:dataTable
                     id="archivedContractsTable"
+                    widgetVar="archivedContractsTable"
                     value="#{supervisorArchivedContractsBean.archivedContracts}"
                     var="contract"
                     paginator="true"
@@ -110,8 +100,25 @@
                         filterBy="#{contract.status}"
                         filterMatchMode="exact">
 
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('archivedContractsTable').filter()">
+
+                                <f:selectItem
+                                    itemLabel="#{msg['common.all']}"
+                                    itemValue="#{null}"
+                                    noSelectionOption="true"/>
+
+                                <f:selectItems
+                                    value="#{supervisorArchivedContractsBean.statuses}"
+                                    var="status"
+                                    itemLabel="#{msg['contract.status.'.concat(status)]}"
+                                    itemValue="#{status}"/>
+
+                            </p:selectOneMenu>
+                        </f:facet>
+
                         <span class="status-badge">
-                            #{msg['contract.status.'.concat(contract.status.name())]}
+                            #{msg['contract.status.'.concat(contract.status)]}
                         </span>
 
                     </p:column>

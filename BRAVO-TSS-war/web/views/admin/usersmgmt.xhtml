@@ -25,18 +25,7 @@
 
     <!-- Header Actions -->
     <ui:define name="headerActions">
-        <div class="user-info">
-            <span class="user-name">
-                #{loginBean.user.firstName} #{loginBean.user.lastName}
-            </span>
-            <ui:repeat
-                value="#{loginBean.user.roles}"
-                var="role">
-                <span class="badge">
-                    #{msg['role.'.concat(role.name())]}
-                </span>
-            </ui:repeat>
-        </div>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
 
     <ui:define name="content">
@@ -80,8 +69,8 @@
                     <!-- Name -->
                     <p:column
                         headerText="#{msg['user.name']}"
-                        sortBy="#{person.lastName}"
-                        filterBy="#{person.lastName}"
+                        sortBy="#{PersonListBean.getFullName(person)}"
+                        filterBy="#{PersonListBean.getFullName(person)}"
                         filterMatchMode="contains">
 
                         <h:outputText
@@ -104,9 +93,9 @@
                     <!-- Role -->
                     <p:column
                         headerText="#{msg['user.role']}"
-                        sortBy="#{person.role}"
-                        filterBy="#{person.role}"
-                        filterMatchMode="exact">
+                        sortBy="#{PersonListBean.getRoleNames(person)}"
+                        filterBy="#{PersonListBean.getRoleNames(person)}"
+                        filterMatchMode="contains">
 
                         <f:facet name="filter">
 
@@ -115,13 +104,12 @@
 
                                 <f:selectItem
                                     itemLabel="#{msg['common.all']}"
-                                    itemValue="#{null}"
-                                    noSelectionOption="true"/>
+                                    itemValue=""/>
 
                                 <f:selectItems
                                     value="#{PersonListBean.roles}"
                                     var="role"
-                                    itemLabel="#{msg['role.'.concat(role.name())]}"
+                                    itemLabel="#{msg['role.'.concat(role)]}"
                                     itemValue="#{role}"/>
 
                             </p:selectOneMenu>
@@ -130,7 +118,7 @@
 
                         <span class="role-badge">
                             <ui:repeat value="#{person.role}" var="r">
-                                #{msg['role.'.concat(r.name())]} 
+                                #{msg['role.'.concat(r)]}
                             </ui:repeat>
                         </span>
 

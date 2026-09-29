@@ -26,6 +26,10 @@
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
+    
+    <ui:define name="headerActions">
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
+    </ui:define>
 
     <ui:define name="content">
         <section class="card holiday-form-card">
@@ -33,8 +37,11 @@
             <h:form id="holidayForm">
 
                 <p:messages
-                        showDetail="true"
-                        closable="true"/>
+                    id="messages"
+                    showDetail="true"
+                    closable="true"
+                    styleClass="app-messages"
+                />
 
                 <div class="form-field">
                     <p:outputLabel

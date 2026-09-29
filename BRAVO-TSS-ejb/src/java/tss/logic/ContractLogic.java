@@ -4,6 +4,7 @@ import jakarta.ejb.Remote;
 import java.time.LocalDate;
 import java.util.List;
 import tss.dto.ContractDTO;
+import tss.dto.ContractStatisticsDTO;
 import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
 import tss.entity.TimesheetFrequency;
@@ -13,13 +14,15 @@ import tss.entity.FederalState;
 @Remote
 public interface ContractLogic {
 
-    ContractDTO createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, PersonDTO person, FederalState state);
+    ContractDTO createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, PersonDTO person, FederalState state, int archiveDuration);
 
     ContractDTO updateContract(ContractDTO updatedContract);
 
     void deleteContract(Long contractId);
 
     ContractDTO searchContract(Long contractId);
+    
+    ContractStatisticsDTO getContractStatistics(Long contractId);
 
     List<ContractDTO> findAllContracts();
 

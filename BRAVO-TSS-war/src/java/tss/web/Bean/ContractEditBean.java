@@ -21,6 +21,7 @@ import tss.entity.TimesheetFrequency;
 import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
 import java.util.Set;
+import tss.dto.ContractStatisticsDTO;
 
 @Named
 @ViewScoped
@@ -37,6 +38,7 @@ public class ContractEditBean implements Serializable {
 
     private Long id;
     private ContractDTO contract;
+    private ContractStatisticsDTO statistics;
     private List<PersonDTO> persons;
     private List<Long> originalSecretaryIds;
     private List<Long> originalAssistantIds;
@@ -60,6 +62,7 @@ public class ContractEditBean implements Serializable {
                 denyAccess();
                 return;
             }
+            statistics = contractLogic.getContractStatistics(id);
         }
         originalSecretaryIds = contract.getSecretaryIds() != null
                 ? new ArrayList<>(contract.getSecretaryIds())
@@ -93,82 +96,83 @@ public class ContractEditBean implements Serializable {
     }
 
     public void save() {
-    try {
-        validateNoOverlap();
+        try {
+            validateNoOverlap();
 
-        Long contractId;
-        if (isNewContract()) {
-            PersonDTO person = findSelectedPerson();
-            ContractDTO created = contractLogic.createContract(
-                    contract.getName(),
-                    contract.getStartDate(),
-                    contract.getEndDate(),
-                    contract.getFrequency(),
-                    contract.getHoursPerWeek(),
-                    contract.getHoursDue(),
-                    contract.getWorkingDaysPerWeek(),
-                    contract.getVacationDaysPerYear(),
-                    person,
-                    contract.getState()
-            );
-            contractId = created.getId();
-            if (contract.getSupervisorId() != null) {
-                contractLogic.addSupervisor(contractId, contract.getSupervisorId());
-            }
-        } else {
-            contractLogic.updateContract(contract);
-            contractId = contract.getId();
-            if (contract.getSupervisorId() != null) {
-                contractLogic.addSupervisor(contractId, contract.getSupervisorId());
+            Long contractId;
+            if (isNewContract()) {
+                PersonDTO person = findSelectedPerson();
+                ContractDTO created = contractLogic.createContract(
+                        contract.getName(),
+                        contract.getStartDate(),
+                        contract.getEndDate(),
+                        contract.getFrequency(),
+                        contract.getHoursPerWeek(),
+                        contract.getHoursDue(),
+                        contract.getWorkingDaysPerWeek(),
+                        contract.getVacationDaysPerYear(),
+                        person,
+                        contract.getState(),
+                        contract.getArchiveDuration()
+                );
+                contractId = created.getId();
+                if (contract.getSupervisorId() != null) {
+                    contractLogic.addSupervisor(contractId, contract.getSupervisorId());
+                }
             } else {
-                contractLogic.removeSupervisor(contractId);
+                contractLogic.updateContract(contract);
+                contractId = contract.getId();
+                if (contract.getSupervisorId() != null) {
+                    contractLogic.addSupervisor(contractId, contract.getSupervisorId());
+                } else {
+                    contractLogic.removeSupervisor(contractId);
+                }
+            }
+            syncSecretariesAndAssistants(contractId);
+            redirectToContracts();
+        } catch (Exception e) {
+            showError("Could not save contract", e.getMessage());
+        }
+    }
+
+    private void validateNoOverlap() {
+        Long employeeId = contract.getPersonId();
+        Long supervisorId = contract.getSupervisorId();
+        List<Long> secretaryIds = contract.getSecretaryIds() != null
+                ? contract.getSecretaryIds() : List.of();
+        List<Long> assistantIds = contract.getAssistantIds() != null
+                ? contract.getAssistantIds() : List.of();
+
+        if (secretaryIds.isEmpty()) {
+            throw new IllegalArgumentException("At least one secretary is required.");
+        }
+
+        // Collect every (role label, personId) pair that was actually assigned
+        List<Map.Entry<String, Long>> assignments = new ArrayList<>();
+        if (employeeId != null) assignments.add(Map.entry("employee", employeeId));
+        if (supervisorId != null) assignments.add(Map.entry("supervisor", supervisorId));
+        for (Long id : secretaryIds) assignments.add(Map.entry("secretary", id));
+        for (Long id : assistantIds) assignments.add(Map.entry("assistant", id));
+
+        Set<Long> seen = new HashSet<>();
+        for (Map.Entry<String, Long> entry : assignments) {
+            if (!seen.add(entry.getValue())) {
+                throw new IllegalArgumentException(
+                        "Each person may only have one role on this contract. "
+                        + personNameOrId(entry.getValue())
+                        + " is assigned to more than one role."
+                );
             }
         }
-        syncSecretariesAndAssistants(contractId);
-        redirectToContracts();
-    } catch (Exception e) {
-        showError("Could not save contract", e.getMessage());
-    }
-}
-
-private void validateNoOverlap() {
-    Long employeeId = contract.getPersonId();
-    Long supervisorId = contract.getSupervisorId();
-    List<Long> secretaryIds = contract.getSecretaryIds() != null
-            ? contract.getSecretaryIds() : List.of();
-    List<Long> assistantIds = contract.getAssistantIds() != null
-            ? contract.getAssistantIds() : List.of();
-
-    if (secretaryIds.isEmpty()) {
-        throw new IllegalArgumentException("At least one secretary is required.");
     }
 
-    // Collect every (role label, personId) pair that was actually assigned
-    List<Map.Entry<String, Long>> assignments = new ArrayList<>();
-    if (employeeId != null) assignments.add(Map.entry("employee", employeeId));
-    if (supervisorId != null) assignments.add(Map.entry("supervisor", supervisorId));
-    for (Long id : secretaryIds) assignments.add(Map.entry("secretary", id));
-    for (Long id : assistantIds) assignments.add(Map.entry("assistant", id));
-
-    Set<Long> seen = new HashSet<>();
-    for (Map.Entry<String, Long> entry : assignments) {
-        if (!seen.add(entry.getValue())) {
-            throw new IllegalArgumentException(
-                    "Each person may only have one role on this contract. "
-                    + personNameOrId(entry.getValue())
-                    + " is assigned to more than one role."
-            );
-        }
+    private String personNameOrId(Long id) {
+        return persons.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst()
+                .map(p -> p.getFirstName() + " " + p.getLastName())
+                .orElse("Person #" + id);
     }
-}
-
-private String personNameOrId(Long id) {
-    return persons.stream()
-            .filter(p -> p.getId().equals(id))
-            .findFirst()
-            .map(p -> p.getFirstName() + " " + p.getLastName())
-            .orElse("Person #" + id);
-}
 
     private void syncSecretariesAndAssistants(Long contractId) {
         List<Long> selectedSecretaries = contract.getSecretaryIds() != null
@@ -208,6 +212,8 @@ private String personNameOrId(Long id) {
                     contract.getId(),
                     ContractStatus.STARTED
             );
+            
+            refreshStatistics();
         } catch (Exception e) {
             showError(
                     "Could not start contract",
@@ -222,6 +228,8 @@ private String personNameOrId(Long id) {
                     contract.getId(),
                     ContractStatus.TERMINATED
             );
+            
+            refreshStatistics();
         } catch (Exception e) {
             showError(
                     "Could not terminate contract",
@@ -330,17 +338,17 @@ private String personNameOrId(Long id) {
             .toList();
 }
 
-public List<PersonDTO> getSecretaries() {
-    return persons.stream()
-            .filter(p -> p.getRole() != null && p.getRole().contains(Role.SECRETARY))
-            .toList();
-}
+    public List<PersonDTO> getSecretaries() {
+        return persons.stream()
+                .filter(p -> p.getRole() != null && p.getRole().contains(Role.SECRETARY))
+                .toList();
+    }
 
-public List<PersonDTO> getAssistants() {
-    return persons.stream()
-            .filter(p -> p.getRole() != null && p.getRole().contains(Role.ASSISTANT))
-            .toList();
-}
+    public List<PersonDTO> getAssistants() {
+        return persons.stream()
+                .filter(p -> p.getRole() != null && p.getRole().contains(Role.ASSISTANT))
+                .toList();
+    }
 
     public boolean isEditable() {
         return isNewContract() || isPrepared();
@@ -368,5 +376,16 @@ public List<PersonDTO> getAssistants() {
 
     public List<PersonDTO> getPersons() {
         return persons;
+    }
+    public ContractStatisticsDTO getStatistics() {
+        return statistics;
+    }
+    
+    private void refreshStatistics() {
+        if (contract != null && contract.getId() != null) {
+            statistics = contractLogic.getContractStatistics(
+                    contract.getId()
+            );
+        }
     }
 }

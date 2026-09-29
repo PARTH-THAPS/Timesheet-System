@@ -5,6 +5,7 @@ import jakarta.ejb.EJBException;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.security.Principal;
@@ -28,6 +29,9 @@ public class PersonalDataBean implements Serializable {
 
     @EJB
     private PersonLogic personLogic;
+
+    @Inject
+    private LocaleBean localeBean;
 
     private String oldPrincipalName = null;   // was Principal (not serializable)
 
@@ -54,20 +58,43 @@ public class PersonalDataBean implements Serializable {
         return personDTO;
     }
 
-    public Language[] getLanguages() {         
+    public Language[] getLanguages() {
         return Language.values();
     }
 
     public String save() {
         FacesContext ctx = FacesContext.getCurrentInstance();
+
         try {
-            personDTO = personLogic.updatePerson(personDTO);   // use the persisted result
-            ctx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
-                    "Saved successfully!", null));
+            personDTO = personLogic.updatePerson(personDTO);
+
+            if (personDTO.getPreferredLanguage() != null) {
+                localeBean.applyPreferredLanguage(
+                        personDTO.getPreferredLanguage()
+                );
+            }
+
+            ctx.addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            "Saved successfully!",
+                            null
+                    )
+            );
+
         } catch (EJBException | IllegalArgumentException e) {
-            ctx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Saving failed: " + e.getMessage(), null));
+
+            ctx.addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Saving failed: " + e.getMessage(),
+                            null
+                    )
+            );
         }
+
         return null;
     }
 }

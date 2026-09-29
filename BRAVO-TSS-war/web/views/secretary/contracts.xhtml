@@ -20,18 +20,7 @@
     </ui:define>
 
     <ui:define name="headerActions">
-        <div class="user-info">
-            <span class="user-name">
-                #{loginBean.user.firstName} #{loginBean.user.lastName}
-            </span>
-            <ui:repeat
-                value="#{loginBean.user.roles}"
-                var="role">
-                <span class="badge">
-                    #{msg['role.'.concat(role.name())]}
-                </span>
-            </ui:repeat>
-        </div>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
 
     <ui:define name="content">
@@ -47,6 +36,7 @@
         <section class="card">
             <p:dataTable
                 id="secretaryContractsTable"
+                widgetVar="secretaryContractsTable"
                 value="#{secretaryContractBean.contracts}"
                 var="contract"
                 paginator="true"
@@ -57,8 +47,12 @@
 
                 <p:column
                     headerText="#{msg['contract.name']}"
-                    sortBy="#{contract.name}">
+                    sortBy="#{contract.name}"
+                    filterBy="#{contract.name}"
+                    filterMatchMode="contains">
+
                     <h:outputText value="#{contract.name}"/>
+
                 </p:column>
 
                 <p:column
@@ -79,10 +73,44 @@
 
                 <p:column
                     headerText="#{msg['contract.status']}"
-                    sortBy="#{contract.status}">
-                    <span class="status-badge status-#{contract.status.name().toLowerCase()}">
-                        #{msg['contract.status.'.concat(contract.status.name())]}
+                    sortBy="#{contract.status}"
+                    filterBy="#{contract.status}"
+                    filterMatchMode="exact">
+
+                    <f:facet name="filter">
+
+                        <p:selectOneMenu
+                            onchange="PF('secretaryContractsTable').filter()">
+
+                            <f:selectItem
+                                itemLabel="#{msg['common.all']}"
+                                itemValue="#{null}"
+                                noSelectionOption="true"/>
+
+                            <f:selectItems
+                                value="#{secretaryContractBean.statuses}"
+                                var="status"
+                                itemValue="#{status}"
+                                itemLabel="#{msg['contract.status.'.concat(status)]}"/>
+
+                        </p:selectOneMenu>
+
+                    </f:facet>
+
+                    <span class="status-badge status-#{contract.status}">
+                        #{msg['contract.status.'.concat(contract.status)]}
                     </span>
+
+                </p:column>
+
+                <p:column
+                    headerText="#{msg['contract.archiveDuration']}"
+                    sortBy="#{contract.archiveDuration}"
+                    styleClass="table-small-column">
+
+                    <h:outputText value="#{contract.archiveDuration}"/>
+                    <span> #{msg['contract.archiveDuration.years']}</span>
+
                 </p:column>
 
                 <p:column
@@ -92,16 +120,49 @@
                         icon="pi pi-print"
                         value="#{msg['contract.print.button']}"
                         title="#{msg['contract.print.button']}"
-                        outcome="/views/secretary/print"
+                        outcome="/views/secretary/print/contract-cover"
                         target="_blank"
                         styleClass="ui-button-secondary">
                         <f:param
                             name="id"
                             value="#{contract.id}"/>
                     </p:button>
+
+                    <p:button
+                        icon="pi pi-print"
+                        value="#{msg['contract.print.complete']}"
+                        title="#{msg['contract.print.complete']}"
+                        outcome="/views/secretary/print/contract-complete"
+                        target="_blank"
+                        styleClass="ui-button-secondary">
+
+                        <f:param
+                            name="id"
+                            value="#{contract.id}"/>
+
+                    </p:button>
+
+                    <p:commandButton
+                        icon="pi pi-eye"
+                        process="@this"
+                        update="contractDetails"
+                        oncomplete="PF('contractDetailsDialog').show()"
+                        styleClass="ui-button-secondary">
+
+                        <f:setPropertyActionListener
+                            target="#{secretaryContractBean.selectedContract}"
+                            value="#{contract}"/>
+
+                    </p:commandButton>
                 </p:column>
 
             </p:dataTable>
+
+            <ui:include src="/WEB-INF/components/contract-statistics.xhtml">
+                <ui:param
+                    name="statistics"
+                    value="#{secretaryContractBean.selectedStatistics}"/>
+            </ui:include>
         </section>
     </ui:define>
 

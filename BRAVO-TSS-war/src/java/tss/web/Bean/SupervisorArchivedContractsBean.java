@@ -81,6 +81,10 @@ public class SupervisorArchivedContractsBean implements Serializable {
     public List<ContractDTO> getArchivedContracts() {
         return archivedContracts;
     }
+    
+    public ContractStatus[] getStatuses() {
+        return ContractStatus.values();
+    }
 }
 
 

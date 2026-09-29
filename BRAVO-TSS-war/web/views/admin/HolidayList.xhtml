@@ -18,21 +18,9 @@
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
  
-    
     <ui:define name="headerActions">
-            <div class="user-info">
-                <span class="user-name">
-                    #{loginBean.user.firstName} #{loginBean.user.lastName}
-                </span>
-                <ui:repeat
-                    value="#{loginBean.user.roles}"
-                    var="role">
-                    <span class="badge">
-                        #{msg['role.'.concat(role.name())]}
-                    </span>
-                </ui:repeat>
-            </div>
-        </ui:define>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
+    </ui:define>
     
     <ui:define name="content">
 
@@ -47,7 +35,13 @@
 
         <h:form id="holidayForm">
 
-            <h:messages globalOnly="true"/>
+            <p:messages
+                id="messages"
+                showDetail="true"
+                closable="true"
+                globalOnly="true"
+                styleClass="app-messages"
+            />
 
             <div class="table-responsive-wrapper">
 

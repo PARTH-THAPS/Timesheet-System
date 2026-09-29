@@ -24,9 +24,9 @@ public class ContractDTO extends AbstractDTO {
     private Long supervisorId;
     private FederalState state;
     private ContractStatus status;
-     private List<Long> secretaryIds;
+    private List<Long> secretaryIds;
     private List<Long> assistantIds;
-    private int archiveDuration;
+    private int archiveDuration = 2;
 
     public ContractDTO() {
     }

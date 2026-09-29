@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import tss.dto.ContractDTO;
+import tss.dto.ContractStatisticsDTO;
 import tss.dto.User;
 import tss.logic.ContractLogic;
 
@@ -27,6 +28,7 @@ public class MyContractBean implements Serializable {
 
     private List<ContractDTO> contracts;
     private ContractDTO selectedContract;
+    private ContractStatisticsDTO selectedStatistics;
 
     @PostConstruct
     public void init() {
@@ -51,6 +53,23 @@ public class MyContractBean implements Serializable {
     }
 
     public void setSelectedContract(ContractDTO selectedContract) {
+
         this.selectedContract = selectedContract;
+
+        if (selectedContract == null
+                || selectedContract.getId() == null) {
+
+            selectedStatistics = null;
+            return;
+        }
+
+        selectedStatistics =
+                contractLogic.getContractStatistics(
+                        selectedContract.getId()
+                );
+    }
+    
+    public ContractStatisticsDTO getSelectedStatistics() {
+        return selectedStatistics;
     }
 }

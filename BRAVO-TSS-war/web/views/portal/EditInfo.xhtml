@@ -5,7 +5,8 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="jakarta.faces.html"
     xmlns:f="jakarta.faces.core"
-    xmlns:ui="jakarta.faces.facelets">
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
         #{msg['personalInfo.title']}
@@ -19,25 +20,18 @@
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
 
-
     <ui:define name="headerActions">
-        <div class="user-info">
-            <span class="user-name">
-                #{loginBean.user.firstName} #{loginBean.user.lastName}
-            </span>
-            <ui:repeat
-                value="#{loginBean.user.roles}"
-                var="role">
-                <span class="badge">
-                    #{msg['role.'.concat(role.name())]}
-                </span>
-            </ui:repeat>
-        </div>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
 
     <ui:define name="content">
         <h:form id="personalInfoForm">
-            <h:messages infoStyle="color:green;" errorStyle="color:red;"/>
+            <p:messages
+                id="messages"
+                showDetail="true"
+                closable="true"
+                styleClass="app-messages"
+            />
 
             <h:outputText value="#{personalDataBean.user}" style="display:none;"/>
 
@@ -47,21 +41,30 @@
                              value="#{personalDataBean.personDTO.firstName}"
                              required="true"
                              requiredMessage="#{msg['personalInfo.firstName.required']}"/>
-                <h:message for="firstName" style="color:red;"/>
+                <p:message
+                    for="firstName"
+                    styleClass="field-message"
+                />
 
                 <h:outputLabel for="lastName" value="#{msg['person.lastName']}:"/>
                 <h:inputText id="lastName"
                              value="#{personalDataBean.personDTO.lastName}"
                              required="true"
                              requiredMessage="#{msg['personalInfo.lastName.required']}"/>
-                <h:message for="lastName" style="color:red;"/>
+                <p:message
+                    for="lastName"
+                    styleClass="field-message"
+                />
 
                 <h:outputLabel for="email" value="#{msg['person.email']}:"/>
                 <h:inputText id="email"
                              value="#{personalDataBean.personDTO.emailAddress}"
                              required="true"
                              requiredMessage="#{msg['personalInfo.email.required']}" readonly="true"/>
-                <h:message for="email" style="color:red;"/>
+                <p:message
+                    for="email"
+                    styleClass="field-message"
+                />
 
                 <h:outputLabel for="preferredLanguage"
                                value="#{msg['personalInfo.PreferedLanguage.ForReminder']}:"/>
@@ -75,9 +78,12 @@
                     <f:selectItems value="#{personalDataBean.languages}"
                                    var="l"
                                    itemValue="#{l}"
-                                   itemLabel="#{msg['language.'.concat(l.name())]}"/>
+                                   itemLabel="#{msg['language.'.concat(l)]}"/>
                 </h:selectOneMenu>
-                <h:message for="preferredLanguage" style="color:red;"/>
+                <p:message
+                    for="preferredLanguage"
+                    styleClass="field-message"
+                />
             </h:panelGrid>
 
             <br/>

@@ -26,10 +26,15 @@
                 </p>
 
                 <ui:fragment rendered="#{loginErrorBean.error}">
-                    <div class="form-messages">
-                        <p class="text-muted" style="color:#b91c1c;">
-                            Invalid email or password. Please try again.
-                        </p>
+                    <div class="app-message app-message-error">
+                        <i class="pi pi-times-circle"></i>
+
+                        <div class="app-message-content">
+                            <strong>Login failed</strong>
+                            <span>
+                                Invalid email or password. Please try again.
+                            </span>
+                        </div>
                     </div>
                 </ui:fragment>
 

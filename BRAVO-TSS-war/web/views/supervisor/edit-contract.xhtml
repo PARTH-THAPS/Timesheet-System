@@ -32,26 +32,18 @@
     </ui:define>
 
     <ui:define name="headerActions">
-        <div class="user-info">
-            <span class="user-name">
-                #{loginBean.user.firstName} #{loginBean.user.lastName}
-            </span>
-            <ui:repeat
-                value="#{loginBean.user.roles}"
-                var="role">
-                <span class="badge">
-                    #{msg['role.'.concat(role.name())]}
-                </span>
-            </ui:repeat>
-        </div>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
 
     <ui:define name="content">
         <section class="card contract-form-card">
             <h:form id="contractForm">
                 <p:messages
+                    id="messages"
                     showDetail="true"
-                    closable="true"/>
+                    closable="true"
+                    styleClass="app-messages"
+                />
 
                 <ui:fragment rendered="#{not contractEditBean.newContract}">
                     <div class="contract-header">
@@ -270,51 +262,42 @@
                                 value="#{contractEditBean.states}"
                                 var="state"
                                 itemValue="#{state}"
-                                itemLabel="#{state.name()}"/>
+                                itemLabel="#{state}"/>
                         </p:selectOneMenu>
                     </div>
                 </div>
+                
+                <div class="form-field">
 
-                <ui:fragment rendered="#{not contractEditBean.newContract}">
-                    <section class="contract-statistics">
-                        <h3>
-                            #{msg['contract.overview']}
-                        </h3>
-                        <div class="statistics-grid">
-                            <div class="statistic">
-                                <span class="statistic-label">
-                                    #{msg['contract.hoursDue']}
-                                </span>
-                                <strong class="statistic-value">
-                                    #{contractEditBean.contract.hoursDue} h
-                                </strong>
-                            </div>
-                            <div class="statistic">
-                                <span class="statistic-label">
-                                    #{msg['contract.vacationHours']}
-                                </span>
-                                <strong class="statistic-value">
-                                    #{contractEditBean.contract.vacationHours} h
-                                </strong>
-                            </div>
-                            <ui:fragment
-                                rendered="#{not empty contractEditBean.contract.terminationDate}">
-                                <div class="statistic">
-                                    <span class="statistic-label">
-                                        #{msg['contract.terminationDate']}
-                                    </span>
-                                    <strong class="statistic-value">
-                                        <h:outputText
-                                            value="#{contractEditBean.contract.terminationDate}">
-                                            <f:convertDateTime
-                                                type="localDate"
-                                                pattern="dd.MM.yyyy"/>
-                                        </h:outputText>
-                                    </strong>
-                                </div>
-                            </ui:fragment>
-                        </div>
-                    </section>
+                    <p:outputLabel
+                        for="archiveDuration"
+                        value="#{msg['contract.archiveDuration']}"/>
+
+                    <p:inputNumber
+                        id="archiveDuration"
+                        value="#{contractEditBean.contract.archiveDuration}"
+                        minValue="1"
+                        decimalPlaces="0"
+                        required="true"
+                        disabled="#{not contractEditBean.editable}"/>
+
+                    <small class="text-muted">
+                        #{msg['contract.archiveDuration.help']}
+                    </small>
+
+                </div>
+
+                <ui:fragment rendered="#{not contractEditBean.newContract and not contractEditBean.prepared}">
+
+                    <ui:include
+                        src="/WEB-INF/components/contract-statistics.xhtml">
+
+                        <ui:param
+                            name="statistics"
+                            value="#{contractEditBean.statistics}"/>
+
+                    </ui:include>
+
                 </ui:fragment>
 
                 <div class="form-actions">
