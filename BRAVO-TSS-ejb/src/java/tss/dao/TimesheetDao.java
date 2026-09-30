@@ -4,11 +4,8 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import tss.entity.Contract;
 import tss.entity.Timesheet;
 import tss.entity.TimesheetStatus;
@@ -19,9 +16,6 @@ public class TimesheetDao {
     @PersistenceContext(unitName = "BRAVO-TSS-ejbPU")
     private EntityManager em;
 
-    /**
-     * Only gets called when creating a contract
-     */
     public void createTimesheet(Timesheet timesheet) {
         if (timesheet == null) {
             throw new IllegalArgumentException("timesheet must not be null");
@@ -65,7 +59,9 @@ public class TimesheetDao {
     public List<Timesheet> findByContract(Contract contract) {
         try {
             return em.createQuery(
-                            "SELECT t FROM Timesheet t WHERE t.contract = :contract ORDER BY t.startDate",
+                            "SELECT t FROM Timesheet t "
+                            + "WHERE t.contract = :contract "
+                            + "ORDER BY t.startDate",
                             Timesheet.class)
                     .setParameter("contract", contract)
                     .getResultList();
@@ -77,7 +73,9 @@ public class TimesheetDao {
     public List<Timesheet> findByContractAndStatus(Contract contract, TimesheetStatus status) {
         try {
             return em.createQuery(
-                            "SELECT t FROM Timesheet t WHERE t.contract = :contract AND t.status = :status ORDER BY t.startDate",
+                            "SELECT t FROM Timesheet t "
+                            + "WHERE t.contract = :contract AND t.status = :status "
+                            + "ORDER BY t.startDate",
                             Timesheet.class)
                     .setParameter("contract", contract)
                     .setParameter("status", status)
@@ -90,7 +88,9 @@ public class TimesheetDao {
     public List<Timesheet> findByStatus(TimesheetStatus status) {
         try {
             return em.createQuery(
-                            "SELECT t FROM Timesheet t WHERE t.status = :status ORDER BY t.startDate",
+                            "SELECT t FROM Timesheet t "
+                            + "WHERE t.status = :status "
+                            + "ORDER BY t.startDate",
                             Timesheet.class)
                     .setParameter("status", status)
                     .getResultList();
@@ -101,12 +101,12 @@ public class TimesheetDao {
 
     public List<Timesheet> findByEmployeeUsername(String emailAddress) {
         return em.createQuery(
-                        "SELECT DISTINCT t FROM Timesheet t " +
-                                "LEFT JOIN FETCH t.entries " +
-                                "JOIN t.contract c " +
-                                "JOIN c.employee p " +
-                                "WHERE p.emailAddress = :email " +
-                                "ORDER BY t.startDate",
+                        "SELECT DISTINCT t FROM Timesheet t " 
+                        +"LEFT JOIN FETCH t.entries " 
+                        +"JOIN t.contract c " 
+                        +"JOIN c.employee p " 
+                        +"WHERE p.emailAddress = :email " 
+                        +"ORDER BY t.startDate",
                         Timesheet.class)
                 .setParameter("email", emailAddress)
                 .getResultList();
@@ -114,12 +114,12 @@ public class TimesheetDao {
 
     public List<Timesheet> findPendingArchivesForSecretary(String emailAddress) {
         return em.createQuery(
-                        "SELECT DISTINCT t FROM Timesheet              t " +
-                                "JOIN t.contract c " +
-                                "JOIN c.secretaries s " +
-                                "WHERE s.emailAddress = :emailAddress " +
-                                "AND t.status = tss.entity.TimesheetStatus.SIGNED_BY_SUPERVISOR " +
-                                "ORDER BY t.startDate",
+                        "SELECT DISTINCT t FROM Timesheet              t " 
+                                +"JOIN t.contract c " 
+                                +"JOIN c.secretaries s " +
+                                "WHERE s.emailAddress = :emailAddress " 
+                                +"AND t.status = tss.entity.TimesheetStatus.SIGNED_BY_SUPERVISOR " 
+                                +"ORDER BY t.startDate",
                         Timesheet.class)
                 .setParameter("emailAddress", emailAddress)
                 .getResultList();
@@ -127,7 +127,9 @@ public class TimesheetDao {
 
     public List<Timesheet> findInProgressOnLastDay() {
         return em.createQuery(
-                        "SELECT t FROM Timesheet t WHERE t.endDate = CURRENT_DATE ORDER BY t.startDate",
+                        "SELECT t FROM Timesheet t "
+                        + "WHERE t.endDate = CURRENT_DATE "
+                        + "ORDER BY t.startDate",
                         Timesheet.class)
                 .getResultList();
     }
@@ -135,7 +137,9 @@ public class TimesheetDao {
     public List<Timesheet> findByStatusOnLastDay(TimesheetStatus status) {
         try {
             return em.createQuery(
-                            "SELECT t FROM Timesheet t WHERE t.status = :status AND t.endDate = CURRENT_DATE ORDER BY t.startDate",
+                            "SELECT t FROM Timesheet t "
+                            + "WHERE t.status = :status AND t.endDate = CURRENT_DATE "
+                            + "ORDER BY t.startDate",
                             Timesheet.class)
                     .setParameter("status", status)
                     .getResultList();
@@ -146,7 +150,9 @@ public class TimesheetDao {
 
     public int deleteArchiveOldRecords() {
         List<Timesheet> archivedTimesheets = em.createQuery(
-                        "SELECT t FROM Timesheet t JOIN FETCH t.contract WHERE t.status = :status",
+                        "SELECT t FROM Timesheet t "
+                        + "JOIN FETCH t.contract "
+                        + "WHERE t.status = :status",
                         Timesheet.class)
                 .setParameter("status", TimesheetStatus.ARCHIVED)
                 .getResultList();
@@ -191,6 +197,7 @@ public class TimesheetDao {
                 + "JOIN t.contract c "
                 + "JOIN c.employee p "
                 + "WHERE p.id = :personId "
+                + "AND t.status <> tss.entity.TimesheetStatus.ARCHIVED "
                 + "ORDER BY t.startDate",
                 Timesheet.class
         )
@@ -205,6 +212,7 @@ public class TimesheetDao {
                 + "JOIN FETCH t.contract c "
                 + "JOIN FETCH c.employee e "
                 + "WHERE c.supervisor.id = :supervisorId "
+                + "AND t.status <> tss.entity.TimesheetStatus.ARCHIVED "
                 + "ORDER BY t.startDate DESC",
                 Timesheet.class
         )
@@ -220,6 +228,7 @@ public class TimesheetDao {
                 + "JOIN FETCH c.employee e "
                 + "JOIN c.assistants a "
                 + "WHERE a.id = :assistantId "
+                + "AND t.status <> tss.entity.TimesheetStatus.ARCHIVED "
                 + "ORDER BY t.startDate DESC",
                 Timesheet.class
         )
@@ -235,6 +244,7 @@ public class TimesheetDao {
                 + "JOIN FETCH c.employee e "
                 + "JOIN c.secretaries s "
                 + "WHERE s.id = :secretaryId "
+                + "AND t.status <> tss.entity.TimesheetStatus.ARCHIVED "
                 + "ORDER BY t.startDate DESC",
                 Timesheet.class
         )
@@ -306,9 +316,7 @@ public class TimesheetDao {
    
     public Timesheet findByIdWithEntries(Long id) {
     if (id == null) {
-        throw new IllegalArgumentException(
-                "id must not be null"
-        );
+        throw new IllegalArgumentException( "id must not be null");
     }
 
     return em.createQuery(
@@ -324,7 +332,9 @@ public class TimesheetDao {
      public List<Timesheet> findPendingRemindersByStatus(TimesheetStatus status) {
         try {
             return em.createQuery(
-                            "SELECT t FROM Timesheet t WHERE t.status = :status AND t.endDate <= CURRENT_DATE ORDER BY t.startDate",
+                            "SELECT t FROM Timesheet t "
+                            + "WHERE t.status = :status AND t.endDate <= CURRENT_DATE "
+                            + "ORDER BY t.startDate",
                             Timesheet.class)
                     .setParameter("status", status)
                     .getResultList();

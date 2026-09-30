@@ -2,7 +2,6 @@ package tss.logic.impl;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import tss.dao.ContractsDao;
 import tss.dao.TimeSheetEntriesDao;
 import tss.dto.HolidayDTO;
 import tss.entity.FederalState;
-import tss.entity.Holiday;
 import tss.entity.ReportType;
 import tss.logic.HolidayLogic;
 
@@ -67,7 +65,6 @@ public class TimesheetLogicImp implements TimesheetLogic {
             ts.setStartDate(startDate);
             ts.setEndDate(periodEnd);
             ts.setContract(contract);
-            //ts.setHoursDue(calculateHoursDue(startDate, periodEnd, contract.getHoursPerWeek(), contract.getWorkingDaysPerWeek(), contract));
             double timesheetHoursDue = calculateHoursDue(startDate, periodEnd, contract.getHoursPerWeek(),contract.getWorkingDaysPerWeek(), contract);
             ts.setHoursDue(timesheetHoursDue);
             totalHoursDue += timesheetHoursDue;
@@ -139,17 +136,7 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         return toDTO(timesheet);
     }
-        //     holidays logic
-    public List<HolidayDTO> checkForHolidays(LocalDate startDate, LocalDate endDate, FederalState State) {
-        return holidayLogic.findByStateAndRange(State, startDate, endDate);
-    }
-
-    //holidays logic
-    /* public List<Holiday> checkForHolidays(Timesheet timeSheet, String State) {
-        LocalDate startDate = timeSheet.getStartDate();
-        LocalDate endDate = timeSheet.getEndDate();
-        return holidayLogic.findByStateAndRange(State, startDate, endDate);
-    } */
+    
     @Override
     public TimesheetDTO updateEntry(Long timesheetId, Long entryId, TimesheetEntryDTO updatedEntryDTO) {
         if (updatedEntryDTO == null) {
@@ -271,7 +258,6 @@ public class TimesheetLogicImp implements TimesheetLogic {
         timesheetDAO.updateTimesheet(timesheet);
 
         return toDTO(timesheet);
-
     }
 
     @Override
@@ -289,7 +275,6 @@ public class TimesheetLogicImp implements TimesheetLogic {
         timesheetDAO.updateTimesheet(timesheet);
 
         return toDTO(timesheet);
-
     }
 
     @Override
@@ -311,7 +296,6 @@ public class TimesheetLogicImp implements TimesheetLogic {
         timesheetDAO.updateTimesheet(timesheet);
 
         return toDTO(timesheet);
-
     }
     
     @Override
@@ -331,14 +315,19 @@ public class TimesheetLogicImp implements TimesheetLogic {
    @Override
     public List<TimesheetDTO> findByEmployeeId(Long personId) {
         List<Timesheet> entities = timesheetDAO.findByEmployeeId(personId);
-        return entities.stream().map(this::toDTO).collect(Collectors.toList());
+        return entities.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<TimesheetDTO> findTimesheetsForSupervisor(Long supervisorId) {
         List<Timesheet> entities = timesheetDAO.findBySupervisorId(supervisorId);
-        if (entities == null) return List.of();
-        return entities.stream().map(this::toDTO).collect(Collectors.toList());
+        if (entities == null) 
+            return List.of();
+        return entities.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -382,7 +371,10 @@ public class TimesheetLogicImp implements TimesheetLogic {
     @Override
     public List<TimesheetDTO> findTimesheetsForAssistant(Long assistantId) {
         List<Timesheet> entities = timesheetDAO.findByAssistantId(assistantId);
-        return entities.stream().map(this::toDTO).collect(Collectors.toList());
+        return entities
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -411,13 +403,68 @@ public class TimesheetLogicImp implements TimesheetLogic {
     @Override
     public List<TimesheetDTO> findTimesheetsForSecretary(Long secretaryId) {
         List<Timesheet> entities = timesheetDAO.findBySecretaryId(secretaryId);
-        return entities.stream().map(this::toDTO).collect(Collectors.toList());
+        return entities
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public TimesheetDTO getTimesheetForSecretary(Long timesheetId, Long secretaryId) {
         Timesheet timesheet = timesheetDAO.findByIdForSecretaryId(timesheetId, secretaryId);
         return toDTO(timesheet);
+    }
+    
+    @Override
+    public List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress) {
+        List<Timesheet> entities = timesheetDAO.findPendingArchivesForSecretary(emailAddress);
+
+        List<TimesheetDTO> dtos = new ArrayList<>();
+
+        for (Timesheet t : entities) {
+            TimesheetDTO dto = new TimesheetDTO();
+            dto.setId(t.getId());
+            dto.setStartDate(t.getStartDate());
+            dto.setEndDate(t.getEndDate());
+            dto.setStatus(t.getStatus());
+            dto.setHoursDue(t.getHoursDue());
+            dto.setSignedByEmployee(t.getSignedByEmployee());
+            dto.setSignedBySupervisor(t.getSignedBySupervisor());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    @Override
+    public void archiveTimesheet(Long timesheetId) {
+        Timesheet entity = timesheetDAO.findById(timesheetId);
+
+        if (entity != null) {
+            if (entity.getStatus() == TimesheetStatus.SIGNED_BY_SUPERVISOR) {
+                entity.setStatus(TimesheetStatus.ARCHIVED);
+                timesheetDAO.updateTimesheet(entity);
+
+                Contract contract = entity.getContract();
+                boolean allArchived = true;
+                for (Timesheet t : contract.getTimesheet()) {
+                    if (t.getStatus() != TimesheetStatus.ARCHIVED) {
+                        allArchived = false;
+                        break;
+                    }
+                }
+                if (allArchived) {
+                    contract.setStatus(ContractStatus.ARCHIVED);
+                    contractsDao.UpdateContract(contract);
+                }
+            } else {
+                throw new IllegalStateException("Timesheet must be SIGNED_BY_SUPERVISOR to be archived.");
+            }
+        }
+    }
+
+    @Override
+    public int archiveOldRecords() {
+        return timesheetDAO.deleteArchiveOldRecords();
     }
 
     private double calculateHoursDue(LocalDate startDate, LocalDate endDate, double hoursPerWeek,int workingDaysPerWeek, Contract contract) {
@@ -462,6 +509,10 @@ public class TimesheetLogicImp implements TimesheetLogic {
     private boolean isWorkingDay(LocalDate date, int workingDaysPerWeek) {
         int dayOfWeekValue = date.getDayOfWeek().getValue();
         return dayOfWeekValue <= workingDaysPerWeek;
+    }
+    
+    public List<HolidayDTO> checkForHolidays(LocalDate startDate, LocalDate endDate, FederalState State) {
+        return holidayLogic.findByStateAndRange(State, startDate, endDate);
     }
 
     private void validateEntryModification(Timesheet timesheet) {
@@ -561,62 +612,6 @@ public class TimesheetLogicImp implements TimesheetLogic {
         }
 
         throw new IllegalArgumentException("No entry found with id: " + entryId);
-    }
-
-    
-    @Override
-    public List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress) {
-        List<Timesheet> entities = timesheetDAO.findPendingArchivesForSecretary(emailAddress);
-
-        List<TimesheetDTO> dtos = new ArrayList<>();
-
-        for (Timesheet t : entities) {
-            TimesheetDTO dto = new TimesheetDTO();
-            dto.setId(t.getId());
-            dto.setStartDate(t.getStartDate());
-            dto.setEndDate(t.getEndDate());
-            dto.setStatus(t.getStatus());
-            dto.setHoursDue(t.getHoursDue());
-            dto.setSignedByEmployee(t.getSignedByEmployee());
-            dto.setSignedBySupervisor(t.getSignedBySupervisor());
-
-            dtos.add(dto);
-        }
-
-        return dtos;
-    }
-
-    @Override
-    public void archiveTimesheet(Long timesheetId) {
-        Timesheet entity = timesheetDAO.findById(timesheetId);
-
-        if (entity != null) {
-            if (entity.getStatus() == TimesheetStatus.SIGNED_BY_SUPERVISOR) {
-                entity.setStatus(TimesheetStatus.ARCHIVED);
-                timesheetDAO.updateTimesheet(entity);
-
-                Contract contract = entity.getContract();
-                boolean allArchived = true;
-                for (Timesheet t : contract.getTimesheet()) {
-                    if (t.getStatus() != TimesheetStatus.ARCHIVED) {
-                        allArchived = false;
-                        break;
-                    }
-                }
-
-                if (allArchived) {
-                    contract.setStatus(ContractStatus.ARCHIVED);
-                    contractsDao.UpdateContract(contract);
-                }
-            } else {
-                throw new IllegalStateException("Timesheet must be SIGNED_BY_SUPERVISOR to be archived.");
-            }
-        }
-    }
-
-    @Override
-    public int archiveOldRecords() {
-        return timesheetDAO.deleteArchiveOldRecords();
     }
 
     private TimesheetDTO toDTO(Timesheet ts) {

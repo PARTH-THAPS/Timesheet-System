@@ -1,7 +1,6 @@
 package tss.logic;
 
 import jakarta.ejb.Remote;
-
 import java.util.List;
 import tss.dto.TimesheetDTO;
 import tss.dto.TimesheetEntryDTO;
@@ -30,8 +29,6 @@ public interface TimesheetLogic {
     void archiveTimesheet(Long timesheetId);
     
     int archiveOldRecords();
-    
-    //List<TimesheetDTO> findByEmployeeUsername(String emailAddress);
 
     List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress);
 
@@ -60,7 +57,4 @@ public interface TimesheetLogic {
     List<TimesheetDTO> findTimesheetsForSecretary(Long secretaryId);
     
     TimesheetDTO getTimesheetForSecretary(Long timesheetId, Long secretaryId);
-
-
-
 }
