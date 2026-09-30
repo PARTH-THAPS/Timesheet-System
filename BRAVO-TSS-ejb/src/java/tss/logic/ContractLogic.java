@@ -53,7 +53,6 @@ public interface ContractLogic {
 
     ContractDTO updateContractStatus(Long contractId, ContractStatus contractStatus);
 
-
     ContractDTO terminateContract(Long contractId, boolean confirmed);
     long countContractsByEmployee(Long personId);
 

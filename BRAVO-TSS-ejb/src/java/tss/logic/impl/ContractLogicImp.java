@@ -259,17 +259,15 @@ public class ContractLogicImp implements ContractLogic {
     }
 
     
-    @Override
-    public void CheckForArchivedTimesheet(Contract contract) {
-        // Only a TERMINATED contract can become ARCHIVED. allMatch on an empty list is true,
-        // so without this check a PREPARED contract would be archived by mistake.
-        if (contract.getStatus() == ContractStatus.TERMINATED
-                && contract.getTimesheet().stream()
-                        .allMatch(ts -> ts.getStatus() == TimesheetStatus.ARCHIVED)) {
-            contract.setStatus(ContractStatus.ARCHIVED);
-            contractsDao.UpdateContract(contract);
-        }
-    }
+//    @Override
+//    public void CheckForArchivedTimesheet(Contract contract) {
+//        if (contract.getStatus() == ContractStatus.TERMINATED
+//                && contract.getTimesheet().stream()
+//                        .allMatch(ts -> ts.getStatus() == TimesheetStatus.ARCHIVED)) {
+//            contract.setStatus(ContractStatus.ARCHIVED);
+//            contractsDao.UpdateContract(contract);
+//        }
+//    }
 
     public static LocalDate terminationDate() {
         return LocalDate.now();

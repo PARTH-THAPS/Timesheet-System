@@ -127,11 +127,6 @@ public class ContractEditBean implements Serializable {
     public void save() {
         try {
             validateNoOverlap();
-
-            Long contractId;
-            if (isNewContract()) {
-                PersonDTO person = findSelectedPerson();
-            
             validateDateOfBirth();
 
             Long contractId;
@@ -152,7 +147,9 @@ public class ContractEditBean implements Serializable {
                         contract.getState(),
                         contract.getArchiveDuration()
                 );
+
                 contractId = created.getId();
+                
 
                 if (contract.getSupervisorId() != null) {
                     contractLogic.addSupervisor(contractId, contract.getSupervisorId());
@@ -167,7 +164,6 @@ public class ContractEditBean implements Serializable {
                     contractLogic.removeSupervisor(contractId);
                 }
             }
-
             if (dateOfBirthRequired && dateOfBirth != null) {
                 personLogic.updateDateOfBirth(contract.getPersonId(), dateOfBirth);
             }
@@ -178,6 +174,7 @@ public class ContractEditBean implements Serializable {
         } catch (Exception e) {
             showError("Could not save contract", e.getMessage());
         }
+
     }
 
     private void validateNoOverlap() {
