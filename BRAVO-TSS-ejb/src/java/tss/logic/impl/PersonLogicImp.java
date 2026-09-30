@@ -15,12 +15,27 @@ import tss.entity.Role;
 import tss.logic.PersonLogic;
 import tss.util.PasswordHash;
 
+/**
+ * Implementation of the {@link PersonLogic} interface.
+ * Provides services for creating, finding, updating, and deleting users (Persons) in the system.
+ */
 @Stateless
 public class PersonLogicImp implements PersonLogic {
 
     @EJB
     private PersonDao personDao;
 
+    /**
+     * Creates a new Person (user) in the system.
+     *
+     * @param firstName The first name of the user.
+     * @param lastName The last name of the user.
+     * @param emailAddress The user's email address (login).
+     * @param consent Whether the user has provided data consent.
+     * @param password The plaintext password to be hashed.
+     * @param role The roles assigned to the user.
+     * @return A PersonDTO representing the created user.
+     */
     @Override
     public PersonDTO createPerson(String firstName, String lastName, String emailAddress, boolean consent, String password, Set<Role> role) {
         if (role == null || role.isEmpty()) {
@@ -37,6 +52,12 @@ public class PersonLogicImp implements PersonLogic {
         return personDto(person);
     }
 
+    /**
+     * Finds a specific Person by their ID.
+     *
+     * @param id The ID of the Person.
+     * @return The corresponding PersonDTO.
+     */
     @Override
     public PersonDTO findPerson(Long id) {
 
@@ -51,6 +72,12 @@ public class PersonLogicImp implements PersonLogic {
         return personDto(person);
     }
 
+    /**
+     * Updates an existing Person's details.
+     *
+     * @param dto The PersonDTO containing the updated information.
+     * @return The updated PersonDTO.
+     */
     @Override
     public PersonDTO updatePerson(PersonDTO dto) {
         Person person = personDao.findPersonById(dto.getId());
@@ -74,6 +101,11 @@ public class PersonLogicImp implements PersonLogic {
         return personDto(personDao.updatePerson(person));
     }
 
+    /**
+     * Deletes a Person from the system.
+     *
+     * @param dto The PersonDTO identifying the user to delete.
+     */
     @Override
     public void deletePerson(PersonDTO dto) {
         Person person = personDao.findPersonById(dto.getId());
@@ -83,6 +115,11 @@ public class PersonLogicImp implements PersonLogic {
         personDao.deletePerson(person);
     }
 
+    /**
+     * Retrieves all registered Persons in the system.
+     *
+     * @return A list of PersonDTOs.
+     */
     @Override
     public List<PersonDTO> findAllPersons() {
         List<Person> persons = personDao.findAllPersons();
@@ -99,6 +136,12 @@ public class PersonLogicImp implements PersonLogic {
         return dtoList;
     }
 
+    /**
+     * Updates the date of birth for a given Person.
+     *
+     * @param personId The ID of the Person.
+     * @param dob The new date of birth.
+     */
     @Override
     public void updateDateOfBirth(Long personId, LocalDate dob) {
         Person person = personDao.findPersonById(personId);
@@ -112,6 +155,11 @@ public class PersonLogicImp implements PersonLogic {
         personDao.updatePerson(person);
     }
 
+    /**
+     * Flags the consent status as true for a given Person.
+     *
+     * @param personId The ID of the Person.
+     */
     @Override
     public void acceptConsent(Long personId) {
         Person person = personDao.findPersonById(personId);
@@ -126,6 +174,11 @@ public class PersonLogicImp implements PersonLogic {
         personDao.updatePerson(person);
     }
 
+    /**
+     * Flags the consent status as false for a given Person.
+     *
+     * @param personId The ID of the Person.
+     */
     @Override
     public void revokeConsent(Long personId) {
         Person person = personDao.findPersonById(personId);
@@ -140,6 +193,13 @@ public class PersonLogicImp implements PersonLogic {
         personDao.updatePerson(person);
     }
 
+    /**
+     * Changes the user's password after verifying the current password.
+     *
+     * @param personId The ID of the Person.
+     * @param currentPassword The user's current plaintext password.
+     * @param newPassword The new plaintext password.
+     */
     @Override
     public void changePassword(
             Long personId,

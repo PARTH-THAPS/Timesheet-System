@@ -23,6 +23,10 @@ import tss.logic.ContractLogic;
 import tss.logic.TerminationBlockedException;
 import tss.logic.TimesheetLogic;
 
+/**
+ * Implementation of the {@link ContractLogic} interface.
+ * Handles creation, modification, termination, and state transitions of employment contracts.
+ */
 @Stateless
 public class ContractLogicImp implements ContractLogic {
 
@@ -35,6 +39,22 @@ public class ContractLogicImp implements ContractLogic {
     @EJB
     TimesheetLogic timesheetLogic;
 
+    /**
+     * Creates a new contract in PREPARED status.
+     *
+     * @param name The contract name.
+     * @param startDate The start date of the contract.
+     * @param endDate The end date of the contract.
+     * @param timesheetFrequency Timesheet generation frequency.
+     * @param hoursPerWeek Hours required per week.
+     * @param hoursDue Total hours due over the contract duration.
+     * @param workingDaysPerWeek Working days per week.
+     * @param vacationDaysPerYear Allowed vacation days per year.
+     * @param person The assigned employee.
+     * @param state The relevant federal state.
+     * @param archiveDuration Archival retention time.
+     * @return The created ContractDTO.
+     */
     @Override
     public ContractDTO createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, PersonDTO person, FederalState state, int archiveDuration) {
         validateContractDates(startDate, endDate);
@@ -69,6 +89,12 @@ public class ContractLogicImp implements ContractLogic {
         return toDTO(contract);
     }
 
+    /**
+     * Updates an existing PREPARED contract.
+     *
+     * @param updatedContract The updated ContractDTO values.
+     * @return The modified ContractDTO.
+     */
     @Override
     public ContractDTO updateContract(ContractDTO updatedContract) {
         Contract contract = contractsDao.findContract(updatedContract.getId());
@@ -143,6 +169,11 @@ public class ContractLogicImp implements ContractLogic {
         return toDTO(contract);
     }
 
+    /**
+     * Deletes a contract if it is still in the PREPARED status.
+     *
+     * @param contractId The ID of the contract to delete.
+     */
     @Override
     public void deleteContract(Long contractId) {
         Contract contract = contractsDao.findContract(contractId);
@@ -155,6 +186,12 @@ public class ContractLogicImp implements ContractLogic {
         contractsDao.deleteContract(contract);
     }
 
+    /**
+     * Finds a contract by ID.
+     *
+     * @param contractId The ID of the contract.
+     * @return The corresponding ContractDTO.
+     */
     @Override
     public ContractDTO searchContract(Long contractId) {
         Contract contract = contractsDao.findContract(contractId);
@@ -164,6 +201,12 @@ public class ContractLogicImp implements ContractLogic {
         return toDTO(contract);
     }
 
+    /**
+     * Calculates statistics (worked hours, due hours, vacation) for a given contract.
+     *
+     * @param contractId The ID of the contract.
+     * @return A ContractStatisticsDTO.
+     */
     @Override
     public ContractStatisticsDTO getContractStatistics(Long contractId) {
 
@@ -215,6 +258,11 @@ public class ContractLogicImp implements ContractLogic {
         return statistics;
     }
 
+    /**
+     * Retrieves all contracts in the system.
+     *
+     * @return A list of ContractDTOs.
+     */
     @Override
     public List<ContractDTO> findAllContracts() {
         return contractsDao.findAllContracts()
@@ -223,6 +271,12 @@ public class ContractLogicImp implements ContractLogic {
                 .toList();
     }
 
+    /**
+     * Retrieves all archived contracts linked to a specific supervisor.
+     *
+     * @param id The supervisor's ID.
+     * @return A list of archived ContractDTOs.
+     */
     @Override
     public List<ContractDTO> findAllArchivedContractsForSupervisor(long id) {
         return contractsDao.findAllArchivedContractsForSupervisor(id)
@@ -231,6 +285,11 @@ public class ContractLogicImp implements ContractLogic {
                 .toList();
     }
 
+    /**
+     * Retrieves all archived contracts system-wide.
+     *
+     * @return A list of archived ContractDTOs.
+     */
     @Override
     public List<ContractDTO> findAllArchivedContracts() {
         return contractsDao.findAllArchivedContracts()
@@ -239,6 +298,11 @@ public class ContractLogicImp implements ContractLogic {
                 .toList();
     }
 
+    /**
+     * Verifies if all timesheets within a contract are archived, and if so, archives the contract itself.
+     *
+     * @param contract The contract entity to check.
+     */
     @Override
     public void CheckForArchivedTimesheet(Contract contract) {
         boolean allArchivedTimesheet = contract.getTimesheet().stream().allMatch(ts -> ts.getStatus() == TimesheetStatus.ARCHIVED);
@@ -264,6 +328,13 @@ public class ContractLogicImp implements ContractLogic {
     }
 
     // PREPARED -> STARTED and TERMINATED -> ARCHIVED. Termination goes through terminateContract.
+    /**
+     * Updates the status of a contract (e.g., PREPARED to STARTED or TERMINATED to ARCHIVED).
+     *
+     * @param contractId The ID of the contract.
+     * @param newStatus The new ContractStatus to apply.
+     * @return The updated ContractDTO.
+     */
     @Override
     public ContractDTO updateContractStatus(Long contractId, ContractStatus newStatus) {
         Contract contract = contractsDao.findContract(contractId);
@@ -296,6 +367,13 @@ public class ContractLogicImp implements ContractLogic {
     }
 
     // STARTED -> TERMINATED
+    /**
+     * Terminates a STARTED contract, setting a termination date and clearing empty timesheets.
+     *
+     * @param contractId The contract ID to terminate.
+     * @param confirmed Whether termination is forced despite incomplete records.
+     * @return The updated ContractDTO.
+     */
     @Override
     public ContractDTO terminateContract(Long contractId, boolean confirmed) {
         Contract contract = contractsDao.findContract(contractId);
@@ -393,6 +471,12 @@ public class ContractLogicImp implements ContractLogic {
         return dto;
     }
 
+    /**
+     * Adds secretaries to a contract.
+     *
+     * @param contractId The contract ID.
+     * @param personIds The list of user IDs to assign as secretaries.
+     */
     @Override
     public void addSecretary(Long contractId, List<Long> personIds) {
         Contract contract = contractsDao.findContract(contractId);
@@ -419,6 +503,12 @@ public class ContractLogicImp implements ContractLogic {
         }
     }
 
+    /**
+     * Removes secretaries from a contract.
+     *
+     * @param contractId The contract ID.
+     * @param personIds The list of user IDs to remove from the secretary role.
+     */
     @Override
     public void removeSecretary(Long contractId, List<Long> personIds) {
         Contract contract = contractsDao.findContract(contractId);
@@ -449,6 +539,12 @@ public class ContractLogicImp implements ContractLogic {
         }
     }
 
+    /**
+     * Adds assistants to a contract.
+     *
+     * @param contractId The contract ID.
+     * @param personIds The list of user IDs to assign as assistants.
+     */
     @Override
     public void addAssistant(Long contractId, List<Long> personIds) {
         Contract contract = contractsDao.findContract(contractId);
@@ -475,6 +571,12 @@ public class ContractLogicImp implements ContractLogic {
         }
     }
 
+    /**
+     * Removes assistants from a contract.
+     *
+     * @param contractId The contract ID.
+     * @param personIds The list of user IDs to remove from the assistant role.
+     */
     @Override
     public void removeAssistant(Long contractId, List<Long> personIds) {
         Contract contract = contractsDao.findContract(contractId);
@@ -505,6 +607,12 @@ public class ContractLogicImp implements ContractLogic {
         }
     }
 
+    /**
+     * Assigns a supervisor to a contract.
+     *
+     * @param contractId The contract ID.
+     * @param personId The ID of the supervisor.
+     */
     @Override
     public void addSupervisor(Long contractId, Long personId) {
         Contract contract = contractsDao.findContract(contractId);
@@ -524,6 +632,11 @@ public class ContractLogicImp implements ContractLogic {
         personDao.updatePerson(person);
     }
 
+    /**
+     * Removes the assigned supervisor from a contract.
+     *
+     * @param contractId The contract ID.
+     */
     @Override
     public void removeSupervisor(Long contractId) {
         Contract contract = contractsDao.findContract(contractId);
@@ -546,6 +659,12 @@ public class ContractLogicImp implements ContractLogic {
         }
     }
 
+    /**
+     * Checks if a contract has any IN_PROGRESS timesheets that contain entries.
+     *
+     * @param contractId The contract ID.
+     * @return true if unresolved timesheets exist, false otherwise.
+     */
     @Override
     public boolean hasUnresolvedInProgressTimesheets(Long contractId) {
         // IN_PROGRESS with at least one entry
@@ -555,12 +674,24 @@ public class ContractLogicImp implements ContractLogic {
                 && !t.getEntries().isEmpty());
     }
 
+    /**
+     * Checks if a contract has timesheets signed by the employee but waiting for supervisor approval.
+     *
+     * @param contractId The contract ID.
+     * @return true if pending supervisor signatures exist, false otherwise.
+     */
     @Override
     public boolean hasTimesheetsPendingSupervisorSignature(Long contractId) {
         return timesheetLogic.getTimesheetsForContract(contractId).stream()
                 .anyMatch(t -> t.getStatus() == TimesheetStatus.SIGNED_BY_EMPLOYEE);
     }
 
+    /**
+     * Checks if a contract has IN_PROGRESS timesheets that have no entries.
+     *
+     * @param contractId The contract ID.
+     * @return true if empty timesheets exist, false otherwise.
+     */
     @Override
     public boolean hasEmptyInProgressTimesheets(Long contractId) {
         return timesheetLogic.getTimesheetsForContract(contractId).stream()
@@ -568,6 +699,12 @@ public class ContractLogicImp implements ContractLogic {
                 && (t.getEntries() == null || t.getEntries().isEmpty()));
     }
 
+    /**
+     * Returns the total count of contracts associated with a specific employee.
+     *
+     * @param personId The employee ID.
+     * @return The number of contracts.
+     */
     @Override
     public long countContractsByEmployee(Long personId) {
         return contractsDao.countContractsByEmployee(personId);
