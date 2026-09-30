@@ -175,7 +175,11 @@ public class ContractDTO extends AbstractDTO {
         this.assistantIds = assistantIds;
     }
 
-    public void setArchiveDuration(int archiveDuration) { this.archiveDuration = archiveDuration; }
+    public void setArchiveDuration(int archiveDuration) { 
+        this.archiveDuration = archiveDuration; 
+    }
 
-    public int getArchiveDuration() { return archiveDuration; }
+    public int getArchiveDuration() { 
+        return archiveDuration; 
+    }
 }
