@@ -9,7 +9,6 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import tss.dto.PersonDTO;
 import tss.entity.Role;
@@ -28,7 +27,7 @@ public class AdminUserBean implements Serializable {
     private Long id;
     private PersonDTO person;
 
-    private Set<String> selectedRoleNames = new HashSet<>();
+    private Set<Role> selectedRoleNames = new HashSet<>();
 
     public void init() {
 
@@ -44,9 +43,7 @@ public class AdminUserBean implements Serializable {
         }
 
         if (person.getRole() != null) {
-            selectedRoleNames = person.getRole().stream()
-                    .map(Role::name)
-                    .collect(Collectors.toSet());
+            selectedRoleNames = new HashSet<>(person.getRole());
         }
     }
 
@@ -54,10 +51,7 @@ public class AdminUserBean implements Serializable {
 
         try {
 
-            Set<Role> roles = selectedRoleNames.stream()
-                    .map(Role::valueOf)
-                    .collect(Collectors.toSet());
-            person.setRole(roles);
+            person.setRole(new HashSet<>(selectedRoleNames));
 
             if (id == null) {
                 personLogic.createPerson(
@@ -149,11 +143,11 @@ public class AdminUserBean implements Serializable {
         return person;
     }
 
-    public Set<String> getSelectedRoleNames() {
+    public Set<Role> getSelectedRoleNames() {
         return selectedRoleNames;
     }
 
-    public void setSelectedRoleNames(Set<String> selectedRoleNames) {
+    public void setSelectedRoleNames(Set<Role> selectedRoleNames) {
         this.selectedRoleNames = selectedRoleNames;
     }
 
