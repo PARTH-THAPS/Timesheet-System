@@ -9,19 +9,28 @@
     xmlns:p="http://primefaces.org/ui">
 
     <f:metadata>
-        <f:viewParam name="id" value="#{assistantTimesheetDetailBean.id}"/>
-        <f:viewAction action="#{assistantTimesheetDetailBean.init}"/>
+        <f:viewParam
+            name="id"
+            value="#{assistantTimesheetDetailBean.id}"/>
+
+        <f:viewAction
+            action="#{assistantTimesheetDetailBean.init}"/>
     </f:metadata>
 
-    <ui:define name="pageTitle">Review Timesheet</ui:define>
-    <ui:define name="pageHeadline">Review Timesheet</ui:define>
+    <ui:define name="pageTitle">
+        #{msg['timesheet.review.title']}
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        #{msg['timesheet.review.title']}
+    </ui:define>
 
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
-    
+
     <ui:define name="headerActions">
-        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
+        <ui:include src="/WEB-INF/components/header-actions.xhtml"/>
     </ui:define>
 
     <ui:define name="content">
@@ -32,129 +41,254 @@
                 id="messages"
                 showDetail="true"
                 closable="true"
-                styleClass="app-messages"
-            />
+                styleClass="app-messages"/>
 
             <section class="page-section-header">
+
                 <div>
+
                     <h2>
-                        <h:outputText value="#{assistantTimesheetDetailBean.timesheet.startDate}">
-                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+                        <h:outputText
+                            value="#{assistantTimesheetDetailBean.timesheet.startDate}">
+
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+
                         </h:outputText>
+
                         -
-                        <h:outputText value="#{assistantTimesheetDetailBean.timesheet.endDate}">
-                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+
+                        <h:outputText
+                            value="#{assistantTimesheetDetailBean.timesheet.endDate}">
+
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+
                         </h:outputText>
                     </h2>
+
                     <p class="text-muted">
-                        Employee:
-                        <strong>#{assistantTimesheetDetailBean.timesheet.employeeFullName}</strong>
+                        #{msg['timesheet.employee']}:
+                        <strong>
+                            #{assistantTimesheetDetailBean.timesheet.employeeFullName}
+                        </strong>
                     </p>
+
                 </div>
 
                 <span class="status-badge">
-                    #{assistantTimesheetDetailBean.timesheet.status}
+                    #{msg['timesheet.status.'.concat(assistantTimesheetDetailBean.timesheet.status)]}
                 </span>
+
             </section>
 
             <section class="timesheet-summary">
+
                 <div class="statistic">
-                    <span class="statistic-label">Hours due</span>
+
+                    <span class="statistic-label">
+                        #{msg['timesheet.hoursDue']}
+                    </span>
+
                     <strong class="statistic-value">
-                        <h:outputText value="#{assistantTimesheetDetailBean.timesheet.hoursDue}">
-                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
-                        </h:outputText> h
+
+                        <h:outputText
+                            value="#{assistantTimesheetDetailBean.timesheet.hoursDue}">
+
+                            <f:convertNumber
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
+
+                        </h:outputText>
+
+                        #{msg['timesheet.hoursUnit']}
+
                     </strong>
+
                 </div>
 
                 <div class="statistic">
-                    <span class="statistic-label">Hours reported</span>
+
+                    <span class="statistic-label">
+                        #{msg['timesheet.hoursReported']}
+                    </span>
+
                     <strong class="statistic-value">
-                        <h:outputText value="#{assistantTimesheetDetailBean.reportedHours}">
-                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
-                        </h:outputText> h
+
+                        <h:outputText
+                            value="#{assistantTimesheetDetailBean.reportedHours}">
+
+                            <f:convertNumber
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
+
+                        </h:outputText>
+
+                        #{msg['timesheet.hoursUnit']}
+
                     </strong>
+
                 </div>
 
                 <div class="statistic">
-                    <span class="statistic-label">Balance</span>
+
+                    <span class="statistic-label">
+                        #{msg['timesheet.balance']}
+                    </span>
+
                     <strong class="statistic-value">
-                        <h:outputText value="#{assistantTimesheetDetailBean.balance}">
-                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
-                        </h:outputText> h
+
+                        <h:outputText
+                            value="#{assistantTimesheetDetailBean.balance}">
+
+                            <f:convertNumber
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
+
+                        </h:outputText>
+
+                        #{msg['timesheet.hoursUnit']}
+
                     </strong>
+
                 </div>
+
             </section>
 
             <section class="card">
+
                 <div class="page-section-header">
+
                     <div>
-                        <h3>Reported entries</h3>
-                        <p class="text-muted">Read-only view of the employee's reported entries.</p>
+
+                        <h3>
+                            #{msg['timesheet.entries']}
+                        </h3>
+
+                        <p class="text-muted">
+                            #{msg['timesheet.entriesReadOnly']}
+                        </p>
+
                     </div>
+
                 </div>
 
                 <p:dataTable
-                        value="#{assistantTimesheetDetailBean.timesheet.entries}"
-                        var="entry"
-                        stripedRows="true"
-                        emptyMessage="No entries reported.">
+                    value="#{assistantTimesheetDetailBean.timesheet.entries}"
+                    var="entry"
+                    stripedRows="true"
+                    emptyMessage="#{msg['timesheet.noEntries']}">
 
-                    <p:column headerText="Date">
-                        <h:outputText value="#{entry.entryDate}">
-                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+                    <p:column
+                        headerText="#{msg['timesheet.date']}">
+
+                        <h:outputText
+                            value="#{entry.entryDate}">
+
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+
                         </h:outputText>
+
                     </p:column>
-                    <p:column headerText="Start">
-                        <h:outputText value="#{entry.startTime}"/>
+
+                    <p:column
+                        headerText="#{msg['timesheet.start']}">
+
+                        <h:outputText
+                            value="#{entry.startTime}"/>
+
                     </p:column>
-                    <p:column headerText="End">
-                        <h:outputText value="#{entry.endTime}"/>
+
+                    <p:column
+                        headerText="#{msg['timesheet.end']}">
+
+                        <h:outputText
+                            value="#{entry.endTime}"/>
+
                     </p:column>
-                    <p:column headerText="Hours">
-                        <h:outputText value="#{entry.hours}">
-                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+
+                    <p:column
+                        headerText="#{msg['timesheet.hours']}">
+
+                        <h:outputText
+                            value="#{entry.hours}">
+
+                            <f:convertNumber
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
+
                         </h:outputText>
+
                     </p:column>
-                    <p:column headerText="Type">
-                        <h:outputText value="#{entry.type}"/>
+
+                    <p:column
+                        headerText="#{msg['timesheet.type']}">
+
+                        <h:outputText
+                            value="#{msg['timesheet.type.'.concat(entry.type)]}"/>
+
                     </p:column>
-                    <p:column headerText="Description">
-                        <h:outputText value="#{entry.description}"/>
+
+                    <p:column
+                        headerText="#{msg['timesheet.description.label']}">
+
+                        <h:outputText
+                            value="#{entry.description}"/>
+
                     </p:column>
 
                 </p:dataTable>
+
             </section>
 
             <section class="card">
+
                 <div class="form-actions">
 
                     <p:commandButton
-                            value="Request Changes"
-                            icon="pi pi-replay"
-                            action="#{assistantTimesheetDetailBean.requestChanges}"
-                            rendered="#{assistantTimesheetDetailBean.canRequestChanges()}"
-                            process="@this"
-                            update="@form"
-                            styleClass="ui-button-warning">
+                        value="#{msg['timesheet.requestChanges']}"
+                        icon="pi pi-replay"
+                        action="#{assistantTimesheetDetailBean.requestChanges}"
+                        rendered="#{assistantTimesheetDetailBean.canRequestChanges()}"
+                        process="@this"
+                        update="@form"
+                        styleClass="ui-button-warning">
+
                         <p:confirm
-                                header="Request Changes"
-                                message="Do you want to return this timesheet to the employee for changes?"
-                                icon="pi pi-exclamation-triangle"/>
+                            header="#{msg['timesheet.requestChanges']}"
+                            message="#{msg['timesheet.requestChanges.confirm']}"
+                            icon="pi pi-exclamation-triangle"/>
+
                     </p:commandButton>
 
                     <p:button
-                            value="Back"
-                            icon="pi pi-arrow-left"
-                            outcome="/views/assistant/timesheets.xhtml"
-                            styleClass="ui-button-secondary"/>
+                        value="#{msg['button.back']}"
+                        icon="pi pi-arrow-left"
+                        outcome="/views/assistant/timesheets.xhtml"
+                        styleClass="ui-button-secondary"/>
 
                 </div>
+
             </section>
 
             <p:confirmDialog global="true">
-                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
-                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+
+                <p:commandButton
+                    value="#{msg['button.yes']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-yes"
+                    icon="pi pi-check"/>
+
+                <p:commandButton
+                    value="#{msg['button.no']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-no ui-button-secondary"
+                    icon="pi pi-times"/>
+
             </p:confirmDialog>
 
         </h:form>

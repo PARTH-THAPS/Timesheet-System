@@ -59,6 +59,7 @@
                         id="firstName"
                         value="#{adminUserBean.person.firstName}"
                         required="true"
+                        requiredMessage="#{msg['user.firstName.required']}"
                         placeholder="#{msg['user.firstName.placeholder']}"
                         styleClass="form-input"/>
 
@@ -75,6 +76,7 @@
                         id="lastName"
                         value="#{adminUserBean.person.lastName}"
                         required="true"
+                        requiredMessage="#{msg['user.lastName.required']}"
                         placeholder="#{msg['user.lastName.placeholder']}"
                         styleClass="form-input"/>
 
@@ -91,6 +93,7 @@
                         id="email"
                         value="#{adminUserBean.person.emailAddress}"
                         required="true"
+                        requiredMessage="#{msg['user.email.required']}"
                         placeholder="#{msg['user.email.placeholder']}"
                         styleClass="form-input"/>
 
@@ -109,6 +112,7 @@
                             id="password"
                             value="#{adminUserBean.person.password}"
                             required="true"
+                            requiredMessage="#{msg['user.initialPassword.required']}"
                             feedback="false"
                             placeholder="#{msg['user.initialPassword.placeholder']}"
                             styleClass="form-input"/>
@@ -128,6 +132,7 @@
                         id="role"
                         value="#{adminUserBean.selectedRoleNames}"
                         required="true"
+                        requiredMessage="#{msg['user.roles.required']}"
                         layout="responsive"
                         columns="1">
 
@@ -161,7 +166,7 @@
                         </div>
 
                         <small class="form-help">
-                            Consent can only be granted by the user.
+                            #{msg['user.consent.help']}
                         </small>
 
                     </div>
@@ -200,24 +205,8 @@
 
                     </p:commandButton>
 
-                    <p:confirmDialog global="true">
-
-                        <p:commandButton
-                            value="#{msg['button.yes']}"
-                            type="button"
-                            styleClass="ui-confirmdialog-yes"
-                            icon="pi pi-check"/>
-
-                        <p:commandButton
-                            value="#{msg['button.no']}"
-                            type="button"
-                            styleClass="ui-confirmdialog-no ui-button-secondary"
-                            icon="pi pi-times"/>
-
-                    </p:confirmDialog>
-
                     <p:commandButton
-                        value="Revoke consent"
+                        value="#{msg['user.consent.revoke']}"
                         icon="pi pi-ban"
                         action="#{adminUserBean.revokeConsent}"
                         update="userForm"
@@ -225,13 +214,29 @@
                         styleClass="ui-button-warning">
 
                         <p:confirm
-                            header="Revoke consent"
-                            message="Are you sure you want to revoke this user's consent?"
+                            header="#{msg['user.consent.revoke.header']}"
+                            message="#{msg['user.consent.revoke.message']}"
                             icon="pi pi-exclamation-triangle"/>
 
                     </p:commandButton>
 
                 </div>
+
+                <p:confirmDialog global="true">
+
+                    <p:commandButton
+                        value="#{msg['button.yes']}"
+                        type="button"
+                        styleClass="ui-confirmdialog-yes"
+                        icon="pi pi-check"/>
+
+                    <p:commandButton
+                        value="#{msg['button.no']}"
+                        type="button"
+                        styleClass="ui-confirmdialog-no ui-button-secondary"
+                        icon="pi pi-times"/>
+
+                </p:confirmDialog>
 
             </h:form>
 

@@ -101,7 +101,7 @@
 
                         </h:outputText>
 
-                        <span> h</span>
+                        <span> #{msg['timesheet.hoursUnit']}</span>
 
                     </p:column>
 
@@ -130,6 +130,7 @@
 
                         <p:commandButton
                             icon="pi pi-eye"
+                            title="#{msg['contract.view']}"
                             process="@this"
                             update=":contractForm:contractDetails"
                             oncomplete="PF('contractDetailsDialog').show()"
@@ -178,8 +179,8 @@
 
                                 <strong>
                                     #{msg['contract.status.'.concat(
-                                        myContractBean.selectedContract.status
-                                    )]}
+                                      myContractBean.selectedContract.status
+                                      )]}
                                 </strong>
                             </div>
 
@@ -227,8 +228,8 @@
 
                                 <strong>
                                     #{msg['contract.frequency.'.concat(
-                                        myContractBean.selectedContract.frequency
-                                    )]}
+                                      myContractBean.selectedContract.frequency
+                                      )]}
                                 </strong>
                             </div>
 
@@ -247,7 +248,7 @@
                                             maxFractionDigits="2"/>
 
                                     </h:outputText>
-                                    h
+                                    #{msg['timesheet.hoursUnit']}
                                 </strong>
                             </div>
 
@@ -280,7 +281,7 @@
                                 </span>
 
                                 <strong>
-                                    #{myContractBean.selectedContract.state}
+                                    #{msg['federalState.'.concat(myContractBean.selectedContract.state)]}
                                 </strong>
                             </div>
 
@@ -307,7 +308,7 @@
                             </ui:fragment>
 
                         </div>
-                        
+
                         <ui:include
                             src="/WEB-INF/components/contract-statistics.xhtml">
 

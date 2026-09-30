@@ -13,19 +13,17 @@
     </f:metadata>
 
     <ui:define name="pageTitle">
-        Data processing consent
+        #{msg['consent.title']}
     </ui:define>
 
     <ui:define name="pageHeadline">
-        Data processing consent
+        #{msg['consent.title']}
     </ui:define>
 
     <ui:define name="navigation">
-        <!-- intentionally empty -->
     </ui:define>
 
     <ui:define name="headerActions">
-        <!-- intentionally empty -->
     </ui:define>
 
     <ui:define name="content">
@@ -40,21 +38,14 @@
 
             <div class="form-card">
 
-                <p>
-                    Before you can use the Time Sheet System,
-                    you must consent to the processing and storage
-                    of the personal data required to operate the system.
-                </p>
+                <p>#{msg['consent.description']}</p>
 
-                <p>
-                    By accepting, you confirm that you understand
-                    and agree to the required data processing.
-                </p>
+                <p>#{msg['consent.confirmation']}</p>
 
                 <div class="form-actions">
 
                     <p:commandButton
-                        value="I agree"
+                        value="#{msg['consent.accept']}"
                         icon="pi pi-check"
                         action="#{consentBean.accept}"
                         ajax="false"/>

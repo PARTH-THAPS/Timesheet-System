@@ -105,7 +105,7 @@
                         headerText="#{msg['contract.frequency']}"
                         sortBy="#{contract.frequency}">
 
-                        <h:outputText value="#{contract.frequency}"/>
+                        <h:outputText value="#{msg['contract.frequency.'.concat(contract.frequency)]}"/>
 
                     </p:column>
 

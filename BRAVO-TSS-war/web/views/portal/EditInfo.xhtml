@@ -85,7 +85,7 @@
                         styleClass="field-message"/>
 
                     <h:outputLabel for="preferredLanguage"
-                                   value="#{msg['personalInfo.PreferedLanguage.ForReminder']}:"/>
+                                   value="#{msg['personalInfo.preferredLanguage']}:"/>
                     <h:selectOneMenu id="preferredLanguage"
                                      value="#{personalDataBean.personDTO.preferredLanguage}"
                                      required="true"
@@ -111,10 +111,12 @@
 
         <section class="card form-card">
 
-            <h2>Change password</h2>
+            <h2>
+                #{msg['personalInfo.password.title']}
+            </h2>
 
             <p>
-                Enter your current password and choose a new password.
+                #{msg['personalInfo.password.description']}
             </p>
 
             <h:form id="passwordForm">
@@ -129,13 +131,13 @@
 
                     <p:outputLabel
                         for="currentPassword"
-                        value="Current password"/>
+                        value="#{msg['personalInfo.password.current']}"/>
 
                     <p:password
                         id="currentPassword"
                         value="#{personalDataBean.currentPassword}"
                         required="true"
-                        requiredMessage="Current password is required."
+                        requiredMessage="#{msg['personalInfo.password.current.required']}"
                         feedback="false"
                         toggleMask="true"
                         autocomplete="current-password"
@@ -151,19 +153,20 @@
 
                     <p:outputLabel
                         for="newPassword"
-                        value="New password"/>
+                        value="#{msg['personalInfo.password.new']}"/>
 
                     <p:password
                         id="newPassword"
                         value="#{personalDataBean.newPassword}"
                         required="true"
-                        feedback="true"
+                        requiredMessage="#{msg['personalInfo.password.new.required']}"
+                        feedback="false"
                         toggleMask="true"
                         autocomplete="new-password"
                         styleClass="form-input"/>
 
                     <small class="form-help">
-                        The password must contain at least 8 characters.
+                        #{msg['personalInfo.password.help']}
                     </small>
 
                     <p:message
@@ -176,12 +179,13 @@
 
                     <p:outputLabel
                         for="confirmPassword"
-                        value="Confirm new password"/>
+                        value="#{msg['personalInfo.password.confirm']}"/>
 
                     <p:password
                         id="confirmPassword"
                         value="#{personalDataBean.confirmPassword}"
                         required="true"
+                        requiredMessage="#{msg['personalInfo.password.confirm.required']}"
                         feedback="false"
                         toggleMask="true"
                         autocomplete="new-password"
@@ -196,7 +200,7 @@
                 <div class="form-actions">
 
                     <p:commandButton
-                        value="Change password"
+                        value="#{msg['personalInfo.password.submit']}"
                         icon="pi pi-key"
                         action="#{personalDataBean.changePassword}"
                         process="@form"

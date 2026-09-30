@@ -28,7 +28,7 @@
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
-    
+
     <ui:define name="headerActions">
         <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
@@ -42,7 +42,7 @@
                 showDetail="true"
                 closable="true"
                 styleClass="app-messages"
-            />
+                />
 
             <section class="page-section-header">
                 <div>
@@ -74,8 +74,8 @@
 
                 <span class="status-badge">
                     #{msg['timesheet.status.'.concat(
-                        supervisorTimesheetDetailBean.timesheet.status
-                    )]}
+                      supervisorTimesheetDetailBean.timesheet.status
+                      )]}
                 </span>
             </section>
 
@@ -93,7 +93,7 @@
                                 minFractionDigits="2"
                                 maxFractionDigits="2"/>
                         </h:outputText>
-                        h
+                        #{msg['timesheet.hoursUnit']}
                     </strong>
                 </div>
 
@@ -109,7 +109,7 @@
                                 minFractionDigits="2"
                                 maxFractionDigits="2"/>
                         </h:outputText>
-                        h
+                        #{msg['timesheet.hoursUnit']}
                     </strong>
                 </div>
 
@@ -125,7 +125,7 @@
                                 minFractionDigits="2"
                                 maxFractionDigits="2"/>
                         </h:outputText>
-                        h
+                        #{msg['timesheet.hoursUnit']}
                     </strong>
                 </div>
 
@@ -177,7 +177,7 @@
                     </p:column>
 
                     <p:column headerText="#{msg['timesheet.type']}">
-                        <h:outputText value="#{entry.type}"/>
+                        <h:outputText value="#{msg['timesheet.type.'.concat(entry.type)]}"/>
                     </p:column>
 
                     <p:column headerText="#{msg['timesheet.description.label']}">
@@ -238,7 +238,7 @@
                 <p:commandButton
                     value="#{msg['button.no']}"
                     type="button"
-                    styleClass="ui-confirmdialog-no"
+                    styleClass="ui-confirmdialog-no ui-button-secondary"
                     icon="pi pi-times"/>
 
             </p:confirmDialog>

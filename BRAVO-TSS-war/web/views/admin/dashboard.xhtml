@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ui:composition
-        template="/WEB-INF/templates/page-layout.xhtml"
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:h="jakarta.faces.html"
-        xmlns:f="jakarta.faces.core"
-        xmlns:ui="jakarta.faces.facelets"
-        xmlns:p="http://primefaces.org/ui">
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
 
     <!-- Page Title -->
     <ui:define name="pageTitle">
@@ -31,7 +31,6 @@
     <!-- Main Content -->
     <ui:define name="content">
 
-        <!-- Section Header -->
         <section class="page-section-header">
 
             <div>
@@ -50,8 +49,8 @@
 
         <!-- Statistics -->
         <section
-                class="statistics-grid"
-                style="margin-bottom: 2rem;">
+            class="statistics-grid"
+            style="margin-bottom: 2rem;">
 
             <div class="statistic">
 
@@ -105,30 +104,30 @@
 
         <!-- Users by Role -->
         <section
-                class="card"
-                style="margin-bottom: 2rem;">
+            class="card"
+            style="margin-bottom: 2rem;">
 
             <h3 style="margin-top: 0;">
                 #{msg['dashboard.usersByRole']}
             </h3>
 
             <table
-                    class="table-responsive-wrapper"
-                    style="width: 100%; border-collapse: collapse;">
+                class="table-responsive-wrapper"
+                style="width: 100%; border-collapse: collapse;">
 
                 <thead>
 
                     <tr>
 
                         <th
-                                style="text-align: left; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                            style="text-align: left; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
 
                             #{msg['dashboard.role']}
 
                         </th>
 
                         <th
-                                style="text-align: right; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                            style="text-align: right; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
 
                             #{msg['dashboard.users']}
 
@@ -141,22 +140,22 @@
                 <tbody>
 
                     <ui:repeat
-                            value="#{adminDashboardBean.roleCounts.entrySet().toArray()}"
-                            var="entry">
+                        value="#{adminDashboardBean.roleCounts.entrySet().toArray()}"
+                        var="entry">
 
                         <tr>
 
                             <td
-                                    style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
+                                style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
 
                                 <span class="role-badge">
-                                    #{entry.key}
+                                    #{msg['role.'.concat(entry.key)]}
                                 </span>
 
                             </td>
 
                             <td
-                                    style="text-align: right; padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
+                                style="text-align: right; padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
 
                                 #{entry.value}
 

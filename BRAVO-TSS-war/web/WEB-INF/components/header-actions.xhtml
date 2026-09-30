@@ -54,7 +54,7 @@
                 value="#{localeBean.languages}"
                 var="language"
                 itemValue="#{language.code}"
-                itemLabel="#{language.fullLabel}"/>
+                itemLabel="#{msg['language.'.concat(language.shortLabel)]}"/>
 
             <p:ajax
                 update="@all"/>

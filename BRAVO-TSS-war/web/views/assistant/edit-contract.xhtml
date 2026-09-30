@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <ui:composition
     template="/WEB-INF/templates/page-layout.xhtml"
     xmlns="http://www.w3.org/1999/xhtml"
@@ -11,6 +12,7 @@
         <f:viewParam
             name="id"
             value="#{contractEditBean.id}"/>
+
         <f:viewAction
             action="#{contractEditBean.init}"/>
     </f:metadata>
@@ -32,117 +34,174 @@
     </ui:define>
 
     <ui:define name="headerActions">
-        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
+        <ui:include src="/WEB-INF/components/header-actions.xhtml"/>
     </ui:define>
 
     <ui:define name="content">
+
         <section class="card contract-form-card">
+
             <h:form id="contractForm">
 
                 <p:messages
                     id="messages"
                     showDetail="true"
                     closable="true"
-                    styleClass="app-messages"
-                    />
+                    styleClass="app-messages"/>
 
                 <ui:fragment rendered="#{not contractEditBean.newContract}">
+
                     <div class="contract-header">
+
                         <div>
+
                             <span class="text-muted">
                                 #{msg['contract.status']}
                             </span>
+
                             <span class="status-badge">
-                                #{msg['contract.status.'.concat(contractEditBean.contract.status.name())]}
+                                #{msg['contract.status.'.concat(contractEditBean.contract.status)]}
                             </span>
+
                         </div>
+
                     </div>
+
                 </ui:fragment>
 
                 <div class="form-grid">
 
+                    <!-- Contract Name -->
                     <div class="form-field form-field-wide">
+
                         <p:outputLabel
                             for="name"
                             value="#{msg['contract.name']}"/>
+
                         <p:inputText
                             id="name"
                             value="#{contractEditBean.contract.name}"
                             required="true"
+                            requiredMessage="#{msg['contract.name.required']}"
                             disabled="#{not contractEditBean.editable}"
                             styleClass="form-input"/>
+
+                        <p:message
+                            for="name"
+                            styleClass="field-message"/>
+
                     </div>
 
-
+                    <!-- Employee -->
                     <div class="form-field form-field-wide">
+
                         <p:outputLabel
                             for="person"
                             value="#{msg['contract.employee']}"/>
+
                         <p:selectOneMenu
                             id="person"
                             value="#{contractEditBean.contract.personId}"
                             required="true"
+                            requiredMessage="#{msg['contract.employee.required']}"
                             disabled="#{not contractEditBean.editable}"
                             styleClass="form-input">
+
                             <p:ajax
                                 event="change"
                                 listener="#{contractEditBean.onEmployeeChange}"
                                 update="dobPanel"/>
+
                             <f:selectItem
                                 itemLabel="#{msg['contract.selectEmployee']}"
                                 itemValue="#{null}"
                                 noSelectionOption="true"/>
+
                             <f:selectItems
                                 value="#{contractEditBean.persons}"
                                 var="person"
                                 itemValue="#{person.id}"
                                 itemLabel="#{person.firstName} #{person.lastName}"/>
+
                         </p:selectOneMenu>
+
+                        <p:message
+                            for="person"
+                            styleClass="field-message"/>
+
                     </div>
 
+                    <!-- Date of Birth -->
+                    <p:outputPanel
+                        id="dobPanel"
+                        layout="block"
+                        styleClass="form-field form-field-wide">
 
-                    <p:outputPanel id="dobPanel" layout="block" styleClass="form-field form-field-wide">
                         <ui:fragment rendered="#{contractEditBean.dateOfBirthRequired}">
+
                             <p:outputLabel
                                 for="dateOfBirth"
                                 value="#{msg['person.dateOfBirth']}"/>
+
                             <p:datePicker
                                 id="dateOfBirth"
                                 value="#{contractEditBean.dateOfBirth}"
                                 pattern="dd.MM.yyyy"
                                 required="#{contractEditBean.editable}"
+                                requiredMessage="#{msg['person.dateOfBirth.required']}"
                                 maxdate="#{contractEditBean.today}"
                                 disabled="#{not contractEditBean.editable}"
                                 showIcon="true"/>
+
+                            <p:message
+                                for="dateOfBirth"
+                                styleClass="field-message"/>
+
                         </ui:fragment>
+
                     </p:outputPanel>
 
+                    <!-- Supervisor -->
                     <div class="form-field form-field-wide">
+
                         <p:outputLabel
                             for="supervisor"
                             value="#{msg['contract.supervisor']}"/>
+
                         <p:selectOneMenu
                             id="supervisor"
                             value="#{contractEditBean.contract.supervisorId}"
                             required="true"
+                            requiredMessage="#{msg['contract.supervisor.required']}"
                             disabled="#{not contractEditBean.editable}"
                             styleClass="form-input">
+
                             <f:selectItem
                                 itemLabel="#{msg['contract.selectSupervisor']}"
                                 itemValue="#{null}"
                                 noSelectionOption="true"/>
+
                             <f:selectItems
                                 value="#{contractEditBean.supervisors}"
                                 var="person"
                                 itemValue="#{person.id}"
                                 itemLabel="#{person.firstName} #{person.lastName}"/>
+
                         </p:selectOneMenu>
+
+                        <p:message
+                            for="supervisor"
+                            styleClass="field-message"/>
+
                     </div>
 
+                    <!-- Secretaries -->
                     <div class="form-field form-field-wide">
+
                         <p:outputLabel
                             for="secretaries"
                             value="#{msg['contract.secretaries']}"/>
+
                         <p:selectCheckboxMenu
                             id="secretaries"
                             value="#{contractEditBean.contract.secretaryIds}"
@@ -152,19 +211,30 @@
                             filter="true"
                             multiple="true"
                             required="true"
+                            requiredMessage="#{msg['contract.secretaries.required']}"
                             panelStyleClass="form-checkboxmenu-panel">
+
                             <f:selectItems
                                 value="#{contractEditBean.secretaries}"
                                 var="person"
                                 itemValue="#{person.id}"
                                 itemLabel="#{person.firstName} #{person.lastName}"/>
+
                         </p:selectCheckboxMenu>
+
+                        <p:message
+                            for="secretaries"
+                            styleClass="field-message"/>
+
                     </div>
 
+                    <!-- Assistants -->
                     <div class="form-field form-field-wide">
+
                         <p:outputLabel
                             for="assistants"
                             value="#{msg['contract.assistants']}"/>
+
                         <p:selectCheckboxMenu
                             id="assistants"
                             value="#{contractEditBean.contract.assistantIds}"
@@ -174,83 +244,129 @@
                             filter="true"
                             multiple="true"
                             panelStyleClass="form-checkboxmenu-panel">
+
                             <f:selectItems
                                 value="#{contractEditBean.assistants}"
                                 var="person"
                                 itemValue="#{person.id}"
                                 itemLabel="#{person.firstName} #{person.lastName}"/>
+
                         </p:selectCheckboxMenu>
+
                     </div>
 
+                    <!-- Start Date -->
                     <div class="form-field">
+
                         <p:outputLabel
                             for="startDate"
                             value="#{msg['contract.startDate']}"/>
+
                         <p:datePicker
                             id="startDate"
                             value="#{contractEditBean.startMonth}"
                             view="month"
                             pattern="MM/yyyy"
                             required="true"
+                            requiredMessage="#{msg['contract.startDate.required']}"
                             disabled="#{not contractEditBean.editable}"
                             showIcon="true"/>
+
                         <small class="text-muted">
                             #{msg['contract.startDate.help']}
                         </small>
+
+                        <p:message
+                            for="startDate"
+                            styleClass="field-message"/>
+
                     </div>
 
+                    <!-- End Date -->
                     <div class="form-field">
+
                         <p:outputLabel
                             for="endDate"
                             value="#{msg['contract.endDate']}"/>
+
                         <p:datePicker
                             id="endDate"
                             value="#{contractEditBean.endMonth}"
                             view="month"
                             pattern="MM/yyyy"
                             required="true"
+                            requiredMessage="#{msg['contract.endDate.required']}"
                             disabled="#{not contractEditBean.editable}"
                             showIcon="true"/>
+
                         <small class="text-muted">
                             #{msg['contract.endDate.help']}
                         </small>
+
+                        <p:message
+                            for="endDate"
+                            styleClass="field-message"/>
+
                     </div>
 
+                    <!-- Frequency -->
                     <div class="form-field">
+
                         <p:outputLabel
                             for="frequency"
                             value="#{msg['contract.frequency']}"/>
+
                         <p:selectOneMenu
                             id="frequency"
                             value="#{contractEditBean.contract.frequency}"
                             required="true"
+                            requiredMessage="#{msg['contract.frequency.required']}"
                             disabled="#{not contractEditBean.editable}"
                             styleClass="form-input">
+
                             <f:selectItems
                                 value="#{contractEditBean.frequencies}"
                                 var="frequency"
-                                itemLabel="#{msg['contract.frequency.'.concat(frequency.name())]}"
+                                itemLabel="#{msg['contract.frequency.'.concat(frequency)]}"
                                 itemValue="#{frequency}"/>
+
                         </p:selectOneMenu>
+
+                        <p:message
+                            for="frequency"
+                            styleClass="field-message"/>
+
                     </div>
 
+                    <!-- Hours per Week -->
                     <div class="form-field">
+
                         <p:outputLabel
                             for="hoursPerWeek"
                             value="#{msg['contract.hoursPerWeek']}"/>
+
                         <p:inputNumber
                             id="hoursPerWeek"
                             value="#{contractEditBean.contract.hoursPerWeek}"
                             minValue="0"
                             decimalPlaces="2"
                             required="true"
+                            requiredMessage="#{msg['contract.hoursPerWeek.required']}"
                             disabled="#{not contractEditBean.editable}"/>
+
+                        <p:message
+                            for="hoursPerWeek"
+                            styleClass="field-message"/>
+
                     </div>
 
+                    <!-- Working Days per Week -->
                     <div class="form-field">
+
                         <p:outputLabel
                             for="workingDays"
                             value="#{msg['contract.workingDaysPerWeek']}"/>
+
                         <p:inputNumber
                             id="workingDays"
                             value="#{contractEditBean.contract.workingDaysPerWeek}"
@@ -258,42 +374,69 @@
                             maxValue="7"
                             decimalPlaces="0"
                             required="true"
+                            requiredMessage="#{msg['contract.workingDaysPerWeek.required']}"
                             disabled="#{not contractEditBean.editable}"/>
+
+                        <p:message
+                            for="workingDays"
+                            styleClass="field-message"/>
+
                     </div>
 
+                    <!-- Vacation Days per Year -->
                     <div class="form-field">
+
                         <p:outputLabel
                             for="vacationDays"
                             value="#{msg['contract.vacationDaysPerYear']}"/>
+
                         <p:inputNumber
                             id="vacationDays"
                             value="#{contractEditBean.contract.vacationDaysPerYear}"
                             minValue="0"
                             decimalPlaces="0"
                             required="true"
+                            requiredMessage="#{msg['contract.vacationDaysPerYear.required']}"
                             disabled="#{not contractEditBean.editable}"/>
+
+                        <p:message
+                            for="vacationDays"
+                            styleClass="field-message"/>
+
                     </div>
 
+                    <!-- Federal State -->
                     <div class="form-field form-field-wide">
+
                         <p:outputLabel
                             for="state"
                             value="#{msg['contract.federalState']}"/>
+
                         <p:selectOneMenu
                             id="state"
                             value="#{contractEditBean.contract.state}"
                             required="true"
+                            requiredMessage="#{msg['contract.federalState.required']}"
                             disabled="#{not contractEditBean.editable}"
                             styleClass="form-input">
+
                             <f:selectItems
                                 value="#{contractEditBean.states}"
                                 var="state"
                                 itemValue="#{state}"
-                                itemLabel="#{state}"/>
+                                itemLabel="#{msg['federalState.'.concat(state)]}"/>
+
                         </p:selectOneMenu>
+
+                        <p:message
+                            for="state"
+                            styleClass="field-message"/>
+
                     </div>
 
                 </div>
 
+                <!-- Archive Duration -->
                 <div class="form-field">
 
                     <p:outputLabel
@@ -306,15 +449,23 @@
                         minValue="1"
                         decimalPlaces="0"
                         required="true"
+                        requiredMessage="#{msg['contract.archiveDuration.required']}"
                         disabled="#{not contractEditBean.editable}"/>
 
                     <small class="text-muted">
                         #{msg['contract.archiveDuration.help']}
                     </small>
 
+                    <p:message
+                        for="archiveDuration"
+                        styleClass="field-message"/>
+
                 </div>
 
-                <ui:fragment rendered="#{not contractEditBean.newContract and not contractEditBean.prepared}">
+                <!-- Statistics -->
+                <ui:fragment
+                    rendered="#{not contractEditBean.newContract
+                                and not contractEditBean.prepared}">
 
                     <ui:include
                         src="/WEB-INF/components/contract-statistics.xhtml">
@@ -327,6 +478,7 @@
 
                 </ui:fragment>
 
+                <!-- Actions -->
                 <div class="form-actions">
 
                     <p:commandButton
@@ -344,10 +496,12 @@
                         rendered="#{not contractEditBean.newContract
                                     and contractEditBean.prepared}"
                         styleClass="ui-button-success">
+
                         <p:confirm
                             header="#{msg['contract.start']}"
                             message="#{msg['contract.start.confirm']}"
                             icon="pi pi-exclamation-triangle"/>
+
                     </p:commandButton>
 
                     <p:commandButton
@@ -358,10 +512,12 @@
                         disabled="#{contractEditBean.terminateBlocked}"
                         rendered="#{contractEditBean.started}"
                         styleClass="ui-button-warning">
+
                         <p:confirm
                             header="#{msg['contract.terminate']}"
                             message="#{msg[contractEditBean.terminateConfirmMessageKey]}"
                             icon="pi pi-exclamation-triangle"/>
+
                     </p:commandButton>
 
                     <h:outputText
@@ -377,10 +533,12 @@
                         rendered="#{not contractEditBean.newContract
                                     and contractEditBean.prepared}"
                         styleClass="ui-button-danger">
+
                         <p:confirm
                             header="#{msg['contract.delete']}"
                             message="#{msg['contract.delete.confirm']}"
                             icon="pi pi-exclamation-triangle"/>
+
                     </p:commandButton>
 
                     <p:commandButton
@@ -391,23 +549,28 @@
                         ajax="false"
                         styleClass="ui-button-secondary"/>
 
-                    <p:confirmDialog global="true">
-                        <p:commandButton
-                            value="#{msg['button.yes']}"
-                            type="button"
-                            styleClass="ui-confirmdialog-yes"
-                            icon="pi pi-check"/>
-                        <p:commandButton
-                            value="#{msg['button.no']}"
-                            type="button"
-                            styleClass="ui-confirmdialog-no ui-button-secondary"
-                            icon="pi pi-times"/>
-                    </p:confirmDialog>
-
                 </div>
 
+                <p:confirmDialog global="true">
+
+                    <p:commandButton
+                        value="#{msg['button.yes']}"
+                        type="button"
+                        styleClass="ui-confirmdialog-yes"
+                        icon="pi pi-check"/>
+
+                    <p:commandButton
+                        value="#{msg['button.no']}"
+                        type="button"
+                        styleClass="ui-confirmdialog-no ui-button-secondary"
+                        icon="pi pi-times"/>
+
+                </p:confirmDialog>
+
             </h:form>
+
         </section>
+
     </ui:define>
 
 </ui:composition>
