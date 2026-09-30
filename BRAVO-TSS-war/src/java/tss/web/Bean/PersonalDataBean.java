@@ -35,7 +35,11 @@ public class PersonalDataBean implements Serializable {
     @Inject
     private LocaleBean localeBean;
 
-    private String oldPrincipalName = null;   // was Principal (not serializable)
+    private String oldPrincipalName = null;
+
+    private String currentPassword;
+    private String newPassword;
+    private String confirmPassword;
 
     public User getUser() {
         Principal p = FacesContext.getCurrentInstance()
@@ -108,5 +112,81 @@ public class PersonalDataBean implements Serializable {
         return personDTO != null
                 && personDTO.getRole() != null
                 && personDTO.getRole().contains(Role.EMPLOYEE);
+    }
+
+    public String getCurrentPassword() {
+        return this.currentPassword;
+    }
+
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
+    }
+    
+    public String getNewPassword() {
+        return this.newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+    
+    public String getConfirmPassword() {
+        return this.confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
+    public void changePassword() {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+
+        try {
+            if (newPassword == null
+                    || !newPassword.equals(confirmPassword)) {
+
+                throw new IllegalArgumentException(
+                        "The new passwords do not match."
+                );
+            }
+
+            User user = getUser();
+
+            if (user == null) {
+                throw new IllegalStateException(
+                        "No authenticated user found."
+                );
+            }
+
+            personLogic.changePassword(
+                    user.getId(),
+                    currentPassword,
+                    newPassword
+            );
+
+            currentPassword = null;
+            newPassword = null;
+            confirmPassword = null;
+
+            ctx.addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            "Password changed",
+                            "Your password was changed successfully."
+                    )
+            );
+
+        } catch (EJBException | IllegalArgumentException | IllegalStateException e) {
+
+            ctx.addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Could not change password",
+                            e.getMessage()
+                    )
+            );
+        }
     }
 }

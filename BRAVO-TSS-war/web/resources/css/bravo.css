@@ -157,6 +157,10 @@ body {
     border-radius: 8px;
 }
 
+.card + .card {
+    margin-top: 1.5rem;
+}
+
 
 /* =========================
    Navigation

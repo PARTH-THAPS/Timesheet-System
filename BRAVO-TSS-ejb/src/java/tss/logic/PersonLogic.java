@@ -26,4 +26,6 @@ public interface PersonLogic {
     void acceptConsent(Long personId);
 
     void revokeConsent(Long personId);
+
+    void changePassword(Long personId, String currentPassword, String newPassword);
 }

@@ -140,6 +140,54 @@ public class PersonLogicImp implements PersonLogic {
         personDao.updatePerson(person);
     }
 
+    @Override
+    public void changePassword(
+            Long personId,
+            String currentPassword,
+            String newPassword
+    ) {
+        Person person = personDao.findPersonById(personId);
+
+        if (person == null) {
+            throw new IllegalArgumentException(
+                    "No Person found with id: " + personId
+            );
+        }
+
+        if (currentPassword == null || currentPassword.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Current password is required."
+            );
+        }
+
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new IllegalArgumentException(
+                    "New password is required."
+            );
+        }
+
+        String currentPasswordHash
+                = PasswordHash.hashPassword(currentPassword);
+
+        if (!currentPasswordHash.equals(person.getPassword())) {
+            throw new IllegalArgumentException(
+                    "Current password is incorrect."
+            );
+        }
+
+        if (newPassword.length() < 8) {
+            throw new IllegalArgumentException(
+                    "New password must contain at least 8 characters."
+            );
+        }
+
+        person.setPassword(
+                PasswordHash.hashPassword(newPassword)
+        );
+
+        personDao.updatePerson(person);
+    }
+
     private PersonDTO personDto(Person p) {
         PersonDTO dto = new PersonDTO();
         dto.setId(p.getId());
