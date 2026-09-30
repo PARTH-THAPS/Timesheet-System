@@ -5,7 +5,6 @@ import jakarta.ejb.EJB;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -16,6 +15,7 @@ import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
 import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
+import tss.web.i18n.Messages;
 
 @Named
 @RequestScoped
@@ -55,8 +55,8 @@ public class ContractListBean {
         }
 
         contracts = visible.stream()
-            .filter(c -> c.getStatus() != ContractStatus.ARCHIVED)
-            .toList();
+                .filter(c -> c.getStatus() != ContractStatus.ARCHIVED)
+                .toList();
 
         for (PersonDTO person : personLogic.findAllPersons()) {
             personNames.put(person.getId(), person.getFirstName() + " " + person.getLastName());
@@ -72,6 +72,9 @@ public class ContractListBean {
     }
 
     public String getPersonName(Long personId) {
-        return personNames.getOrDefault(personId, "Unknown");
+        return personNames.getOrDefault(
+                personId,
+                Messages.get("common.unknown")
+        );
     }
 }

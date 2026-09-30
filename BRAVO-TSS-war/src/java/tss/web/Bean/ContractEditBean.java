@@ -25,6 +25,7 @@ import tss.logic.PersonLogic;
 import java.util.Set;
 import tss.dto.ContractStatisticsDTO;
 import tss.logic.TerminationBlockedException;
+import tss.web.i18n.Messages;
 
 @Named
 @ViewScoped
@@ -120,7 +121,10 @@ public class ContractEditBean implements Serializable {
             facesContext.getExternalContext().redirect(contextPath + "/views/access-denied.xhtml");
             facesContext.responseComplete();
         } catch (IOException e) {
-            showError("Access denied", "You are not authorized to view this contract.");
+            showError(
+                    Messages.get("accessDenied.title"),
+                    Messages.get("accessDenied.description")
+            );
         }
     }
 
@@ -171,7 +175,10 @@ public class ContractEditBean implements Serializable {
             redirectToContracts();
 
         } catch (Exception e) {
-            showError("Could not save contract", e.getMessage());
+            showError(
+                    Messages.get("message.contract.saveFailed"),
+                    e.getMessage()
+            );
         }
     }
 
@@ -184,7 +191,9 @@ public class ContractEditBean implements Serializable {
                 ? contract.getAssistantIds() : List.of();
 
         if (secretaryIds.isEmpty()) {
-            throw new IllegalArgumentException("At least one secretary is required.");
+            throw new IllegalArgumentException(
+                    Messages.get("message.contract.secretaryRequired")
+            );
         }
 
         // Collect every (role label, personId) pair that was actually assigned
@@ -207,9 +216,10 @@ public class ContractEditBean implements Serializable {
         for (Map.Entry<String, Long> entry : assignments) {
             if (!seen.add(entry.getValue())) {
                 throw new IllegalArgumentException(
-                        "Each person may only have one role on this contract. "
-                        + personNameOrId(entry.getValue())
-                        + " is assigned to more than one role."
+                        Messages.get(
+                                "message.contract.uniqueRole",
+                                personNameOrId(entry.getValue())
+                        )
                 );
             }
         }
@@ -220,7 +230,7 @@ public class ContractEditBean implements Serializable {
                 .filter(p -> p.getId().equals(id))
                 .findFirst()
                 .map(p -> p.getFirstName() + " " + p.getLastName())
-                .orElse("Person #" + id);
+                .orElse(Messages.get("message.person.fallback", id));
     }
 
     private void syncSecretariesAndAssistants(Long contractId) {
@@ -273,7 +283,7 @@ public class ContractEditBean implements Serializable {
 
         } catch (Exception e) {
             showError(
-                    "Could not start contract",
+                    Messages.get("message.contract.startFailed"),
                     e.getMessage()
             );
         }
@@ -300,8 +310,10 @@ public class ContractEditBean implements Serializable {
     public void terminate() {
 
         if (!isStarted()) {
-            showError("Could not terminate contract",
-                    "Only a started contract can be terminated.");
+            showError(
+                    Messages.get("message.contract.terminateFailed"),
+                    Messages.get("message.contract.onlyStarted")
+            );
             return;
         }
         try {
@@ -310,9 +322,15 @@ public class ContractEditBean implements Serializable {
             contract = contractLogic.terminateContract(contract.getId(), true);
         } catch (TerminationBlockedException e) {
             // A timesheet was signed by the employee after the page was rendered
-            showError("Contract cannot be terminated", e.getMessage());
+            showError(
+                    Messages.get("message.contract.terminateBlocked"),
+                    e.getMessage()
+            );
         } catch (Exception e) {
-            showError("Could not terminate contract", e.getMessage());
+            showError(
+                    Messages.get("message.contract.terminateFailed"),
+                    e.getMessage()
+            );
         } finally {
             refreshStatistics();
             refreshTerminationFlags();
@@ -325,7 +343,7 @@ public class ContractEditBean implements Serializable {
             redirectToContracts();
         } catch (Exception e) {
             showError(
-                    "Could not delete contract",
+                    Messages.get("message.contract.deleteFailed"),
                     e.getMessage()
             );
         }
@@ -336,7 +354,7 @@ public class ContractEditBean implements Serializable {
             redirectToContracts();
         } catch (IOException e) {
             showError(
-                    "Could not return to contracts",
+                    Messages.get("message.contract.returnFailed"),
                     e.getMessage()
             );
         }
@@ -345,7 +363,7 @@ public class ContractEditBean implements Serializable {
     private PersonDTO findSelectedPerson() {
         if (contract.getPersonId() == null) {
             throw new IllegalArgumentException(
-                    "Please select an employee."
+                    Messages.get("message.contract.employeeRequired")
             );
         }
 
@@ -356,7 +374,7 @@ public class ContractEditBean implements Serializable {
                 .findFirst()
                 .orElseThrow(()
                         -> new IllegalArgumentException(
-                        "Selected employee could not be found."
+                        Messages.get("message.contract.employeeNotFound")
                 )
                 );
     }
@@ -416,9 +434,13 @@ public class ContractEditBean implements Serializable {
     private void validateDateOfBirth() {
         if (dateOfBirthRequired && dateOfBirth == null) {
             PersonDTO employee = findSelectedPerson();
+
             throw new IllegalArgumentException(
-                    "Date of birth is required for " + employee.getFirstName()
-                    + " " + employee.getLastName() + ".");
+                    Messages.get(
+                            "message.contract.dateOfBirthRequired",
+                            employee.getFirstName() + " " + employee.getLastName()
+                    )
+            );
         }
     }
 

@@ -16,6 +16,7 @@ import tss.entity.Language;
 import tss.entity.Role;
 import tss.logic.PersonLogic;
 import tss.logic.UserLogic;
+import tss.web.i18n.Messages;
 
 @Named
 @SessionScoped
@@ -84,7 +85,7 @@ public class PersonalDataBean implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_INFO,
-                            "Saved successfully!",
+                            Messages.get("message.personalInfo.saved"),
                             null
                     )
             );
@@ -95,7 +96,10 @@ public class PersonalDataBean implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,
-                            "Saving failed: " + e.getMessage(),
+                            Messages.get(
+                                    "message.personalInfo.saveFailed",
+                                    e.getMessage()
+                            ),
                             null
                     )
             );
@@ -121,7 +125,7 @@ public class PersonalDataBean implements Serializable {
     public void setCurrentPassword(String currentPassword) {
         this.currentPassword = currentPassword;
     }
-    
+
     public String getNewPassword() {
         return this.newPassword;
     }
@@ -129,7 +133,7 @@ public class PersonalDataBean implements Serializable {
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
     }
-    
+
     public String getConfirmPassword() {
         return this.confirmPassword;
     }
@@ -146,7 +150,7 @@ public class PersonalDataBean implements Serializable {
                     || !newPassword.equals(confirmPassword)) {
 
                 throw new IllegalArgumentException(
-                        "The new passwords do not match."
+                        Messages.get("message.password.mismatch")
                 );
             }
 
@@ -154,7 +158,7 @@ public class PersonalDataBean implements Serializable {
 
             if (user == null) {
                 throw new IllegalStateException(
-                        "No authenticated user found."
+                        Messages.get("message.auth.noUser")
                 );
             }
 
@@ -172,8 +176,8 @@ public class PersonalDataBean implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_INFO,
-                            "Password changed",
-                            "Your password was changed successfully."
+                            Messages.get("message.password.changed.summary"),
+                            Messages.get("message.password.changed.detail")
                     )
             );
 
@@ -183,7 +187,7 @@ public class PersonalDataBean implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,
-                            "Could not change password",
+                            Messages.get("message.password.changeFailed"),
                             e.getMessage()
                     )
             );

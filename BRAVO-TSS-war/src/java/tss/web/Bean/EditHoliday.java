@@ -11,6 +11,7 @@ import java.io.Serializable;
 import tss.dto.HolidayDTO;
 import tss.entity.FederalState;
 import tss.logic.HolidayLogic;
+import tss.web.i18n.Messages;
 
 @Named("EditHolidayBean")
 @ViewScoped
@@ -57,8 +58,8 @@ public class EditHoliday implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_INFO,
-                            "Holiday saved",
-                            "The holiday was saved successfully."
+                            Messages.get("message.holiday.saved.summary"),
+                            Messages.get("message.holiday.saved.detail")
                     )
             );
 
@@ -70,7 +71,7 @@ public class EditHoliday implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,
-                            "Could not save holiday",
+                            Messages.get("message.holiday.saveFailed"),
                             e.getMessage()
                     )
             );
@@ -97,7 +98,7 @@ public class EditHoliday implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,
-                            "Could not delete holiday",
+                            Messages.get("message.holiday.deleteFailed"),
                             e.getMessage()
                     )
             );

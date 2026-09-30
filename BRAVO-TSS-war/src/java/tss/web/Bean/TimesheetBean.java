@@ -2,13 +2,11 @@ package tss.web.Bean;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.List;
 
 import tss.dto.PersonDTO;
@@ -16,6 +14,7 @@ import tss.dto.TimesheetDTO;
 import tss.dto.User;
 import tss.logic.PersonLogic;
 import tss.logic.TimesheetLogic;
+import tss.web.i18n.Messages;
 
 @ViewScoped
 @Named("timesheetBean")
@@ -50,9 +49,7 @@ public class TimesheetBean implements Serializable {
         return timesheetList;
     }
 
-
     // Development only
-
     @EJB
     private PersonLogic personLogic;
 
@@ -69,10 +66,10 @@ public class TimesheetBean implements Serializable {
         PersonDTO person = persons.stream()
                 .filter(p -> selectedEmployeeId.equals(p.getId()))
                 .findFirst()
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Selected employee could not be found."
-                        )
+                .orElseThrow(()
+                        -> new IllegalArgumentException(
+                        Messages.get("message.contract.employeeNotFound")
+                )
                 );
 
         loadTimesheetsForUser(person.getId());

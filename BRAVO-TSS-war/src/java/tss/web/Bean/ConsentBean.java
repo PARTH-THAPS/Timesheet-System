@@ -11,6 +11,7 @@ import tss.dto.PersonDTO;
 import tss.dto.User;
 import tss.logic.PersonLogic;
 import tss.logic.UserLogic;
+import tss.web.i18n.Messages;
 
 @Named
 @ViewScoped
@@ -52,7 +53,7 @@ public class ConsentBean implements Serializable {
 
             if (user == null) {
                 throw new IllegalStateException(
-                        "No authenticated user found."
+                        Messages.get("message.auth.noUser")
                 );
             }
 
@@ -65,7 +66,7 @@ public class ConsentBean implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,
-                            "Could not save consent",
+                            Messages.get("message.consent.saveFailed"),
                             e.getMessage()
                     )
             );
@@ -92,7 +93,7 @@ public class ConsentBean implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,
-                            "Could not continue",
+                            Messages.get("message.common.continueFailed"),
                             e.getMessage()
                     )
             );

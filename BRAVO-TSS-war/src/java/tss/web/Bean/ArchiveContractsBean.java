@@ -13,6 +13,7 @@ import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
 import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
+import tss.web.i18n.Messages;
 
 @Named("archiveContractsBean")
 @ViewScoped
@@ -45,9 +46,12 @@ public class ArchiveContractsBean implements Serializable {
     }
 
     public String getPersonName(Long personId) {
-        return personNames.getOrDefault(personId, "Unknown");
+        return personNames.getOrDefault(
+                personId,
+                Messages.get("common.unknown")
+        );
     }
-    
+
     public ContractStatus[] getStatuses() {
         return ContractStatus.values();
     }

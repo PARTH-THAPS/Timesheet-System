@@ -11,7 +11,6 @@ import jakarta.inject.Named;
 import java.util.List;
 import tss.dto.HolidayDTO;
 import tss.logic.HolidayLogic;
-import tss.entity.Holiday;
 
 @Named("HolidayListBean")
 @RequestScoped
