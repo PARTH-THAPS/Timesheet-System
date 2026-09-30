@@ -88,7 +88,7 @@
                     <p:column
                         headerText="#{msg['timesheet.status']}"
                         sortBy="#{timesheet.status}"
-                        filterBy="#{timesheet.status}"
+                        filterBy="#{msg['timesheet.status.'.concat(timesheet.status)]}"
                         filterMatchMode="exact">
 
                         <f:facet name="filter">
@@ -105,7 +105,7 @@
                                     value="#{secretaryTimesheetsBean.statuses}"
                                     var="status"
                                     itemLabel="#{msg['timesheet.status.'.concat(status)]}"
-                                    itemValue="#{status}"/>
+                                    itemValue="#{msg['timesheet.status.'.concat(status)]}"/>
 
                             </p:selectOneMenu>
 

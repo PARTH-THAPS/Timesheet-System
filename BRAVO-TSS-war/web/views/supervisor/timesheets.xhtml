@@ -90,7 +90,7 @@
                     <p:column
                         headerText="#{msg['timesheet.approvalStatus']}"
                         sortBy="#{timesheet.status}"
-                        filterBy="#{timesheet.status}"
+                        filterBy="#{msg['timesheet.status.'.concat(timesheet.status)]}"
                         filterMatchMode="exact">
 
                         <f:facet name="filter">
@@ -106,7 +106,7 @@
                                 <f:selectItems
                                     value="#{supervisorSignBean.statuses}"
                                     var="status"
-                                    itemValue="#{status}"
+                                    itemValue="#{msg['timesheet.status.'.concat(status)]}"
                                     itemLabel="#{msg['timesheet.status.'.concat(status)]}"/>
 
                             </p:selectOneMenu>
