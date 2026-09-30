@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import tss.dto.ContractDTO;
@@ -33,15 +34,21 @@ public class MyContractBean implements Serializable {
     @PostConstruct
     public void init() {
         User currentUser = loginBean.getUser();
+
         if (currentUser == null) {
-            contracts = List.of();
+            contracts = new ArrayList<>();
             return;
         }
+
         Long currentPersonId = currentUser.getId();
-        contracts = contractLogic.findAllContracts()
-                .stream()
-                .filter(c -> c.getPersonId() != null && c.getPersonId().equals(currentPersonId))
-                .toList();
+
+        contracts = new ArrayList<>(
+                contractLogic.findAllContracts()
+                        .stream()
+                        .filter(c -> c.getPersonId() != null
+                        && c.getPersonId().equals(currentPersonId))
+                        .toList()
+        );
     }
 
     public List<ContractDTO> getContracts() {
@@ -63,12 +70,12 @@ public class MyContractBean implements Serializable {
             return;
         }
 
-        selectedStatistics =
-                contractLogic.getContractStatistics(
+        selectedStatistics
+                = contractLogic.getContractStatistics(
                         selectedContract.getId()
                 );
     }
-    
+
     public ContractStatisticsDTO getSelectedStatistics() {
         return selectedStatistics;
     }
