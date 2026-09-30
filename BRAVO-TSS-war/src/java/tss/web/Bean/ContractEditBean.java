@@ -518,4 +518,46 @@ public class ContractEditBean implements Serializable {
     public LocalDate getToday() {
         return LocalDate.now();
     }
+
+    public LocalDate getStartMonth() {
+        if (contract == null || contract.getStartDate() == null) {
+            return null;
+        }
+
+        return contract.getStartDate().withDayOfMonth(1);
+    }
+
+    public void setStartMonth(LocalDate startMonth) {
+        if (contract == null) {
+            return;
+        }
+
+        contract.setStartDate(
+                startMonth != null
+                        ? startMonth.withDayOfMonth(1)
+                        : null
+        );
+    }
+
+    public LocalDate getEndMonth() {
+        if (contract == null || contract.getEndDate() == null) {
+            return null;
+        }
+
+        return contract.getEndDate().withDayOfMonth(1);
+    }
+
+    public void setEndMonth(LocalDate endMonth) {
+        if (contract == null) {
+            return;
+        }
+
+        contract.setEndDate(
+                endMonth != null
+                        ? endMonth.withDayOfMonth(
+                                endMonth.lengthOfMonth()
+                        )
+                        : null
+        );
+    }
 }
