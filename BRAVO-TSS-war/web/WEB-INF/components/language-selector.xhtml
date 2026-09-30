@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core">
+
+    <h:form id="languageForm">
+
+        <p:selectOneMenu
+            id="languageMenu"
+            value="#{localeBean.selectedLanguage}"
+            styleClass="language-menu">
+
+            <f:selectItems
+                value="#{localeBean.languages}"
+                var="language"
+                itemValue="#{language.code}"
+                itemLabel="#{msg['language.'.concat(language.shortLabel)]}"/>
+
+            <p:ajax
+                process="@this"
+                oncomplete="window.location.reload();"/>
+
+        </p:selectOneMenu>
+
+    </h:form>
+
+</ui:composition>

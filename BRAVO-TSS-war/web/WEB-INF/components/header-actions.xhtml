@@ -43,26 +43,7 @@
         </ui:fragment>
     </div>
 
-    <h:form id="languageForm">
-
-        <p:selectOneMenu
-            id="languageMenu"
-            value="#{localeBean.selectedLanguage}"
-            styleClass="language-menu">
-
-            <f:selectItems
-                value="#{localeBean.languages}"
-                var="language"
-                itemValue="#{language.code}"
-                itemLabel="#{msg['language.'.concat(language.shortLabel)]}"/>
-
-            <p:ajax
-                process="@this"
-                oncomplete="window.location.reload();"/>
-
-        </p:selectOneMenu>
-
-    </h:form>
+    <ui:include src="/WEB-INF/components/language-selector.xhtml"/>
 
     <h:form>
 
