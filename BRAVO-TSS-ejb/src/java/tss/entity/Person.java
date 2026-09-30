@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.*;
+import java.time.LocalDate;
 
 @NamedQueries({
     @NamedQuery(name = "getUserByEmail", query = "SELECT p from Person p WHERE p.emailAddress=:emailAddress ")})
@@ -40,6 +41,8 @@ public class Person extends AbstractEntity implements Serializable {
 
     @ManyToMany(mappedBy = "assistants")
     private Set<Contract> assistantContract;
+
+    private LocalDate dateOfBirth;
 
     public Person() {
         this.roles = new HashSet<>();
@@ -138,7 +141,19 @@ public class Person extends AbstractEntity implements Serializable {
         this.password = password;
     }
 
-    public void setPreferredLanguage(Language preferredLanguage) { this.preferredLanguage = preferredLanguage; }
+    public void setPreferredLanguage(Language preferredLanguage) {
+        this.preferredLanguage = preferredLanguage;
+    }
 
-    public Language getPreferredLanguage() { return preferredLanguage; }
+    public Language getPreferredLanguage() {
+        return preferredLanguage;
+    }
+    
+     public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
 }

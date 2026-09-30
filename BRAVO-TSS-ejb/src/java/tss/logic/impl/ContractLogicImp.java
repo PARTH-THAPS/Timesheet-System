@@ -5,6 +5,7 @@ import jakarta.ejb.Stateless;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 import tss.dao.ContractsDao;
 import tss.dao.PersonDao;
 import tss.dto.ContractDTO;
@@ -16,29 +17,40 @@ import tss.entity.ContractStatus;
 import tss.entity.TimesheetFrequency;
 import tss.logic.ContractLogic;
 import tss.entity.Contract;
+import tss.entity.ContractStatus;
 import tss.entity.FederalState;
 import tss.entity.Person;
 import tss.entity.TimesheetStatus;
 import tss.logic.TimesheetLogic;
 import tss.entity.Role;
+import tss.entity.TimesheetFrequency;
+import tss.entity.TimesheetStatus;
+import tss.logic.ContractLogic;
+import tss.logic.TerminationBlockedException;
+import tss.logic.TerminationBlockedException;
+import tss.logic.TimesheetLogic;
 
 @Stateless
 public class ContractLogicImp implements ContractLogic {
 
     @EJB
     private ContractsDao contractsDao;
+
     @EJB
     private PersonDao personDao;
+
     @EJB
     TimesheetLogic timesheetLogic;
 
     @Override
     public ContractDTO createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, PersonDTO person, FederalState state, int archiveDuration) {
         validateContractDates(startDate, endDate);
+
         Person personEnt = personDao.findPersonById(person.getId());
         if (personEnt == null) {
             throw new IllegalArgumentException("No Person found with id: " + person.getId());
         }
+
         Contract contract = new Contract();
         contract.setStatus(ContractStatus.PREPARED);
         contract.setName(name);
@@ -59,6 +71,8 @@ public class ContractLogicImp implements ContractLogic {
         }
         contract.setArchiveDuration(archiveDuration);
         contractsDao.createContract(contract);
+        personEnt.setRoles(Role.EMPLOYEE);
+        personDao.updatePerson(personEnt);
         return toDTO(contract);
     }
 
@@ -70,24 +84,31 @@ public class ContractLogicImp implements ContractLogic {
                     "No contract found with id: " + updatedContract.getId()
             );
         }
+
         if (contract.getStatus() != ContractStatus.PREPARED) {
             throw new IllegalStateException(
                     "Contract can only be updated when status is PREPARED"
             );
         }
+
         validateContractDates(
                 updatedContract.getStartDate(),
                 updatedContract.getEndDate()
         );
+
         Person person = personDao.findPersonById(
                 updatedContract.getPersonId()
         );
+
         if (person == null) {
             throw new IllegalArgumentException(
                     "No person found with id: "
                     + updatedContract.getPersonId()
             );
         }
+        
+        Person previousEmployee = contract.getEmployee();
+
         contract.setName(updatedContract.getName());
         contract.setStartDate(updatedContract.getStartDate());
         contract.setEndDate(updatedContract.getEndDate());
@@ -102,6 +123,7 @@ public class ContractLogicImp implements ContractLogic {
         contract.setState(updatedContract.getState());
         contract.setArchiveDuration(updatedContract.getArchiveDuration());
         contract.setEmployee(person);
+
         contract.setVacationHours(
                 vacationHours(
                         updatedContract.getStartDate(),
@@ -111,8 +133,23 @@ public class ContractLogicImp implements ContractLogic {
                         updatedContract.getHoursPerWeek()
                 )
         );
-       
+
         contractsDao.UpdateContract(contract);
+        
+        
+        
+        person.setRoles(Role.EMPLOYEE);
+        personDao.updatePerson(person);
+
+       
+        if (previousEmployee != null && !previousEmployee.getId().equals(person.getId())) {
+            boolean stillEmployeeElsewhere = previousEmployee.getEmployeeContract().stream()
+                    .anyMatch(c -> !c.getId().equals(updatedContract.getId()));
+            if (!stillEmployeeElsewhere) {
+                previousEmployee.removeRole(Role.EMPLOYEE);
+                personDao.updatePerson(previousEmployee);
+            }
+        }
         return toDTO(contract);
     }
 
@@ -223,21 +260,22 @@ public class ContractLogicImp implements ContractLogic {
 
     
     @Override
-    public boolean hasUnresolvedInProgressTimesheets(Long contractId) {
-        Contract contract = contractsDao.findContract(contractId);
-        if (contract == null) {
-            throw new IllegalArgumentException("No contract found with id: " + contractId);
+    public void CheckForArchivedTimesheet(Contract contract) {
+        // Only a TERMINATED contract can become ARCHIVED. allMatch on an empty list is true,
+        // so without this check a PREPARED contract would be archived by mistake.
+        if (contract.getStatus() == ContractStatus.TERMINATED
+                && contract.getTimesheet().stream()
+                        .allMatch(ts -> ts.getStatus() == TimesheetStatus.ARCHIVED)) {
+            contract.setStatus(ContractStatus.ARCHIVED);
+            contractsDao.UpdateContract(contract);
         }
-        return contract.getTimesheet().stream()
-                .anyMatch(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS
-                        && t.getEntries() != null
-                        && !t.getEntries().isEmpty());
     }
 
     public static LocalDate terminationDate() {
         return LocalDate.now();
     }
 
+    // PREPARED -> STARTED and TERMINATED -> ARCHIVED. Termination goes through terminateContract.
     @Override
     public ContractDTO updateContractStatus(Long contractId, ContractStatus newStatus) {
         Contract contract = contractsDao.findContract(contractId);
@@ -245,30 +283,68 @@ public class ContractLogicImp implements ContractLogic {
             throw new IllegalArgumentException("No contract found with id: " + contractId);
         }
         ContractStatus currentStatus = contract.getStatus();
+
         if (currentStatus == ContractStatus.PREPARED && newStatus == ContractStatus.STARTED) {
             contract.setStatus(newStatus);
             timesheetLogic.generateTimesheetsForContract(contractId);
-            
-            // commit. No merge() call needed/used here.
-        } else if (currentStatus == ContractStatus.STARTED && newStatus == ContractStatus.TERMINATED) {
-            
-            LocalDate date = terminationDate();
-            contract.setTerminationDate(date);
+
+        } else if (currentStatus == ContractStatus.TERMINATED && newStatus == ContractStatus.ARCHIVED) {
+            boolean allArchived = timesheetLogic.getTimesheetsForContract(contractId).stream()
+                    .allMatch(t -> t.getStatus() == TimesheetStatus.ARCHIVED);
+            if (!allArchived) {
+                throw new IllegalStateException(
+                        "Contract can only be archived when all timesheets are archived.");
+            }
             contract.setStatus(newStatus);
 
-            // IMPORTANT: this removes Timesheet entities from the same
-           
-            timesheetLogic.deleteInProgressTimesheets(contract.getId());
-            return toDTO(contract);
-        } else if (currentStatus == ContractStatus.TERMINATED && newStatus == ContractStatus.ARCHIVED) {
-            contract.setStatus(newStatus);
         } else {
-            throw new IllegalStateException("Invalid status transition: " + currentStatus + "From" + newStatus);
+            // includes STARTED -> TERMINATED: use terminateContract instead
+            throw new IllegalStateException(
+                    "Invalid status transition from " + currentStatus + " to " + newStatus);
         }
+
         contractsDao.UpdateContract(contract);
         return toDTO(contract);
     }
 
+    // STARTED -> TERMINATED
+    @Override
+    public ContractDTO terminateContract(Long contractId, boolean confirmed) {
+        Contract contract = contractsDao.findContract(contractId);
+        if (contract == null) {
+            throw new IllegalArgumentException("No contract found with id: " + contractId);
+        }
+        if (contract.getStatus() != ContractStatus.STARTED) {
+            throw new IllegalStateException("Only a started contract can be terminated.");
+        }
+
+        // Signed by the employee only: waiting for the supervisor
+        if (hasTimesheetsPendingSupervisorSignature(contractId)) {
+            throw new TerminationBlockedException(
+                    "Contract cannot be terminated: a timesheet is signed by the employee "
+                    + "and still awaiting the supervisor's signature.");
+        }
+
+        // IN_PROGRESS with entries: error
+        if (hasUnresolvedInProgressTimesheets(contractId) && !confirmed) {
+            throw new TerminationBlockedException(
+                    "Contract cannot be terminated: a timesheet is still in progress and contains entries. "
+                    + "Please have it signed by the employee and the supervisor first.");
+        }
+
+        contract.setTerminationDate(terminationDate());
+        contract.setStatus(ContractStatus.TERMINATED);
+        timesheetLogic.deleteInProgressTimesheets(contractId);   // only empty ones are left here
+
+        contractsDao.UpdateContract(contract);
+        return toDTO(contract);
+    }
+
+//     boolean nothingLeftToArchive = timesheetLogic.getTimesheetsForContract(contractId).stream()
+//                .allMatch(t -> t.getStatus() == TimesheetStatus.ARCHIVED);
+//        if (nothingLeftToArchive) {
+//            contract.setStatus(ContractStatus.ARCHIVED);
+//        }
     public static double vacationHours(LocalDate startDate, LocalDate endDate, int workingDaysPerWeek, int vacationDaysPerYear, double hoursPerWeek) {
         long durationInMonths = ChronoUnit.MONTHS.between(startDate, endDate.plusDays(1));
         return vacationDaysPerYear * (double) durationInMonths / 12 * hoursPerWeek / workingDaysPerWeek;
@@ -335,6 +411,7 @@ public class ContractLogicImp implements ContractLogic {
         if (contract == null) {
             throw new IllegalArgumentException("No contract found with id: " + contractId);
         }
+
         List<Person> people = personIds.stream()
                 .map(id -> {
                     Person p = personDao.findPersonById(id);
@@ -344,8 +421,10 @@ public class ContractLogicImp implements ContractLogic {
                     return p;
                 })
                 .toList();
+
         contract.addSecretary(people);
         contractsDao.UpdateContract(contract);
+
         for (Person p : people) {
             p.setRoles(Role.SECRETARY);
             personDao.updatePerson(p);
@@ -358,6 +437,7 @@ public class ContractLogicImp implements ContractLogic {
         if (contract == null) {
             throw new IllegalArgumentException("No contract found with id: " + contractId);
         }
+
         Person[] people = personIds.stream()
                 .map(id -> {
                     Person p = personDao.findPersonById(id);
@@ -367,8 +447,10 @@ public class ContractLogicImp implements ContractLogic {
                     return p;
                 })
                 .toArray(Person[]::new);
+
         contract.removeSecretary(people);
         contractsDao.UpdateContract(contract);
+
         for (Person p : people) {
             boolean stillSecretaryElsewhere = p.getSecretaryContract().stream()
                     .anyMatch(c -> !c.getId().equals(contractId));
@@ -385,6 +467,7 @@ public class ContractLogicImp implements ContractLogic {
         if (contract == null) {
             throw new IllegalArgumentException("No contract found with id: " + contractId);
         }
+
         Person[] people = personIds.stream()
                 .map(id -> {
                     Person p = personDao.findPersonById(id);
@@ -394,8 +477,10 @@ public class ContractLogicImp implements ContractLogic {
                     return p;
                 })
                 .toArray(Person[]::new);
+
         contract.addAssistant(people);
         contractsDao.UpdateContract(contract);
+
         for (Person p : people) {
             p.setRoles(Role.ASSISTANT);
             personDao.updatePerson(p);
@@ -408,6 +493,7 @@ public class ContractLogicImp implements ContractLogic {
         if (contract == null) {
             throw new IllegalArgumentException("No contract found with id: " + contractId);
         }
+
         Person[] people = personIds.stream()
                 .map(id -> {
                     Person p = personDao.findPersonById(id);
@@ -417,8 +503,10 @@ public class ContractLogicImp implements ContractLogic {
                     return p;
                 })
                 .toArray(Person[]::new);
+
         contract.removeAssistant(people);
         contractsDao.UpdateContract(contract);
+
         for (Person p : people) {
             boolean stillAssistantElsewhere = p.getAssistantContract().stream()
                     .anyMatch(c -> !c.getId().equals(contractId));
@@ -435,12 +523,15 @@ public class ContractLogicImp implements ContractLogic {
         if (contract == null) {
             throw new IllegalArgumentException("No contract found with id: " + contractId);
         }
+
         Person person = personDao.findPersonById(personId);
         if (person == null) {
             throw new IllegalArgumentException("No person found with id: " + personId);
         }
+
         contract.setSupervisor(person);
         contractsDao.UpdateContract(contract);
+
         person.setRoles(Role.SUPERVISOR);
         personDao.updatePerson(person);
     }
@@ -451,9 +542,12 @@ public class ContractLogicImp implements ContractLogic {
         if (contract == null) {
             throw new IllegalArgumentException("No contract found with id: " + contractId);
         }
+
         Person previousSupervisor = contract.getSupervisor();
+
         contract.removeSupervisor();
         contractsDao.UpdateContract(contract);
+
         if (previousSupervisor != null) {
             boolean stillSupervisorElsewhere = previousSupervisor.getSupervisorContract().stream()
                     .anyMatch(c -> !c.getId().equals(contractId));
@@ -462,5 +556,32 @@ public class ContractLogicImp implements ContractLogic {
                 personDao.updatePerson(previousSupervisor);
             }
         }
+    }
+
+    @Override
+    public boolean hasUnresolvedInProgressTimesheets(Long contractId) {
+        // IN_PROGRESS with at least one entry
+        return timesheetLogic.getTimesheetsForContract(contractId).stream()
+                .anyMatch(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS
+                && t.getEntries() != null
+                && !t.getEntries().isEmpty());
+    }
+
+    @Override
+    public boolean hasTimesheetsPendingSupervisorSignature(Long contractId) {
+        return timesheetLogic.getTimesheetsForContract(contractId).stream()
+                .anyMatch(t -> t.getStatus() == TimesheetStatus.SIGNED_BY_EMPLOYEE);
+    }
+
+    @Override
+    public boolean hasEmptyInProgressTimesheets(Long contractId) {
+        return timesheetLogic.getTimesheetsForContract(contractId).stream()
+                .anyMatch(t -> t.getStatus() == TimesheetStatus.IN_PROGRESS
+                && (t.getEntries() == null || t.getEntries().isEmpty()));
+    }
+
+    @Override
+    public long countContractsByEmployee(Long personId) {
+        return contractsDao.countContractsByEmployee(personId);
     }
 }

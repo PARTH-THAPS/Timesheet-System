@@ -3,15 +3,18 @@ package tss.web.Bean;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
@@ -22,6 +25,7 @@ import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
 import java.util.Set;
 import tss.dto.ContractStatisticsDTO;
+import tss.logic.TerminationBlockedException;
 
 @Named
 @ViewScoped
@@ -31,8 +35,10 @@ public class ContractEditBean implements Serializable {
 
     @EJB
     private ContractLogic contractLogic;
+
     @EJB
     private PersonLogic personLogic;
+
     @Inject
     private loginBean loginBean;
 
@@ -43,11 +49,31 @@ public class ContractEditBean implements Serializable {
     private List<Long> originalSecretaryIds;
     private List<Long> originalAssistantIds;
 
+    private boolean terminateBlocked;
+    private boolean hasUnresolvedInProgress;
+    private boolean hasEmptyInProgress;
+
+    private LocalDate dateOfBirth;
+    private boolean dateOfBirthRequired;
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public boolean isDateOfBirthRequired() {
+        return dateOfBirthRequired;
+    }
+
     public void init() {
         if (contract != null) {
             return;
         }
         persons = personLogic.findAllPersons();
+
         if (id == null) {
             contract = new ContractDTO();
             contract.setFrequency(TimesheetFrequency.MONTHLY);
@@ -70,6 +96,9 @@ public class ContractEditBean implements Serializable {
         originalAssistantIds = contract.getAssistantIds() != null
                 ? new ArrayList<>(contract.getAssistantIds())
                 : new ArrayList<>();
+
+        refreshTerminationFlags();
+        updateDateOfBirthRequired();
     }
 
     private boolean isAuthorizedForContract(ContractDTO contract) {
@@ -102,6 +131,14 @@ public class ContractEditBean implements Serializable {
             Long contractId;
             if (isNewContract()) {
                 PersonDTO person = findSelectedPerson();
+            
+            validateDateOfBirth();
+
+            Long contractId;
+
+            if (isNewContract()) {
+                PersonDTO person = findSelectedPerson();
+
                 ContractDTO created = contractLogic.createContract(
                         contract.getName(),
                         contract.getStartDate(),
@@ -116,20 +153,28 @@ public class ContractEditBean implements Serializable {
                         contract.getArchiveDuration()
                 );
                 contractId = created.getId();
+
                 if (contract.getSupervisorId() != null) {
                     contractLogic.addSupervisor(contractId, contract.getSupervisorId());
                 }
             } else {
                 contractLogic.updateContract(contract);
                 contractId = contract.getId();
+
                 if (contract.getSupervisorId() != null) {
                     contractLogic.addSupervisor(contractId, contract.getSupervisorId());
                 } else {
                     contractLogic.removeSupervisor(contractId);
                 }
             }
+
+            if (dateOfBirthRequired && dateOfBirth != null) {
+                personLogic.updateDateOfBirth(contract.getPersonId(), dateOfBirth);
+            }
+
             syncSecretariesAndAssistants(contractId);
             redirectToContracts();
+
         } catch (Exception e) {
             showError("Could not save contract", e.getMessage());
         }
@@ -149,10 +194,19 @@ public class ContractEditBean implements Serializable {
 
         // Collect every (role label, personId) pair that was actually assigned
         List<Map.Entry<String, Long>> assignments = new ArrayList<>();
-        if (employeeId != null) assignments.add(Map.entry("employee", employeeId));
-        if (supervisorId != null) assignments.add(Map.entry("supervisor", supervisorId));
-        for (Long id : secretaryIds) assignments.add(Map.entry("secretary", id));
-        for (Long id : assistantIds) assignments.add(Map.entry("assistant", id));
+
+        if (employeeId != null) {
+            assignments.add(Map.entry("employee", employeeId));
+        }
+        if (supervisorId != null) {
+            assignments.add(Map.entry("supervisor", supervisorId));
+        }
+        for (Long id : secretaryIds) {
+            assignments.add(Map.entry("secretary", id));
+        }
+        for (Long id : assistantIds) {
+            assignments.add(Map.entry("assistant", id));
+        }
 
         Set<Long> seen = new HashSet<>();
         for (Map.Entry<String, Long> entry : assignments) {
@@ -177,12 +231,15 @@ public class ContractEditBean implements Serializable {
     private void syncSecretariesAndAssistants(Long contractId) {
         List<Long> selectedSecretaries = contract.getSecretaryIds() != null
                 ? contract.getSecretaryIds() : List.of();
+
         List<Long> secretariesToAdd = selectedSecretaries.stream()
                 .filter(pid -> !originalSecretaryIds.contains(pid))
                 .toList();
+
         List<Long> secretariesToRemove = originalSecretaryIds.stream()
                 .filter(pid -> !selectedSecretaries.contains(pid))
                 .toList();
+
         if (!secretariesToAdd.isEmpty()) {
             contractLogic.addSecretary(contractId, secretariesToAdd);
         }
@@ -192,12 +249,15 @@ public class ContractEditBean implements Serializable {
 
         List<Long> selectedAssistants = contract.getAssistantIds() != null
                 ? contract.getAssistantIds() : List.of();
+
         List<Long> assistantsToAdd = selectedAssistants.stream()
                 .filter(pid -> !originalAssistantIds.contains(pid))
                 .toList();
+
         List<Long> assistantsToRemove = originalAssistantIds.stream()
                 .filter(pid -> !selectedAssistants.contains(pid))
                 .toList();
+
         if (!assistantsToAdd.isEmpty()) {
             contractLogic.addAssistant(contractId, assistantsToAdd);
         }
@@ -214,6 +274,8 @@ public class ContractEditBean implements Serializable {
             );
             
             refreshStatistics();
+            refreshTerminationFlags();
+
         } catch (Exception e) {
             showError(
                     "Could not start contract",
@@ -222,19 +284,43 @@ public class ContractEditBean implements Serializable {
         }
     }
 
+    private void refreshTerminationFlags() {
+        if (contract == null || contract.getId() == null
+                || contract.getStatus() != ContractStatus.STARTED) {
+            terminateBlocked = false;
+            hasUnresolvedInProgress = false;
+            hasEmptyInProgress = false;
+            return;
+        }
+        Long contractId = contract.getId();
+
+        // Only an employee-signed timesheet blocks the button
+        terminateBlocked = contractLogic.hasTimesheetsPendingSupervisorSignature(contractId);
+
+        // These two only choose the text of the confirm dialog
+        hasUnresolvedInProgress = contractLogic.hasUnresolvedInProgressTimesheets(contractId);
+        hasEmptyInProgress = contractLogic.hasEmptyInProgressTimesheets(contractId);
+    }
+
     public void terminate() {
+
+        if (!isStarted()) {
+            showError("Could not terminate contract",
+                    "Only a started contract can be terminated.");
+            return;
+        }
         try {
-            contract = contractLogic.updateContractStatus(
-                    contract.getId(),
-                    ContractStatus.TERMINATED
-            );
-            
-            refreshStatistics();
+            // The confirm dialog (contract.terminate.confirm.*) has already been accepted
+            // by the user, so deleting IN_PROGRESS timesheets is confirmed here.
+            contract = contractLogic.terminateContract(contract.getId(), true);
+        } catch (TerminationBlockedException e) {
+            // A timesheet was signed by the employee after the page was rendered
+            showError("Contract cannot be terminated", e.getMessage());
         } catch (Exception e) {
-            showError(
-                    "Could not terminate contract",
-                    e.getMessage()
-            );
+            showError("Could not terminate contract", e.getMessage());
+        } finally {
+            refreshStatistics();
+            refreshTerminationFlags();
         }
     }
 
@@ -267,22 +353,23 @@ public class ContractEditBean implements Serializable {
                     "Please select an employee."
             );
         }
+
         return persons.stream()
-                .filter(person ->
-                        contract.getPersonId().equals(person.getId())
+                .filter(person
+                        -> contract.getPersonId().equals(person.getId())
                 )
                 .findFirst()
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Selected employee could not be found."
-                        )
+                .orElseThrow(()
+                        -> new IllegalArgumentException(
+                        "Selected employee could not be found."
+                )
                 );
     }
 
     private void redirectToContracts() throws IOException {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        String contextPath =
-                facesContext.getExternalContext().getRequestContextPath();
+        String contextPath
+                = facesContext.getExternalContext().getRequestContextPath();
 
         String section = loginBean.hasRole("SUPERVISOR")
                 ? "supervisor"
@@ -307,6 +394,39 @@ public class ContractEditBean implements Serializable {
         );
     }
 
+    public void onEmployeeChange(AjaxBehaviorEvent event) {
+        dateOfBirth = null;
+        updateDateOfBirthRequired();
+    }
+
+   private void updateDateOfBirthRequired() {
+    dateOfBirthRequired = false;   
+    dateOfBirth = null;
+
+    if (contract == null || contract.getPersonId() == null) {
+        return;
+    }
+    PersonDTO employee = persons.stream()
+            .filter(p -> contract.getPersonId().equals(p.getId()))
+            .findFirst()
+            .orElse(null);
+    if (employee == null) {
+        return;
+    }
+
+    dateOfBirth = employee.getDateOfBirth();   
+    dateOfBirthRequired = true;                
+}
+
+private void validateDateOfBirth() {
+    if (dateOfBirthRequired && dateOfBirth == null) {
+        PersonDTO employee = findSelectedPerson();
+        throw new IllegalArgumentException(
+                "Date of birth is required for " + employee.getFirstName()
+                + " " + employee.getLastName() + ".");
+    }
+}
+
     public boolean isNewContract() {
         return id == null;
     }
@@ -323,20 +443,30 @@ public class ContractEditBean implements Serializable {
                 == ContractStatus.STARTED;
     }
 
+    // Cached values, so the getters below do not hit the database on every render
     public boolean isHasUnresolvedInProgressTimesheets() {
-        if (contract == null || contract.getId() == null) {
-            return false;
-        }
-        return contractLogic.hasUnresolvedInProgressTimesheets(
-                contract.getId()
-        );
+        return hasUnresolvedInProgress;
     }
-    
+
+    public boolean isTerminateBlocked() {
+        return terminateBlocked;
+    }
+
+    public String getTerminateConfirmMessageKey() {
+        if (hasUnresolvedInProgress) {
+            return "contract.terminate.confirm.warning";
+        }
+        if (hasEmptyInProgress) {
+            return "contract.terminate.confirm.emptyWillBeDeleted";
+        }
+        return "contract.terminate.confirm";
+    }
+
     public List<PersonDTO> getSupervisors() {
-    return persons.stream()
-            .filter(p -> p.getRole() != null && p.getRole().contains(Role.SUPERVISOR))
-            .toList();
-}
+        return persons.stream()
+                .filter(p -> p.getRole() != null && p.getRole().contains(Role.SUPERVISOR))
+                .toList();
+    }
 
     public List<PersonDTO> getSecretaries() {
         return persons.stream()
@@ -377,6 +507,7 @@ public class ContractEditBean implements Serializable {
     public List<PersonDTO> getPersons() {
         return persons;
     }
+
     public ContractStatisticsDTO getStatistics() {
         return statistics;
     }
@@ -387,5 +518,10 @@ public class ContractEditBean implements Serializable {
                     contract.getId()
             );
         }
+    }
+
+
+    public LocalDate getToday() {
+        return LocalDate.now();
     }
 }

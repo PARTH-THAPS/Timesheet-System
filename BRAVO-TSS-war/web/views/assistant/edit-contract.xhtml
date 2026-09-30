@@ -38,6 +38,7 @@
     <ui:define name="content">
         <section class="card contract-form-card">
             <h:form id="contractForm">
+
                 <p:messages
                     id="messages"
                     showDetail="true"
@@ -59,6 +60,7 @@
                 </ui:fragment>
 
                 <div class="form-grid">
+
                     <div class="form-field form-field-wide">
                         <p:outputLabel
                             for="name"
@@ -71,6 +73,7 @@
                             styleClass="form-input"/>
                     </div>
 
+                    
                     <div class="form-field form-field-wide">
                         <p:outputLabel
                             for="person"
@@ -81,6 +84,10 @@
                             required="true"
                             disabled="#{not contractEditBean.editable}"
                             styleClass="form-input">
+                            <p:ajax
+                                event="change"
+                                listener="#{contractEditBean.onEmployeeChange}"
+                                update="dobPanel"/>
                             <f:selectItem
                                 itemLabel="#{msg['contract.selectEmployee']}"
                                 itemValue="#{null}"
@@ -92,6 +99,23 @@
                                 itemLabel="#{person.firstName} #{person.lastName}"/>
                         </p:selectOneMenu>
                     </div>
+
+               
+                    <p:outputPanel id="dobPanel" layout="block" styleClass="form-field form-field-wide">
+                        <ui:fragment rendered="#{contractEditBean.dateOfBirthRequired}">
+                            <p:outputLabel
+                                for="dateOfBirth"
+                                value="#{msg['person.dateOfBirth']}"/>
+                            <p:datePicker
+                                id="dateOfBirth"
+                                value="#{contractEditBean.dateOfBirth}"
+                                pattern="dd.MM.yyyy"
+                                required="#{contractEditBean.editable}"
+                                maxdate="#{contractEditBean.today}"
+                                disabled="#{not contractEditBean.editable}"
+                                showIcon="true"/>
+                        </ui:fragment>
+                    </p:outputPanel>
 
                     <div class="form-field form-field-wide">
                         <p:outputLabel
@@ -127,6 +151,7 @@
                             label="#{msg['contract.selectSecretaries']}"
                             filter="true"
                             multiple="true"
+                            required="true"
                             panelStyleClass="form-checkboxmenu-panel">
                             <f:selectItems
                                 value="#{contractEditBean.secretaries}"
@@ -264,6 +289,7 @@
                                 itemLabel="#{state}"/>
                         </p:selectOneMenu>
                     </div>
+
                 </div>
                 
                 <div class="form-field">
@@ -300,6 +326,7 @@
                 </ui:fragment>
 
                 <div class="form-actions">
+
                     <p:commandButton
                         value="#{msg['button.save']}"
                         icon="pi pi-save"
@@ -326,15 +353,19 @@
                         icon="pi pi-stop"
                         action="#{contractEditBean.terminate}"
                         ajax="false"
+                        disabled="#{contractEditBean.terminateBlocked}"
                         rendered="#{contractEditBean.started}"
                         styleClass="ui-button-warning">
                         <p:confirm
                             header="#{msg['contract.terminate']}"
-                            message="#{contractEditBean.hasUnresolvedInProgressTimesheets
-                                       ? msg['contract.terminate.confirm.warning']
-                                       : msg['contract.terminate.confirm']}"
+                            message="#{msg[contractEditBean.terminateConfirmMessageKey]}"
                             icon="pi pi-exclamation-triangle"/>
                     </p:commandButton>
+
+                    <h:outputText
+                        rendered="#{contractEditBean.terminateBlocked}"
+                        styleClass="text-danger"
+                        value="#{msg['contract.terminate.blocked.pendingSignature']}"/>
 
                     <p:commandButton
                         value="#{msg['button.delete']}"
@@ -370,8 +401,11 @@
                             styleClass="ui-confirmdialog-no ui-button-secondary"
                             icon="pi pi-times"/>
                     </p:confirmDialog>
+
                 </div>
+
             </h:form>
         </section>
     </ui:define>
+
 </ui:composition>

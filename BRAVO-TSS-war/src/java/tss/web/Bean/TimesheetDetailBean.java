@@ -261,9 +261,7 @@ public class TimesheetDetailBean implements Serializable {
     }
 
     public boolean isEditable() {
-        return timesheet != null
-                && timesheet.getStatus()
-                == TimesheetStatus.IN_PROGRESS;
+        return timesheet != null&& timesheet.getStatus() == TimesheetStatus.IN_PROGRESS&& !isFuturePeriod();
     }
 
     public boolean isEditingEntry() {
@@ -271,10 +269,9 @@ public class TimesheetDetailBean implements Serializable {
     }
 
     public boolean isCanSignByEmployee() {
-        return timesheet != null
-                && timesheet.getStatus()
-                == TimesheetStatus.IN_PROGRESS;
-    }
+    return timesheet != null&& timesheet.getStatus() == TimesheetStatus.IN_PROGRESS&& !isFuturePeriod();
+}
+
 
     public boolean isCanRevokeEmployeeSignature() {
         return timesheet != null
@@ -315,6 +312,25 @@ public class TimesheetDetailBean implements Serializable {
                         )
                 );
     }
+    
+    private boolean isFuturePeriod() {
+    if (timesheet == null || timesheet.getStartDate() == null) {
+        return false;
+    }
+    return java.time.LocalDate.now().isBefore(timesheet.getStartDate());
+}
+    
+    
+    public double calculateEntryHours(TimesheetEntryDTO entry) {
+    if (entry == null
+            || entry.getStartTime() == null
+            || entry.getEndTime() == null) {
+        return 0;
+    }
+    long minutes = java.time.Duration.between(
+            entry.getStartTime(),
+            entry.getEndTime()
+    ).toMinutes();
 
     public double calculateEntryHours(TimesheetEntryDTO entry) {
         if (entry == null

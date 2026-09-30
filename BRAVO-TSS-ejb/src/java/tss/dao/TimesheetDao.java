@@ -28,7 +28,7 @@ public class TimesheetDao {
         }
         em.persist(timesheet);
     }
-
+   
     public Timesheet updateTimesheet(Timesheet timesheet) {
         if (timesheet == null) {
             throw new IllegalArgumentException("timesheet must not be null");
@@ -332,6 +332,14 @@ public class TimesheetDao {
             return new ArrayList<>();
         }
     }
+     
+     public List<Timesheet> findByContractId(Long contractId) {
+    return em.createQuery(
+            "SELECT t FROM Timesheet t WHERE t.contract.id = :contractId",
+            Timesheet.class)
+            .setParameter("contractId", contractId)
+            .getResultList();
+}
 
 }
 

@@ -30,8 +30,6 @@ public interface ContractLogic {
 
     List<ContractDTO> findAllArchivedContracts();
 
-    ContractDTO updateContractStatus(Long contrcatId, ContractStatus contractStatus);
-
     void CheckForArchivedTimesheet(Contract contract);
 
     void addSecretary(Long contractId, List<Long> personIds);
@@ -45,7 +43,18 @@ public interface ContractLogic {
     void addSupervisor(Long contractId, Long personId);
 
     void removeSupervisor(Long contractId);
+
     public boolean hasUnresolvedInProgressTimesheets(Long contractId);
 
-//    Contract PrintContract();
+    boolean hasTimesheetsPendingSupervisorSignature(Long contractId);
+
+    boolean hasEmptyInProgressTimesheets(Long contractId);
+
+
+    ContractDTO updateContractStatus(Long contractId, ContractStatus contractStatus);
+
+
+    ContractDTO terminateContract(Long contractId, boolean confirmed);
+    long countContractsByEmployee(Long personId);
+
 }
