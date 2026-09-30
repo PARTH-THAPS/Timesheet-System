@@ -23,7 +23,6 @@ import tss.dao.ContractsDao;
 import tss.dao.TimeSheetEntriesDao;
 import tss.dto.HolidayDTO;
 import tss.entity.FederalState;
-import tss.entity.Holiday;
 import tss.entity.ReportType;
 import tss.logic.HolidayLogic;
 
@@ -107,12 +106,14 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         Timesheet timesheet = timesheetDAO.findById(timesheetId);
 
-        LocalDate start_date = timesheet.getStartDate();
-        LocalDate end_date = timesheet.getEndDate();
-
         if (timesheet == null) {
-            throw new IllegalArgumentException("No timesheet found with id: " + timesheetId);
+            throw new IllegalArgumentException(
+                    "No timesheet found with id: " + timesheetId
+            );
         }
+
+        LocalDate startDate = timesheet.getStartDate();
+        LocalDate endDate = timesheet.getEndDate();
 
         validateEntryModification(timesheet);
 
@@ -121,9 +122,9 @@ public class TimesheetLogicImp implements TimesheetLogic {
         double computedHours = computeHours(entry.getStartTime(), entry.getEndTime());
         entry.setHours(computedHours);
 
-        if (entry.getEntryDate().isBefore(start_date) || entry.getEntryDate().isAfter(end_date)) {
+        if (entry.getEntryDate().isBefore(startDate) || entry.getEntryDate().isAfter(endDate)) {
             throw new IllegalArgumentException(
-                    "The entry date must fall between " + start_date + " and " + end_date + "."
+                    "The entry date must fall between " + startDate + " and " + endDate + "."
             );
         }
 
@@ -173,6 +174,18 @@ public class TimesheetLogicImp implements TimesheetLogic {
         candidate.setEntryDate(updatedEntryDTO.getEntryDate());
         candidate.setStartTime(updatedEntryDTO.getStartTime());
         candidate.setEndTime(updatedEntryDTO.getEndTime());
+
+        if (candidate.getEntryDate().isBefore(timesheet.getStartDate())
+                || candidate.getEntryDate().isAfter(timesheet.getEndDate())) {
+
+            throw new IllegalArgumentException(
+                    "The entry date must fall between "
+                    + timesheet.getStartDate()
+                    + " and "
+                    + timesheet.getEndDate()
+                    + "."
+            );
+        }
 
         validateNoOverlap(timesheet, candidate, entryId);
 

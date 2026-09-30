@@ -28,6 +28,10 @@
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
+    
+    <ui:define name="headerActions">
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
+    </ui:define>
 
     <ui:define name="content">
 
@@ -36,7 +40,9 @@
             <p:messages
                 id="messages"
                 showDetail="true"
-                closable="true"/>
+                closable="true"
+                styleClass="app-messages"
+            />
 
             <section class="page-section-header">
                 <div>
@@ -68,7 +74,7 @@
 
                 <span class="status-badge">
                     #{msg['timesheet.status.'.concat(
-                        supervisorTimesheetDetailBean.timesheet.status.name()
+                        supervisorTimesheetDetailBean.timesheet.status
                     )]}
                 </span>
             </section>

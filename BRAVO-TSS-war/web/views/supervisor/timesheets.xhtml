@@ -23,21 +23,10 @@
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml" />
     </ui:define>
-    
+
     <ui:define name="headerActions">
-            <div class="user-info">
-                <span class="user-name">
-                    #{loginBean.user.firstName} #{loginBean.user.lastName}
-                </span>
-                <ui:repeat
-                    value="#{loginBean.user.roles}"
-                    var="role">
-                    <span class="badge">
-                        #{msg['role.'.concat(role.name())]}
-                    </span>
-                </ui:repeat>
-            </div>
-        </ui:define>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
+    </ui:define>
 
     <ui:define name="content">
 
@@ -46,7 +35,9 @@
             <p:messages
                 id="messages"
                 showDetail="true"
-                closable="true" />
+                closable="true"
+                styleClass="app-messages"
+                />
 
             <section class="page-section-header">
                 <div>
@@ -60,23 +51,34 @@
 
                 <p:dataTable
                     id="pendingTimesheets"
+                    widgetVar="supervisorTimesheetsTable"
                     value="#{supervisorSignBean.timesheetList}"
                     var="timesheet"
                     paginator="true"
                     rows="10"
                     stripedRows="true"
+                    sortMode="single"
                     emptyMessage="#{msg['timesheet.noAwaitingSignature']}">
 
-                    <p:column headerText="#{msg['timesheet.employee']}">
+                    <p:column
+                        headerText="#{msg['timesheet.employee']}"
+                        sortBy="#{timesheet.employeeFullName}"
+                        filterBy="#{timesheet.employeeFullName}"
+                        filterMatchMode="contains">
+
                         <h:outputText
-                            value="#{timesheet.employeeFullName}" />
+                            value="#{timesheet.employeeFullName}"/>
+
                     </p:column>
 
-                    <p:column headerText="#{msg['timesheet.period']}">
+                    <p:column
+                        headerText="#{msg['timesheet.period']}"
+                        sortBy="#{timesheet.startDate}">
+
                         <h:outputText value="#{timesheet.startDate}">
                             <f:convertDateTime
                                 type="localDate"
-                                pattern="dd.MM.yyyy" />
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
 
                         –
@@ -84,17 +86,46 @@
                         <h:outputText value="#{timesheet.endDate}">
                             <f:convertDateTime
                                 type="localDate"
-                                pattern="dd.MM.yyyy" />
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
+
                     </p:column>
 
-                    <p:column headerText="#{msg['timesheet.approvalStatus']}">
-                        <span class="status-badge">
-                            #{msg['timesheet.status.'.concat(timesheet.status.name())]}
+                    <p:column
+                        headerText="#{msg['timesheet.approvalStatus']}"
+                        sortBy="#{timesheet.status}"
+                        filterBy="#{timesheet.status}"
+                        filterMatchMode="exact">
+
+                        <f:facet name="filter">
+
+                            <p:selectOneMenu
+                                onchange="PF('supervisorTimesheetsTable').filter()">
+
+                                <f:selectItem
+                                    itemLabel="#{msg['common.all']}"
+                                    itemValue="#{null}"
+                                    noSelectionOption="true"/>
+
+                                <f:selectItems
+                                    value="#{supervisorSignBean.statuses}"
+                                    var="status"
+                                    itemValue="#{status}"
+                                    itemLabel="#{msg['timesheet.status.'.concat(status)]}"/>
+
+                            </p:selectOneMenu>
+
+                        </f:facet>
+
+                        <span class="status-badge status-#{timesheet.status}">
+                            #{msg['timesheet.status.'.concat(timesheet.status)]}
                         </span>
+
                     </p:column>
 
-                    <p:column headerText="#{msg['timesheet.hoursDue']}">
+                    <p:column
+                        headerText="#{msg['timesheet.hoursDue']}"
+                        sortBy="#{timesheet.hoursDue}">
                         <h:outputText value="#{timesheet.hoursDue}">
                             <f:convertNumber
                                 minFractionDigits="2"
@@ -103,7 +134,9 @@
                         #{msg['timesheet.hoursUnit']}
                     </p:column>
 
-                    <p:column headerText="#{msg['timesheet.employeeSigned']}">
+                    <p:column
+                        headerText="#{msg['timesheet.employeeSigned']}"
+                        sortBy="#{timesheet.signedByEmployee}">
                         <h:outputText value="#{timesheet.signedByEmployee}">
                             <f:convertDateTime
                                 type="localDate"

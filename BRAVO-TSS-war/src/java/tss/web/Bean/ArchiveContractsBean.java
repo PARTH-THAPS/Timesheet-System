@@ -47,4 +47,8 @@ public class ArchiveContractsBean implements Serializable {
     public String getPersonName(Long personId) {
         return personNames.getOrDefault(personId, "Unknown");
     }
+    
+    public ContractStatus[] getStatuses() {
+        return ContractStatus.values();
+    }
 }

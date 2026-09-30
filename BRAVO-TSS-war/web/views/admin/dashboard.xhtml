@@ -25,26 +25,7 @@
 
     <!-- Header Actions -->
     <ui:define name="headerActions">
-
-        <div class="user-info">
-
-            <span class="user-name">
-                #{loginBean.user.firstName} #{loginBean.user.lastName}
-            </span>
-
-            <ui:repeat
-                    value="#{loginBean.user.roles}"
-                    var="role">
-
-                <span class="badge">
-                    #{role}
-                </span>
-
-            </ui:repeat>
-
-        </div>
-
-
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
 
     <!-- Main Content -->

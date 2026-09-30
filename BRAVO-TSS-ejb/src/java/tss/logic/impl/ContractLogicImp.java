@@ -9,11 +9,19 @@ import java.util.stream.Collectors;
 import tss.dao.ContractsDao;
 import tss.dao.PersonDao;
 import tss.dto.ContractDTO;
+import tss.dto.ContractStatisticsDTO;
 import tss.dto.PersonDTO;
+import tss.dto.TimesheetDTO;
+import tss.dto.TimesheetEntryDTO;
+import tss.entity.ContractStatus;
+import tss.entity.TimesheetFrequency;
+import tss.logic.ContractLogic;
 import tss.entity.Contract;
 import tss.entity.ContractStatus;
 import tss.entity.FederalState;
 import tss.entity.Person;
+import tss.entity.TimesheetStatus;
+import tss.logic.TimesheetLogic;
 import tss.entity.Role;
 import tss.entity.TimesheetFrequency;
 import tss.entity.TimesheetStatus;
@@ -35,7 +43,7 @@ public class ContractLogicImp implements ContractLogic {
     TimesheetLogic timesheetLogic;
 
     @Override
-    public ContractDTO createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, PersonDTO person, FederalState state) {
+    public ContractDTO createContract(String name, LocalDate startDate, LocalDate endDate, TimesheetFrequency timesheetFrequency, double hoursPerWeek, double hoursDue, int workingDaysPerWeek, int vacationDaysPerYear, PersonDTO person, FederalState state, int archiveDuration) {
         validateContractDates(startDate, endDate);
 
         Person personEnt = personDao.findPersonById(person.getId());
@@ -61,7 +69,7 @@ public class ContractLogicImp implements ContractLogic {
         } else {
             contract.setState(state);
         }
-
+        contract.setArchiveDuration(archiveDuration);
         contractsDao.createContract(contract);
         personEnt.setRoles(Role.EMPLOYEE);
         personDao.updatePerson(personEnt);
@@ -113,6 +121,7 @@ public class ContractLogicImp implements ContractLogic {
                 updatedContract.getVacationDaysPerYear()
         );
         contract.setState(updatedContract.getState());
+        contract.setArchiveDuration(updatedContract.getArchiveDuration());
         contract.setEmployee(person);
 
         contract.setVacationHours(
@@ -164,6 +173,57 @@ public class ContractLogicImp implements ContractLogic {
         }
         return toDTO(contract);
     }
+    
+    @Override
+    public ContractStatisticsDTO getContractStatistics(Long contractId) {
+
+        Contract contract = contractsDao.findContract(contractId);
+
+        if (contract == null) {
+            throw new IllegalArgumentException(
+                    "No contract found with id: " + contractId
+            );
+        }
+
+        List<TimesheetDTO> timesheets =
+                timesheetLogic.getTimesheetsForContract(contractId);
+
+        double totalHoursWorked = timesheets.stream()
+                .filter(timesheet -> timesheet.getEntries() != null)
+                .flatMap(timesheet -> timesheet.getEntries().stream())
+                .mapToDouble(TimesheetEntryDTO::getHours)
+                .sum();
+
+        double totalWorkingHours = contract.getHoursDue();
+
+        double totalVacationHours = contract.getVacationHours();
+
+        double usedVacationHours =
+                timesheetLogic.getUsedVacationHours(contractId);
+
+        double totalVacationHoursLeft = Math.max(
+                totalVacationHours - usedVacationHours,
+                0.0
+        );
+
+        double balance =
+                totalWorkingHours - totalHoursWorked;
+
+        double totalHoursDue =
+                Math.max(balance, 0.0);
+
+        ContractStatisticsDTO statistics =
+                new ContractStatisticsDTO();
+
+        statistics.setTotalWorkingHours(totalWorkingHours);
+        statistics.setTotalHoursWorked(totalHoursWorked);
+        statistics.setTotalVacationHours(totalVacationHours);
+        statistics.setTotalVacationHoursLeft(totalVacationHoursLeft);
+        statistics.setTotalHoursDue(totalHoursDue);
+        statistics.setBalance(balance);
+
+        return statistics;
+    }
 
     @Override
     public List<ContractDTO> findAllContracts() {
@@ -189,6 +249,16 @@ public class ContractLogicImp implements ContractLogic {
                 .toList();
     }
 
+    @Override
+    public void CheckForArchivedTimesheet(Contract contract) {
+        boolean allArchivedTimesheet = contract.getTimesheet().stream().allMatch(ts -> ts.getStatus() == TimesheetStatus.ARCHIVED);
+        if (allArchivedTimesheet) {
+            contract.setStatus(ContractStatus.ARCHIVED);
+        }
+        contractsDao.UpdateContract(contract);
+    }
+
+    
     @Override
     public void CheckForArchivedTimesheet(Contract contract) {
         // Only a TERMINATED contract can become ARCHIVED. allMatch on an empty list is true,
@@ -320,14 +390,18 @@ public class ContractLogicImp implements ContractLogic {
         if (c.getSupervisor() != null) {
             dto.setSupervisorId(c.getSupervisor().getId());
         }
+
         dto.setSecretaryIds(
                 c.getSecretaries().stream()
                         .map(Person::getId)
-                        .collect(Collectors.toList()));
+                        .toList()
+        );
         dto.setAssistantIds(
                 c.getAssistants().stream()
                         .map(Person::getId)
-                        .collect(Collectors.toList()));
+                        .toList()
+        );
+
         return dto;
     }
 

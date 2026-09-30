@@ -9,12 +9,13 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
-import java.security.Principal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import tss.dto.TimesheetDTO;
 import tss.dto.User;
+import tss.entity.TimesheetStatus;
 import tss.logic.TimesheetLogic;
 
 @Named("supervisorSignBean")
@@ -29,7 +30,7 @@ public class SupervisorSignBean
     @Inject
     private loginBean loginBean;
 
-    private List<TimesheetDTO> timesheetList =Collections.emptyList();
+    private List<TimesheetDTO> timesheetList = Collections.emptyList();
 
     @PostConstruct
     public void init() {
@@ -37,8 +38,8 @@ public class SupervisorSignBean
     }
 
     public void loadTimesheets(Long supervisorId) {
-        List<TimesheetDTO> result =
-                timesheetLogic.findTimesheetsForSupervisor(supervisorId);
+        List<TimesheetDTO> result
+                = timesheetLogic.findTimesheetsForSupervisor(supervisorId);
 
         timesheetList = result != null
                 ? result
@@ -47,7 +48,7 @@ public class SupervisorSignBean
 
     public void signTimesheet(Long timesheetId) {
         if (timesheetId == null) {
-            showError("Could not sign timesheet","No timesheet was selected.");
+            showError("Could not sign timesheet", "No timesheet was selected.");
             return;
         }
 
@@ -55,7 +56,7 @@ public class SupervisorSignBean
             timesheetLogic.signBySupervisor(timesheetId);
 
             showInfo(
-                    "Timesheet signed","The timesheet was signed successfully.");
+                    "Timesheet signed", "The timesheet was signed successfully.");
 
             reload();
 
@@ -63,11 +64,11 @@ public class SupervisorSignBean
                 | IllegalStateException e) {
 
             showError(
-                    "Could not sign timesheet",messageOf(e));
+                    "Could not sign timesheet", messageOf(e));
         }
     }
 
-  public void requestChanges(Long timesheetId) {
+    public void requestChanges(Long timesheetId) {
         if (timesheetId == null) {
             showError("Could Not Request Changes", "No timesheet was selected.");
             return;
@@ -85,13 +86,12 @@ public class SupervisorSignBean
             showInfo("Changes Requested", "The employee can edit this timesheet again.");
             reload();
 
-        } catch (IllegalArgumentException| IllegalStateException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             showError("Could Not Request Changes", messageOf(e));
         }
     }
 
-
-     private void reload() {
+    private void reload() {
         User user = loginBean.getUser();
 
         if (user != null) {
@@ -102,26 +102,30 @@ public class SupervisorSignBean
     }
 
     private String messageOf(Exception e) {
-        return e.getMessage() != null ? e.getMessage(): "The operation could not be completed.";
+        return e.getMessage() != null ? e.getMessage() : "The operation could not be completed.";
     }
 
-    private void showInfo(String summary,String detail) {
+    private void showInfo(String summary, String detail) {
 
         FacesContext.getCurrentInstance().addMessage(
                 null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO,summary,detail)
+                new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail)
         );
     }
 
-    private void showError(String summary,String detail) {
+    private void showError(String summary, String detail) {
 
         FacesContext.getCurrentInstance().addMessage(
                 null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR,summary,detail)
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail)
         );
     }
 
     public List<TimesheetDTO> getTimesheetList() {
         return timesheetList;
+    }
+
+    public List<TimesheetStatus> getStatuses() {
+        return Arrays.asList(TimesheetStatus.values());
     }
 }

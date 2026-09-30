@@ -15,11 +15,20 @@
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
 
+    <ui:define name="headerActions">
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
+    </ui:define>
+
     <ui:define name="content">
 
         <h:form id="secretaryTimesheetsForm">
 
-            <p:messages closable="true"/>
+            <p:messages
+                id="messages"
+                showDetail="true"
+                closable="true"
+                styleClass="app-messages"
+                />
 
             <section class="page-section-header">
                 <div>
@@ -32,46 +41,110 @@
             <section class="card">
 
                 <p:dataTable
-                        id="secretaryTimesheets"
-                        value="#{secretaryTimesheetsBean.timesheetList}"
-                        var="timesheet"
-                        paginator="true"
-                        rows="10"
-                        stripedRows="true"
-                        emptyMessage="No timesheets are assigned to you.">
+                    id="secretaryTimesheets"
+                    widgetVar="secretaryTimesheetsTable"
+                    value="#{secretaryTimesheetsBean.timesheetList}"
+                    var="timesheet"
+                    paginator="true"
+                    rows="10"
+                    stripedRows="true"
+                    emptyMessage="No timesheets are assigned to you."
+                    sortMode="single">
 
-                    <p:column headerText="Employee">
+                    <p:column
+                        headerText="Employee"
+                        sortBy="#{timesheet.employeeFullName}"
+                        filterBy="#{timesheet.employeeFullName}"
+                        filterMatchMode="contains">
+
                         <h:outputText value="#{timesheet.employeeFullName}"/>
+
                     </p:column>
 
-                    <p:column headerText="Period">
+                    <p:column
+                        headerText="Period"
+                        sortBy="#{timesheet.startDate}">
+
                         <h:outputText value="#{timesheet.startDate}">
-                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
+
                         –
+
                         <h:outputText value="#{timesheet.endDate}">
-                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
                         </h:outputText>
+
                     </p:column>
 
-                    <p:column headerText="Status">
-                        <span class="status-badge">#{timesheet.status}</span>
+                    <p:column
+                        headerText="Status"
+                        sortBy="#{timesheet.status}"
+                        filterBy="#{timesheet.status}"
+                        filterMatchMode="exact">
+
+                        <f:facet name="filter">
+
+                            <p:selectOneMenu
+                                onchange="PF('secretaryTimesheetsTable').filter()">
+
+                                <f:selectItem
+                                    itemLabel="#{msg['common.all']}"
+                                    itemValue=""/>
+
+                                <f:selectItems
+                                    value="#{secretaryTimesheetsBean.statuses}"
+                                    var="status"
+                                    itemLabel="#{msg['timesheet.status.'.concat(status)]}"
+                                    itemValue="#{status}"/>
+
+                            </p:selectOneMenu>
+
+                        </f:facet>
+
+                        <span class="status-badge status-#{timesheet.status}">
+                            #{msg['timesheet.status.'.concat(timesheet.status)]}
+                        </span>
+
                     </p:column>
 
-                    <p:column headerText="Hours Due">
+                    <p:column
+                        headerText="Hours Due"
+                        sortBy="#{timesheet.hoursDue}">
+
                         <h:outputText value="#{timesheet.hoursDue}">
-                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                            <f:convertNumber
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
                         </h:outputText>
+
                         h
+
                     </p:column>
 
                     <p:column headerText="Actions" styleClass="table-actions-column">
                         <p:button
-                                value="Open"
-                                icon="pi pi-folder-open"
-                                outcome="/views/secretary/timesheet"
-                                styleClass="ui-button-secondary">
+                            value="Open"
+                            icon="pi pi-folder-open"
+                            outcome="/views/secretary/timesheet"
+                            styleClass="ui-button-secondary">
                             <f:param name="id" value="#{timesheet.id}"/>
+                        </p:button>
+
+                        <p:button
+                            value="Print"
+                            icon="pi pi-print"
+                            outcome="/views/secretary/print/timesheet"
+                            styleClass="ui-button-secondary">
+
+                            <f:param
+                                name="id"
+                                value="#{timesheet.id}"/>
+
                         </p:button>
                     </p:column>
 

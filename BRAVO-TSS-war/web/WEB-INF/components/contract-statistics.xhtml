@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets">
+
+    <ui:fragment rendered="#{not empty statistics}">
+
+        <section class="contract-statistics">
+
+            <h3 class="contract-statistics-title">
+                #{msg['contract.statistics.title']}
+            </h3>
+
+            <div class="contract-statistics-grid">
+
+                <!-- Working time -->
+
+                <div class="contract-statistics-panel">
+
+                    <div class="contract-statistics-panel-header">
+                        <i class="pi pi-clock"></i>
+                        <span>
+                            #{msg['contract.statistics.workingTime']}
+                        </span>
+                    </div>
+
+                    <div class="contract-statistics-values">
+
+                        <div class="contract-statistic">
+
+                            <span class="contract-statistic-label">
+                                #{msg['contract.statistics.totalWorkingHours']}
+                            </span>
+
+                            <strong class="contract-statistic-value">
+                                <h:outputText
+                                    value="#{statistics.totalWorkingHours}">
+                                    <f:convertNumber
+                                        minFractionDigits="2"
+                                        maxFractionDigits="2"/>
+                                </h:outputText>
+                                h
+                            </strong>
+
+                        </div>
+
+
+                        <div class="contract-statistic">
+
+                            <span class="contract-statistic-label">
+                                #{msg['contract.statistics.totalHoursWorked']}
+                            </span>
+
+                            <strong class="contract-statistic-value">
+                                <h:outputText
+                                    value="#{statistics.totalHoursWorked}">
+                                    <f:convertNumber
+                                        minFractionDigits="2"
+                                        maxFractionDigits="2"/>
+                                </h:outputText>
+                                h
+                            </strong>
+
+                        </div>
+
+
+                        <div class="contract-statistic">
+
+                            <span class="contract-statistic-label">
+                                #{msg['contract.statistics.totalHoursDue']}
+                            </span>
+
+                            <strong class="contract-statistic-value">
+                                <h:outputText
+                                    value="#{statistics.totalHoursDue}">
+                                    <f:convertNumber
+                                        minFractionDigits="2"
+                                        maxFractionDigits="2"/>
+                                </h:outputText>
+                                h
+                            </strong>
+
+                        </div>
+
+
+                        <div class="contract-statistic">
+
+                            <span class="contract-statistic-label">
+                                #{msg['contract.statistics.balance']}
+                            </span>
+
+                            <strong
+                                class="contract-statistic-value
+                                #{statistics.balance gt 0
+                                    ? 'contract-balance-due'
+                                    : (statistics.balance lt 0
+                                        ? 'contract-balance-overtime'
+                                        : 'contract-balance-balanced')}">
+
+                                <h:outputText
+                                    value="#{statistics.balance}">
+                                    <f:convertNumber
+                                        minFractionDigits="2"
+                                        maxFractionDigits="2"/>
+                                </h:outputText>
+                                h
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Vacation -->
+
+                <div class="contract-statistics-panel">
+
+                    <div class="contract-statistics-panel-header">
+                        <i class="pi pi-calendar"></i>
+                        <span>
+                            #{msg['contract.statistics.vacation']}
+                        </span>
+                    </div>
+
+                    <div class="contract-statistics-values">
+
+                        <div class="contract-statistic">
+
+                            <span class="contract-statistic-label">
+                                #{msg['contract.statistics.totalVacationHours']}
+                            </span>
+
+                            <strong class="contract-statistic-value">
+                                <h:outputText
+                                    value="#{statistics.totalVacationHours}">
+                                    <f:convertNumber
+                                        minFractionDigits="2"
+                                        maxFractionDigits="2"/>
+                                </h:outputText>
+                                h
+                            </strong>
+
+                        </div>
+
+
+                        <div class="contract-statistic">
+
+                            <span class="contract-statistic-label">
+                                #{msg['contract.statistics.vacationHoursLeft']}
+                            </span>
+
+                            <strong class="contract-statistic-value">
+                                <h:outputText
+                                    value="#{statistics.totalVacationHoursLeft}">
+                                    <f:convertNumber
+                                        minFractionDigits="2"
+                                        maxFractionDigits="2"/>
+                                </h:outputText>
+                                h
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </ui:fragment>
+
+</ui:composition>

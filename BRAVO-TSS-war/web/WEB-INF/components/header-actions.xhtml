@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core">
+
+    <div class="user-info">
+
+        <span class="user-name">
+            #{loginBean.user.firstName}
+            #{loginBean.user.lastName}
+        </span>
+
+        <ui:fragment rendered="#{loginBean.user.roles.size() eq 1}">
+            <span class="badge">
+                #{msg['role.'.concat(loginBean.activeRole)]}
+            </span>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{loginBean.user.roles.size() gt 1}">
+            <h:form id="roleForm">
+
+                <p:selectOneMenu
+                    value="#{loginBean.activeRole}"
+                    styleClass="badge role-select">
+
+                    <f:selectItems
+                        value="#{loginBean.user.roles}"
+                        var="role"
+                        itemValue="#{role}"
+                        itemLabel="#{msg['role.'.concat(role)]}"/>
+
+                    <p:ajax
+                        listener="#{loginBean.roleChanged}"
+                        oncomplete="window.location.href='#{request.contextPath}/views/portal/home.xhtml'"/>
+
+                </p:selectOneMenu>
+
+            </h:form>
+        </ui:fragment>
+    </div>
+
+    <h:form id="languageForm">
+
+        <p:selectOneMenu
+            id="languageMenu"
+            value="#{localeBean.selectedLanguage}"
+            styleClass="language-menu">
+
+            <f:selectItems
+                value="#{localeBean.languages}"
+                var="language"
+                itemValue="#{language.code}"
+                itemLabel="#{language.fullLabel}"/>
+
+            <p:ajax
+                update="@all"/>
+
+        </p:selectOneMenu>
+
+    </h:form>
+
+    <h:form>
+
+        <h:commandButton
+            value="#{msg['button.logout']}"
+            styleClass="button-logout"
+            action="#{loginBean.logout}" />
+
+    </h:form>
+
+</ui:composition>

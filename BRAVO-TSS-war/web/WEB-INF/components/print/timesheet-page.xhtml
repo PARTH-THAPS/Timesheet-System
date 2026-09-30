@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets">
+
+    <article class="timesheet-print-page">
+
+        <header class="timesheet-print-header">
+
+            <div>
+                <h1>Timesheet</h1>
+
+                <div class="timesheet-print-employee">
+                    #{timesheet.employeeFullName}
+                </div>
+            </div>
+
+            <div class="timesheet-print-period">
+
+                <h:outputText
+                    value="#{timesheet.startDate}">
+
+                    <f:convertDateTime
+                        type="localDate"
+                        pattern="dd.MM.yyyy"/>
+
+                </h:outputText>
+
+                <span> – </span>
+
+                <h:outputText
+                    value="#{timesheet.endDate}">
+
+                    <f:convertDateTime
+                        type="localDate"
+                        pattern="dd.MM.yyyy"/>
+
+                </h:outputText>
+
+            </div>
+
+        </header>
+
+
+        <section class="timesheet-print-summary">
+
+            <div>
+                <span class="timesheet-print-label">
+                    Hours due
+                </span>
+
+                <strong>
+                    <h:outputText
+                        value="#{timesheet.hoursDue}">
+
+                        <f:convertNumber
+                            minFractionDigits="2"
+                            maxFractionDigits="2"/>
+
+                    </h:outputText>
+                    h
+                </strong>
+            </div>
+
+
+            <div>
+                <span class="timesheet-print-label">
+                    Hours reported
+                </span>
+
+                <strong>
+                    <h:outputText
+                        value="#{secretaryTimesheetPrintBean.getReportedHours(timesheet)}">
+
+                        <f:convertNumber
+                            minFractionDigits="2"
+                            maxFractionDigits="2"/>
+
+                    </h:outputText>
+                    h
+                </strong>
+            </div>
+
+
+            <div>
+                <span class="timesheet-print-label">
+                    Balance
+                </span>
+
+                <strong>
+                    <h:outputText
+                        value="#{secretaryTimesheetPrintBean.getBalance(timesheet)}">
+
+                        <f:convertNumber
+                            minFractionDigits="2"
+                            maxFractionDigits="2"/>
+
+                    </h:outputText>
+                    h
+                </strong>
+            </div>
+
+
+            <div>
+                <span class="timesheet-print-label">
+                    Status
+                </span>
+
+                <strong>
+                    #{timesheet.status}
+                </strong>
+            </div>
+
+        </section>
+
+
+        <table class="timesheet-print-table">
+
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Hours</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <ui:repeat
+                    value="#{timesheet.entries}"
+                    var="entry">
+
+                    <tr>
+
+                        <td>
+                            <h:outputText
+                                value="#{entry.entryDate}">
+
+                                <f:convertDateTime
+                                    type="localDate"
+                                    pattern="dd.MM.yyyy"/>
+
+                            </h:outputText>
+                        </td>
+
+                        <td>
+                            <h:outputText
+                                value="#{entry.startTime}"/>
+                        </td>
+
+                        <td>
+                            <h:outputText
+                                value="#{entry.endTime}"/>
+                        </td>
+
+                        <td>
+                            <h:outputText
+                                value="#{entry.hours}">
+
+                                <f:convertNumber
+                                    minFractionDigits="2"
+                                    maxFractionDigits="2"/>
+
+                            </h:outputText>
+                        </td>
+
+                        <td>
+                            #{entry.type}
+                        </td>
+
+                        <td>
+                            #{entry.description}
+                        </td>
+
+                    </tr>
+
+                </ui:repeat>
+
+            </tbody>
+
+        </table>
+
+
+        <footer class="timesheet-print-signatures">
+
+            <div class="timesheet-print-signature">
+
+                <span>Employee signature</span>
+
+                <div class="signature-line"></div>
+
+                <ui:fragment
+                    rendered="#{not empty timesheet.signedByEmployee}">
+
+                    <small>
+                        Digitally signed:
+                        <h:outputText
+                            value="#{timesheet.signedByEmployee}">
+
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+
+                        </h:outputText>
+                    </small>
+
+                </ui:fragment>
+
+            </div>
+
+
+            <div class="timesheet-print-signature">
+
+                <span>Supervisor signature</span>
+
+                <div class="signature-line"></div>
+
+                <ui:fragment
+                    rendered="#{not empty timesheet.signedBySupervisor}">
+
+                    <small>
+                        Digitally signed:
+                        <h:outputText
+                            value="#{timesheet.signedBySupervisor}">
+
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+
+                        </h:outputText>
+                    </small>
+
+                </ui:fragment>
+
+            </div>
+
+        </footer>
+
+    </article>
+
+</ui:composition>

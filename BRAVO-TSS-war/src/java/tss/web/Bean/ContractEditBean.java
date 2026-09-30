@@ -23,6 +23,8 @@ import tss.entity.Role;
 import tss.entity.TimesheetFrequency;
 import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
+import java.util.Set;
+import tss.dto.ContractStatisticsDTO;
 import tss.logic.TerminationBlockedException;
 
 @Named
@@ -42,6 +44,7 @@ public class ContractEditBean implements Serializable {
 
     private Long id;
     private ContractDTO contract;
+    private ContractStatisticsDTO statistics;
     private List<PersonDTO> persons;
     private List<Long> originalSecretaryIds;
     private List<Long> originalAssistantIds;
@@ -85,6 +88,7 @@ public class ContractEditBean implements Serializable {
                 denyAccess();
                 return;
             }
+            statistics = contractLogic.getContractStatistics(id);
         }
         originalSecretaryIds = contract.getSecretaryIds() != null
                 ? new ArrayList<>(contract.getSecretaryIds())
@@ -123,6 +127,11 @@ public class ContractEditBean implements Serializable {
     public void save() {
         try {
             validateNoOverlap();
+
+            Long contractId;
+            if (isNewContract()) {
+                PersonDTO person = findSelectedPerson();
+            
             validateDateOfBirth();
 
             Long contractId;
@@ -140,11 +149,10 @@ public class ContractEditBean implements Serializable {
                         contract.getWorkingDaysPerWeek(),
                         contract.getVacationDaysPerYear(),
                         person,
-                        contract.getState()
+                        contract.getState(),
+                        contract.getArchiveDuration()
                 );
-
                 contractId = created.getId();
-                
 
                 if (contract.getSupervisorId() != null) {
                     contractLogic.addSupervisor(contractId, contract.getSupervisorId());
@@ -159,6 +167,7 @@ public class ContractEditBean implements Serializable {
                     contractLogic.removeSupervisor(contractId);
                 }
             }
+
             if (dateOfBirthRequired && dateOfBirth != null) {
                 personLogic.updateDateOfBirth(contract.getPersonId(), dateOfBirth);
             }
@@ -185,6 +194,7 @@ public class ContractEditBean implements Serializable {
 
         // Collect every (role label, personId) pair that was actually assigned
         List<Map.Entry<String, Long>> assignments = new ArrayList<>();
+
         if (employeeId != null) {
             assignments.add(Map.entry("employee", employeeId));
         }
@@ -262,7 +272,10 @@ public class ContractEditBean implements Serializable {
                     contract.getId(),
                     ContractStatus.STARTED
             );
+            
+            refreshStatistics();
             refreshTerminationFlags();
+
         } catch (Exception e) {
             showError(
                     "Could not start contract",
@@ -306,7 +319,7 @@ public class ContractEditBean implements Serializable {
         } catch (Exception e) {
             showError("Could not terminate contract", e.getMessage());
         } finally {
-
+            refreshStatistics();
             refreshTerminationFlags();
         }
     }
@@ -494,6 +507,19 @@ private void validateDateOfBirth() {
     public List<PersonDTO> getPersons() {
         return persons;
     }
+
+    public ContractStatisticsDTO getStatistics() {
+        return statistics;
+    }
+    
+    private void refreshStatistics() {
+        if (contract != null && contract.getId() != null) {
+            statistics = contractLogic.getContractStatistics(
+                    contract.getId()
+            );
+        }
+    }
+
 
     public LocalDate getToday() {
         return LocalDate.now();

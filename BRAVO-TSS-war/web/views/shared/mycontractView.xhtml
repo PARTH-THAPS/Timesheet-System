@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <ui:composition
     template="/WEB-INF/templates/page-layout.xhtml"
     xmlns="http://www.w3.org/1999/xhtml"
@@ -20,24 +21,15 @@
     </ui:define>
 
     <ui:define name="headerActions">
-        <div class="user-info">
-            <span class="user-name">
-                #{loginBean.user.firstName} #{loginBean.user.lastName}
-            </span>
-            <ui:repeat
-                value="#{loginBean.user.roles}"
-                var="role">
-                <span class="badge">
-                    #{msg['role.'.concat(role.name())]}
-                </span>
-            </ui:repeat>
-        </div>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
 
     <ui:define name="content">
+
         <section class="page-section-header">
             <div>
                 <h2>#{msg['contracts.title']}</h2>
+
                 <p class="text-muted">
                     #{msg['contracts.description']}
                 </p>
@@ -45,70 +37,294 @@
         </section>
 
         <section class="card">
-            <p:dataTable
-                id="contractsTable"
-                value="#{myContractBean.contracts}"
-                var="contract"
-                paginator="true"
-                rows="12"
-                stripedRows="true"
-                emptyMessage="#{msg['contracts.noContracts']}"
-                sortMode="single">
 
-                <p:column
-                    headerText="#{msg['contract.name']}"
-                    sortBy="#{contract.name}">
-                    <h:outputText value="#{contract.name}"/>
-                </p:column>
+            <h:form id="contractForm">
 
-                <p:column
-                    headerText="#{msg['contracts.period']}"
-                    sortBy="#{contract.startDate}">
-                    <h:outputText value="#{contract.startDate}">
-                        <f:convertDateTime
-                            type="localDate"
-                            pattern="dd.MM.yyyy"/>
-                    </h:outputText>
-                    <span class="timesheet-period-separator">
-                        –
-                    </span>
-                    <h:outputText value="#{contract.endDate}">
-                        <f:convertDateTime
-                            type="localDate"
-                            pattern="dd.MM.yyyy"/>
-                    </h:outputText>
-                </p:column>
+                <p:dataTable
+                    id="contractsTable"
+                    value="#{myContractBean.contracts}"
+                    var="contract"
+                    paginator="true"
+                    rows="12"
+                    stripedRows="true"
+                    emptyMessage="#{msg['contracts.noContracts']}"
+                    sortMode="single">
 
-                <p:column
-                    headerText="#{msg['contract.hoursPerWeek']}"
-                    sortBy="#{contract.hoursPerWeek}"
-                    styleClass="table-small-column">
-                    <h:outputText value="#{contract.hoursPerWeek}">
-                        <f:convertNumber
-                            minFractionDigits="2"
-                            maxFractionDigits="2"/>
-                    </h:outputText>
-                    <span> h</span>
-                </p:column>
+                    <p:column
+                        headerText="#{msg['contract.name']}"
+                        sortBy="#{contract.name}">
 
-                <p:column
-                    headerText="#{msg['contract.frequency']}"
-                    sortBy="#{contract.frequency}">
-                    #{msg['contract.frequency.'.concat(contract.frequency.name())]}
-                </p:column>
+                        <h:outputText
+                            value="#{contract.name}"/>
 
-                <p:column
-                    headerText="#{msg['contract.status']}"
-                    sortBy="#{contract.status}">
-                    <span class="status-badge status-#{contract.status.name().toLowerCase()}">
-                        #{msg['contract.status.'.concat(contract.status.name())]}
-                    </span>
-                </p:column>
+                    </p:column>
 
-               
+                    <p:column
+                        headerText="#{msg['contracts.period']}"
+                        sortBy="#{contract.startDate}">
 
-            </p:dataTable>
+                        <h:outputText
+                            value="#{contract.startDate}">
+
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+
+                        </h:outputText>
+
+                        <span class="timesheet-period-separator">
+                            –
+                        </span>
+
+                        <h:outputText
+                            value="#{contract.endDate}">
+
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+
+                        </h:outputText>
+
+                    </p:column>
+
+                    <p:column
+                        headerText="#{msg['contract.hoursPerWeek']}"
+                        sortBy="#{contract.hoursPerWeek}"
+                        styleClass="table-small-column">
+
+                        <h:outputText
+                            value="#{contract.hoursPerWeek}">
+
+                            <f:convertNumber
+                                minFractionDigits="2"
+                                maxFractionDigits="2"/>
+
+                        </h:outputText>
+
+                        <span> h</span>
+
+                    </p:column>
+
+                    <p:column
+                        headerText="#{msg['contract.frequency']}"
+                        sortBy="#{contract.frequency}">
+
+                        #{msg['contract.frequency.'.concat(contract.frequency)]}
+
+                    </p:column>
+
+                    <p:column
+                        headerText="#{msg['contract.status']}"
+                        sortBy="#{contract.status}">
+
+                        <span class="status-badge status-#{contract.status}">
+                            #{msg['contract.status.'.concat(contract.status)]}
+                        </span>
+
+                    </p:column>
+
+                    <p:column
+                        headerText="#{msg['common.actions']}"
+                        exportable="false"
+                        styleClass="table-actions">
+
+                        <p:commandButton
+                            icon="pi pi-eye"
+                            process="@this"
+                            update=":contractForm:contractDetails"
+                            oncomplete="PF('contractDetailsDialog').show()"
+                            styleClass="ui-button-secondary">
+
+                            <f:setPropertyActionListener
+                                target="#{myContractBean.selectedContract}"
+                                value="#{contract}"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+
+                <p:dialog
+                    id="contractDetails"
+                    widgetVar="contractDetailsDialog"
+                    modal="true"
+                    responsive="true"
+                    closable="true"
+                    resizable="false"
+                    width="700">
+
+                    <ui:fragment
+                        rendered="#{not empty myContractBean.selectedContract}">
+
+                        <div class="contract-details-grid">
+
+                            <div class="contract-detail">
+                                <span class="contract-detail-label">
+                                    #{msg['contract.name']}
+                                </span>
+
+                                <strong>
+                                    #{myContractBean.selectedContract.name}
+                                </strong>
+                            </div>
+
+
+                            <div class="contract-detail">
+                                <span class="contract-detail-label">
+                                    #{msg['contract.status']}
+                                </span>
+
+                                <strong>
+                                    #{msg['contract.status.'.concat(
+                                        myContractBean.selectedContract.status
+                                    )]}
+                                </strong>
+                            </div>
+
+
+                            <div class="contract-detail">
+                                <span class="contract-detail-label">
+                                    #{msg['contract.startDate']}
+                                </span>
+
+                                <strong>
+                                    <h:outputText
+                                        value="#{myContractBean.selectedContract.startDate}">
+
+                                        <f:convertDateTime
+                                            type="localDate"
+                                            pattern="dd.MM.yyyy"/>
+
+                                    </h:outputText>
+                                </strong>
+                            </div>
+
+
+                            <div class="contract-detail">
+                                <span class="contract-detail-label">
+                                    #{msg['contract.endDate']}
+                                </span>
+
+                                <strong>
+                                    <h:outputText
+                                        value="#{myContractBean.selectedContract.endDate}">
+
+                                        <f:convertDateTime
+                                            type="localDate"
+                                            pattern="dd.MM.yyyy"/>
+
+                                    </h:outputText>
+                                </strong>
+                            </div>
+
+
+                            <div class="contract-detail">
+                                <span class="contract-detail-label">
+                                    #{msg['contract.frequency']}
+                                </span>
+
+                                <strong>
+                                    #{msg['contract.frequency.'.concat(
+                                        myContractBean.selectedContract.frequency
+                                    )]}
+                                </strong>
+                            </div>
+
+
+                            <div class="contract-detail">
+                                <span class="contract-detail-label">
+                                    #{msg['contract.hoursPerWeek']}
+                                </span>
+
+                                <strong>
+                                    <h:outputText
+                                        value="#{myContractBean.selectedContract.hoursPerWeek}">
+
+                                        <f:convertNumber
+                                            minFractionDigits="2"
+                                            maxFractionDigits="2"/>
+
+                                    </h:outputText>
+                                    h
+                                </strong>
+                            </div>
+
+
+                            <div class="contract-detail">
+                                <span class="contract-detail-label">
+                                    #{msg['contract.workingDaysPerWeek']}
+                                </span>
+
+                                <strong>
+                                    #{myContractBean.selectedContract.workingDaysPerWeek}
+                                </strong>
+                            </div>
+
+
+                            <div class="contract-detail">
+                                <span class="contract-detail-label">
+                                    #{msg['contract.vacationDaysPerYear']}
+                                </span>
+
+                                <strong>
+                                    #{myContractBean.selectedContract.vacationDaysPerYear}
+                                </strong>
+                            </div>
+
+
+                            <div class="contract-detail">
+                                <span class="contract-detail-label">
+                                    #{msg['contract.federalState']}
+                                </span>
+
+                                <strong>
+                                    #{myContractBean.selectedContract.state}
+                                </strong>
+                            </div>
+
+                            <ui:fragment
+                                rendered="#{not empty myContractBean.selectedContract.terminationDate}">
+
+                                <div class="contract-detail">
+                                    <span class="contract-detail-label">
+                                        #{msg['contract.terminationDate']}
+                                    </span>
+
+                                    <strong>
+                                        <h:outputText
+                                            value="#{myContractBean.selectedContract.terminationDate}">
+
+                                            <f:convertDateTime
+                                                type="localDate"
+                                                pattern="dd.MM.yyyy"/>
+
+                                        </h:outputText>
+                                    </strong>
+                                </div>
+
+                            </ui:fragment>
+
+                        </div>
+                        
+                        <ui:include
+                            src="/WEB-INF/components/contract-statistics.xhtml">
+
+                            <ui:param
+                                name="statistics"
+                                value="#{myContractBean.selectedStatistics}"/>
+
+                        </ui:include>
+
+                    </ui:fragment>
+
+                </p:dialog>
+
+            </h:form>
+
         </section>
+
     </ui:define>
 
 </ui:composition>

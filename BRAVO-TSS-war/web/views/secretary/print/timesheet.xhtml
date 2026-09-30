@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <f:metadata>
+        <f:viewParam
+            name="id"
+            value="#{secretaryTimesheetPrintBean.id}"/>
+
+        <f:viewAction
+            action="#{secretaryTimesheetPrintBean.init}"/>
+    </f:metadata>
+
+    <ui:define name="pageTitle">
+        Print Timesheets
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        Print Timesheets
+    </ui:define>
+
+    <ui:define name="navigation">
+        <ui:include src="/WEB-INF/components/navigation.xhtml"/>
+    </ui:define>
+
+    <ui:define name="headerActions">
+        <ui:include src="/WEB-INF/components/header-actions.xhtml"/>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="print-actions">
+
+            <p:commandButton
+                value="Print"
+                icon="pi pi-print"
+                type="button"
+                onclick="window.print();"
+                styleClass="ui-button-secondary"/>
+
+            <p:button
+                value="Back"
+                icon="pi pi-arrow-left"
+                outcome="/views/secretary/timesheets"
+                styleClass="ui-button-secondary"/>
+
+        </div>
+
+
+        <ui:fragment
+            rendered="#{not empty secretaryTimesheetPrintBean.timesheets}">
+
+            <ui:repeat
+                value="#{secretaryTimesheetPrintBean.timesheets}"
+                var="timesheet">
+
+                <ui:include src="/WEB-INF/components/print/timesheet-page.xhtml">
+
+                    <ui:param
+                        name="timesheet"
+                        value="#{timesheet}"/>
+
+                    <ui:param
+                        name="reportedHours"
+                        value="#{secretaryTimesheetPrintBean.getReportedHours(timesheet)}"/>
+
+                </ui:include>
+
+            </ui:repeat>
+
+        </ui:fragment>
+
+
+        <ui:fragment
+            rendered="#{empty secretaryTimesheetPrintBean.timesheets}">
+
+            <section class="card">
+                No timesheets are available for printing.
+            </section>
+
+        </ui:fragment>
+
+    </ui:define>
+
+</ui:composition>

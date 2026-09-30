@@ -15,7 +15,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import java.util.Map;
+import tss.logic.ContractLogic;
 import java.util.logging.Logger;
 import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
@@ -54,7 +54,8 @@ public class ContractRestEndpoint {
                 contractDto.getWorkingDaysPerWeek(),
                 contractDto.getVacationDaysPerYear(),
                 persondto,
-                contractDto.getState()
+                contractDto.getState(),
+                contractDto.getArchiveDuration()
         );
     }
 

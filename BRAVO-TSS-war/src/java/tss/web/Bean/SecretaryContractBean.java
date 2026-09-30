@@ -10,9 +10,10 @@ import java.io.Serializable;
 import java.util.List;
 
 import tss.dto.ContractDTO;
+import tss.dto.ContractStatisticsDTO;
 import tss.dto.User;
+import tss.entity.ContractStatus;
 import tss.logic.ContractLogic;
-
 
 @Named
 @ViewScoped
@@ -27,6 +28,8 @@ public class SecretaryContractBean implements Serializable {
     private loginBean loginBean;
 
     private List<ContractDTO> contracts;
+    private ContractDTO selectedContract;
+    private ContractStatisticsDTO selectedStatistics;
 
     @PostConstruct
     public void init() {
@@ -39,11 +42,38 @@ public class SecretaryContractBean implements Serializable {
         contracts = contractLogic.findAllContracts()
                 .stream()
                 .filter(c -> c.getSecretaryIds() != null
-                        && c.getSecretaryIds().contains(currentPersonId))
+                && c.getSecretaryIds().contains(currentPersonId))
                 .toList();
     }
 
     public List<ContractDTO> getContracts() {
         return contracts;
+    }
+
+    public ContractStatus[] getStatuses() {
+        return ContractStatus.values();
+    }
+
+    public void setSelectedContract(ContractDTO selectedContract) {
+        this.selectedContract = selectedContract;
+
+        if (selectedContract == null || selectedContract.getId() == null) {
+            selectedStatistics = null;
+            return;
+        }
+
+        selectedStatistics
+                = contractLogic.getContractStatistics(
+                        selectedContract.getId()
+                );
+    }
+    
+    public ContractDTO getSelectedContract() {
+        return selectedContract;
+    }
+    
+    
+    public ContractStatisticsDTO getSelectedStatistics() {
+        return selectedStatistics;
     }
 }

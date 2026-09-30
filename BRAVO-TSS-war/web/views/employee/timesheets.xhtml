@@ -21,18 +21,7 @@
     </ui:define>
 
     <ui:define name="headerActions">
-        <div class="user-info">
-            <span class="user-name">
-                #{loginBean.user.firstName} #{loginBean.user.lastName}
-            </span>
-            <ui:repeat
-                value="#{loginBean.user.roles}"
-                var="role">
-                <span class="badge">
-                    #{msg['role.'.concat(role.name())]}
-                </span>
-            </ui:repeat>
-        </div>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
 
     <ui:define name="content">
@@ -96,11 +85,33 @@
                 </p:column>
 
                 <p:column
+                    headerText="#{msg['timesheet.balance']}"
+                    sortBy="#{timesheet.balance}"
+                    styleClass="table-small-column">
+
+                    <h:outputText
+                        value="#{timesheet.balance}"
+                        styleClass="#{
+                        timesheet.balance gt 0
+                            ? 'text-success'
+                            : timesheet.balance lt 0
+                            ? 'text-warning'
+                            : ''
+        }">
+                        <f:convertNumber
+                            minFractionDigits="2"
+                            maxFractionDigits="2"/>
+                    </h:outputText>
+
+                    <span> h</span>
+
+                </p:column>
+
+                <p:column
                     headerText="#{msg['timesheet.approvalStatus']}"
                     sortBy="#{timesheet.status}">
-
-                    <span class="status-badge status-#{timesheet.status.name().toLowerCase()}">
-                        #{msg['timesheet.status.'.concat(timesheet.status.name())]}
+                    <span class="status-badge status-#{timesheet.status}">
+                        #{msg['timesheet.status.'.concat(timesheet.status)]}
                     </span>
 
                 </p:column>
