@@ -5,7 +5,6 @@ import jakarta.ejb.Stateless;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.stream.Collectors;
 import tss.dao.ContractsDao;
 import tss.dao.PersonDao;
 import tss.dto.ContractDTO;
@@ -13,20 +12,14 @@ import tss.dto.ContractStatisticsDTO;
 import tss.dto.PersonDTO;
 import tss.dto.TimesheetDTO;
 import tss.dto.TimesheetEntryDTO;
-import tss.entity.ContractStatus;
-import tss.entity.TimesheetFrequency;
-import tss.logic.ContractLogic;
 import tss.entity.Contract;
 import tss.entity.ContractStatus;
 import tss.entity.FederalState;
 import tss.entity.Person;
-import tss.entity.TimesheetStatus;
-import tss.logic.TimesheetLogic;
 import tss.entity.Role;
 import tss.entity.TimesheetFrequency;
 import tss.entity.TimesheetStatus;
 import tss.logic.ContractLogic;
-import tss.logic.TerminationBlockedException;
 import tss.logic.TerminationBlockedException;
 import tss.logic.TimesheetLogic;
 
@@ -106,7 +99,7 @@ public class ContractLogicImp implements ContractLogic {
                     + updatedContract.getPersonId()
             );
         }
-        
+
         Person previousEmployee = contract.getEmployee();
 
         contract.setName(updatedContract.getName());
@@ -135,13 +128,10 @@ public class ContractLogicImp implements ContractLogic {
         );
 
         contractsDao.UpdateContract(contract);
-        
-        
-        
+
         person.setRoles(Role.EMPLOYEE);
         personDao.updatePerson(person);
 
-       
         if (previousEmployee != null && !previousEmployee.getId().equals(person.getId())) {
             boolean stillEmployeeElsewhere = previousEmployee.getEmployeeContract().stream()
                     .anyMatch(c -> !c.getId().equals(updatedContract.getId()));
@@ -173,7 +163,7 @@ public class ContractLogicImp implements ContractLogic {
         }
         return toDTO(contract);
     }
-    
+
     @Override
     public ContractStatisticsDTO getContractStatistics(Long contractId) {
 
@@ -185,8 +175,8 @@ public class ContractLogicImp implements ContractLogic {
             );
         }
 
-        List<TimesheetDTO> timesheets =
-                timesheetLogic.getTimesheetsForContract(contractId);
+        List<TimesheetDTO> timesheets
+                = timesheetLogic.getTimesheetsForContract(contractId);
 
         double totalHoursWorked = timesheets.stream()
                 .filter(timesheet -> timesheet.getEntries() != null)
@@ -198,22 +188,22 @@ public class ContractLogicImp implements ContractLogic {
 
         double totalVacationHours = contract.getVacationHours();
 
-        double usedVacationHours =
-                timesheetLogic.getUsedVacationHours(contractId);
+        double usedVacationHours
+                = timesheetLogic.getUsedVacationHours(contractId);
 
         double totalVacationHoursLeft = Math.max(
                 totalVacationHours - usedVacationHours,
                 0.0
         );
 
-        double balance =
-                totalWorkingHours - totalHoursWorked;
+        double balance
+                = totalWorkingHours - totalHoursWorked;
 
-        double totalHoursDue =
-                Math.max(balance, 0.0);
+        double totalHoursDue
+                = Math.max(balance, 0.0);
 
-        ContractStatisticsDTO statistics =
-                new ContractStatisticsDTO();
+        ContractStatisticsDTO statistics
+                = new ContractStatisticsDTO();
 
         statistics.setTotalWorkingHours(totalWorkingHours);
         statistics.setTotalHoursWorked(totalHoursWorked);
@@ -249,16 +239,6 @@ public class ContractLogicImp implements ContractLogic {
                 .toList();
     }
 
-    @Override
-    public void CheckForArchivedTimesheet(Contract contract) {
-        boolean allArchivedTimesheet = contract.getTimesheet().stream().allMatch(ts -> ts.getStatus() == TimesheetStatus.ARCHIVED);
-        if (allArchivedTimesheet) {
-            contract.setStatus(ContractStatus.ARCHIVED);
-        }
-        contractsDao.UpdateContract(contract);
-    }
-
-    
     @Override
     public void CheckForArchivedTimesheet(Contract contract) {
         // Only a TERMINATED contract can become ARCHIVED. allMatch on an empty list is true,

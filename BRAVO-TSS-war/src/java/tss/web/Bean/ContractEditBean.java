@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
@@ -103,14 +102,15 @@ public class ContractEditBean implements Serializable {
 
     private boolean isAuthorizedForContract(ContractDTO contract) {
         Long currentPersonId = loginBean.getUser().getId();
-        if (loginBean.hasRole("SUPERVISOR")) {
+        if (loginBean.isActiveRole("SUPERVISOR")) {
             return currentPersonId.equals(contract.getSupervisorId());
         }
-        if (loginBean.hasRole("ASSISTANT")) {
+
+        if (loginBean.isActiveRole("ASSISTANT")) {
             return contract.getAssistantIds() != null
                     && contract.getAssistantIds().contains(currentPersonId);
         }
-        return true; // e.g. ADMIN or other unrestricted roles
+        return false;
     }
 
     private void denyAccess() {
@@ -127,11 +127,6 @@ public class ContractEditBean implements Serializable {
     public void save() {
         try {
             validateNoOverlap();
-
-            Long contractId;
-            if (isNewContract()) {
-                PersonDTO person = findSelectedPerson();
-            
             validateDateOfBirth();
 
             Long contractId;
@@ -272,7 +267,7 @@ public class ContractEditBean implements Serializable {
                     contract.getId(),
                     ContractStatus.STARTED
             );
-            
+
             refreshStatistics();
             refreshTerminationFlags();
 
@@ -371,7 +366,7 @@ public class ContractEditBean implements Serializable {
         String contextPath
                 = facesContext.getExternalContext().getRequestContextPath();
 
-        String section = loginBean.hasRole("SUPERVISOR")
+        String section = loginBean.isActiveRole("SUPERVISOR")
                 ? "supervisor"
                 : "assistant";
 
@@ -399,33 +394,33 @@ public class ContractEditBean implements Serializable {
         updateDateOfBirthRequired();
     }
 
-   private void updateDateOfBirthRequired() {
-    dateOfBirthRequired = false;   
-    dateOfBirth = null;
+    private void updateDateOfBirthRequired() {
+        dateOfBirthRequired = false;
+        dateOfBirth = null;
 
-    if (contract == null || contract.getPersonId() == null) {
-        return;
-    }
-    PersonDTO employee = persons.stream()
-            .filter(p -> contract.getPersonId().equals(p.getId()))
-            .findFirst()
-            .orElse(null);
-    if (employee == null) {
-        return;
+        if (contract == null || contract.getPersonId() == null) {
+            return;
+        }
+        PersonDTO employee = persons.stream()
+                .filter(p -> contract.getPersonId().equals(p.getId()))
+                .findFirst()
+                .orElse(null);
+        if (employee == null) {
+            return;
+        }
+
+        dateOfBirth = employee.getDateOfBirth();
+        dateOfBirthRequired = true;
     }
 
-    dateOfBirth = employee.getDateOfBirth();   
-    dateOfBirthRequired = true;                
-}
-
-private void validateDateOfBirth() {
-    if (dateOfBirthRequired && dateOfBirth == null) {
-        PersonDTO employee = findSelectedPerson();
-        throw new IllegalArgumentException(
-                "Date of birth is required for " + employee.getFirstName()
-                + " " + employee.getLastName() + ".");
+    private void validateDateOfBirth() {
+        if (dateOfBirthRequired && dateOfBirth == null) {
+            PersonDTO employee = findSelectedPerson();
+            throw new IllegalArgumentException(
+                    "Date of birth is required for " + employee.getFirstName()
+                    + " " + employee.getLastName() + ".");
+        }
     }
-}
 
     public boolean isNewContract() {
         return id == null;
@@ -511,7 +506,7 @@ private void validateDateOfBirth() {
     public ContractStatisticsDTO getStatistics() {
         return statistics;
     }
-    
+
     private void refreshStatistics() {
         if (contract != null && contract.getId() != null) {
             statistics = contractLogic.getContractStatistics(
@@ -519,7 +514,6 @@ private void validateDateOfBirth() {
             );
         }
     }
-
 
     public LocalDate getToday() {
         return LocalDate.now();
