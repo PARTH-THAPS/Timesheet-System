@@ -97,7 +97,7 @@
                     <p:column
                         headerText="#{msg['contract.status']}"
                         sortBy="#{contract.status}"
-                        filterBy="#{contract.status}"
+                        filterBy="#{msg['contract.status.'.concat(contract.status)]}"
                         filterMatchMode="exact">
 
                         <f:facet name="filter">
@@ -112,7 +112,7 @@
                                     value="#{supervisorArchivedContractsBean.statuses}"
                                     var="status"
                                     itemLabel="#{msg['contract.status.'.concat(status)]}"
-                                    itemValue="#{status}"/>
+                                    itemValue="#{msg['contract.status.'.concat(status)]}"/>
 
                             </p:selectOneMenu>
                         </f:facet>
