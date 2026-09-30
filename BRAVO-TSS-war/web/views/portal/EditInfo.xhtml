@@ -25,70 +25,192 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:form id="personalInfoForm">
-            <p:messages
-                id="messages"
-                showDetail="true"
-                closable="true"
-                styleClass="app-messages"
-            />
+        <section class="card form-card">
+            <h:form id="personalInfoForm">
+                <p:messages
+                    id="messages"
+                    showDetail="true"
+                    closable="true"
+                    styleClass="app-messages"
+                    />
 
-            <h:outputText value="#{personalDataBean.user}" style="display:none;"/>
+                <h:outputText value="#{personalDataBean.user}" style="display:none;"/>
 
-            <h:panelGrid columns="3">
-                <h:outputLabel for="firstName" value="#{msg['person.firstName']}:"/>
-                <h:inputText id="firstName"
-                             value="#{personalDataBean.personDTO.firstName}"
-                             required="true"
-                             requiredMessage="#{msg['personalInfo.firstName.required']}"/>
-                <p:message
-                    for="firstName"
-                    styleClass="field-message"
-                />
-
-                <h:outputLabel for="lastName" value="#{msg['person.lastName']}:"/>
-                <h:inputText id="lastName"
-                             value="#{personalDataBean.personDTO.lastName}"
-                             required="true"
-                             requiredMessage="#{msg['personalInfo.lastName.required']}"/>
-                <p:message
-                    for="lastName"
-                    styleClass="field-message"
-                />
-
-                <h:outputLabel for="email" value="#{msg['person.email']}:"/>
-                <h:inputText id="email"
-                             value="#{personalDataBean.personDTO.emailAddress}"
-                             required="true"
-                             requiredMessage="#{msg['personalInfo.email.required']}" readonly="true"/>
-                <p:message
-                    for="email"
-                    styleClass="field-message"
-                />
-
-                <h:outputLabel for="preferredLanguage"
-                               value="#{msg['personalInfo.PreferedLanguage.ForReminder']}:"/>
-                <h:selectOneMenu id="preferredLanguage"
-                                 value="#{personalDataBean.personDTO.preferredLanguage}"
+                <h:panelGrid columns="3">
+                    <h:outputLabel for="firstName" value="#{msg['person.firstName']}:"/>
+                    <h:inputText id="firstName"
+                                 value="#{personalDataBean.personDTO.firstName}"
                                  required="true"
-                                 requiredMessage="#{msg['personalInfo.preferredLanguage.required']}">
-                    <f:selectItem itemLabel="#{msg['select.pleaseChoose']}"
-                                  itemValue="#{null}"
-                                  noSelectionOption="true"/>
-                    <f:selectItems value="#{personalDataBean.languages}"
-                                   var="l"
-                                   itemValue="#{l}"
-                                   itemLabel="#{msg['language.'.concat(l)]}"/>
-                </h:selectOneMenu>
-                <p:message
-                    for="preferredLanguage"
-                    styleClass="field-message"
-                />
-            </h:panelGrid>
+                                 requiredMessage="#{msg['personalInfo.firstName.required']}"/>
+                    <p:message
+                        for="firstName"
+                        styleClass="field-message"
+                        />
 
-            <br/>
-            <h:commandButton value="#{msg['button.save']}" action="#{personalDataBean.save}"/>
-        </h:form>
+                    <h:outputLabel for="lastName" value="#{msg['person.lastName']}:"/>
+                    <h:inputText id="lastName"
+                                 value="#{personalDataBean.personDTO.lastName}"
+                                 required="true"
+                                 requiredMessage="#{msg['personalInfo.lastName.required']}"/>
+                    <p:message
+                        for="lastName"
+                        styleClass="field-message"
+                        />
+
+                    <h:outputLabel for="email" value="#{msg['person.email']}:"/>
+                    <h:inputText id="email"
+                                 value="#{personalDataBean.personDTO.emailAddress}"
+                                 required="true"
+                                 requiredMessage="#{msg['personalInfo.email.required']}" readonly="true"/>
+                    <p:message
+                        for="email"
+                        styleClass="field-message"
+                        />
+
+                    <p:outputLabel
+                        for="dateOfBirth"
+                        value="#{msg['person.dateOfBirth']}:"/>
+
+                    <p:datePicker
+                        id="dateOfBirth"
+                        value="#{personalDataBean.personDTO.dateOfBirth}"
+                        pattern="dd.MM.yyyy"
+                        showIcon="true"
+                        maxdate="#{personalDataBean.today}"
+                        required="#{personalDataBean.dateOfBirthRequired}"
+                        requiredMessage="#{msg['person.dateOfBirth.required']}"/>
+
+                    <p:message
+                        for="dateOfBirth"
+                        styleClass="field-message"/>
+
+                    <h:outputLabel for="preferredLanguage"
+                                   value="#{msg['personalInfo.preferredLanguage']}:"/>
+                    <h:selectOneMenu id="preferredLanguage"
+                                     value="#{personalDataBean.personDTO.preferredLanguage}"
+                                     required="true"
+                                     requiredMessage="#{msg['personalInfo.preferredLanguage.required']}">
+                        <f:selectItem itemLabel="#{msg['select.pleaseChoose']}"
+                                      itemValue="#{null}"
+                                      noSelectionOption="true"/>
+                        <f:selectItems value="#{personalDataBean.languages}"
+                                       var="l"
+                                       itemValue="#{l}"
+                                       itemLabel="#{msg['language.'.concat(l)]}"/>
+                    </h:selectOneMenu>
+                    <p:message
+                        for="preferredLanguage"
+                        styleClass="field-message"
+                        />
+                </h:panelGrid>
+
+                <br/>
+                <h:commandButton value="#{msg['button.save']}" action="#{personalDataBean.save}"/>
+            </h:form>
+        </section>
+
+        <section class="card form-card">
+
+            <h2>
+                #{msg['personalInfo.password.title']}
+            </h2>
+
+            <p>
+                #{msg['personalInfo.password.description']}
+            </p>
+
+            <h:form id="passwordForm">
+
+                <p:messages
+                    id="passwordMessages"
+                    showDetail="true"
+                    closable="true"
+                    styleClass="app-messages"/>
+
+                <div class="form-field">
+
+                    <p:outputLabel
+                        for="currentPassword"
+                        value="#{msg['personalInfo.password.current']}"/>
+
+                    <p:password
+                        id="currentPassword"
+                        value="#{personalDataBean.currentPassword}"
+                        required="true"
+                        requiredMessage="#{msg['personalInfo.password.current.required']}"
+                        feedback="false"
+                        toggleMask="true"
+                        autocomplete="current-password"
+                        styleClass="form-input"/>
+
+                    <p:message
+                        for="currentPassword"
+                        styleClass="field-message"/>
+
+                </div>
+
+                <div class="form-field">
+
+                    <p:outputLabel
+                        for="newPassword"
+                        value="#{msg['personalInfo.password.new']}"/>
+
+                    <p:password
+                        id="newPassword"
+                        value="#{personalDataBean.newPassword}"
+                        required="true"
+                        requiredMessage="#{msg['personalInfo.password.new.required']}"
+                        feedback="false"
+                        toggleMask="true"
+                        autocomplete="new-password"
+                        styleClass="form-input"/>
+
+                    <small class="form-help">
+                        #{msg['personalInfo.password.help']}
+                    </small>
+
+                    <p:message
+                        for="newPassword"
+                        styleClass="field-message"/>
+
+                </div>
+
+                <div class="form-field">
+
+                    <p:outputLabel
+                        for="confirmPassword"
+                        value="#{msg['personalInfo.password.confirm']}"/>
+
+                    <p:password
+                        id="confirmPassword"
+                        value="#{personalDataBean.confirmPassword}"
+                        required="true"
+                        requiredMessage="#{msg['personalInfo.password.confirm.required']}"
+                        feedback="false"
+                        toggleMask="true"
+                        autocomplete="new-password"
+                        styleClass="form-input"/>
+
+                    <p:message
+                        for="confirmPassword"
+                        styleClass="field-message"/>
+
+                </div>
+
+                <div class="form-actions">
+
+                    <p:commandButton
+                        value="#{msg['personalInfo.password.submit']}"
+                        icon="pi pi-key"
+                        action="#{personalDataBean.changePassword}"
+                        process="@form"
+                        update="@form"/>
+
+                </div>
+
+            </h:form>
+
+        </section>
     </ui:define>
 
 

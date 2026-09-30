@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
@@ -26,6 +25,7 @@ import tss.logic.PersonLogic;
 import java.util.Set;
 import tss.dto.ContractStatisticsDTO;
 import tss.logic.TerminationBlockedException;
+import tss.web.i18n.Messages;
 
 @Named
 @ViewScoped
@@ -103,14 +103,15 @@ public class ContractEditBean implements Serializable {
 
     private boolean isAuthorizedForContract(ContractDTO contract) {
         Long currentPersonId = loginBean.getUser().getId();
-        if (loginBean.hasRole("SUPERVISOR")) {
+        if (loginBean.isActiveRole("SUPERVISOR")) {
             return currentPersonId.equals(contract.getSupervisorId());
         }
-        if (loginBean.hasRole("ASSISTANT")) {
+
+        if (loginBean.isActiveRole("ASSISTANT")) {
             return contract.getAssistantIds() != null
                     && contract.getAssistantIds().contains(currentPersonId);
         }
-        return true; // e.g. ADMIN or other unrestricted roles
+        return false;
     }
 
     private void denyAccess() {
@@ -120,7 +121,10 @@ public class ContractEditBean implements Serializable {
             facesContext.getExternalContext().redirect(contextPath + "/views/access-denied.xhtml");
             facesContext.responseComplete();
         } catch (IOException e) {
-            showError("Access denied", "You are not authorized to view this contract.");
+            showError(
+                    Messages.get("accessDenied.title"),
+                    Messages.get("accessDenied.description")
+            );
         }
     }
 
@@ -172,7 +176,10 @@ public class ContractEditBean implements Serializable {
             redirectToContracts();
 
         } catch (Exception e) {
-            showError("Could not save contract", e.getMessage());
+            showError(
+                    Messages.get("message.contract.saveFailed"),
+                    e.getMessage()
+            );
         }
 
     }
@@ -186,7 +193,9 @@ public class ContractEditBean implements Serializable {
                 ? contract.getAssistantIds() : List.of();
 
         if (secretaryIds.isEmpty()) {
-            throw new IllegalArgumentException("At least one secretary is required.");
+            throw new IllegalArgumentException(
+                    Messages.get("message.contract.secretaryRequired")
+            );
         }
 
         // Collect every (role label, personId) pair that was actually assigned
@@ -209,9 +218,10 @@ public class ContractEditBean implements Serializable {
         for (Map.Entry<String, Long> entry : assignments) {
             if (!seen.add(entry.getValue())) {
                 throw new IllegalArgumentException(
-                        "Each person may only have one role on this contract. "
-                        + personNameOrId(entry.getValue())
-                        + " is assigned to more than one role."
+                        Messages.get(
+                                "message.contract.uniqueRole",
+                                personNameOrId(entry.getValue())
+                        )
                 );
             }
         }
@@ -222,7 +232,7 @@ public class ContractEditBean implements Serializable {
                 .filter(p -> p.getId().equals(id))
                 .findFirst()
                 .map(p -> p.getFirstName() + " " + p.getLastName())
-                .orElse("Person #" + id);
+                .orElse(Messages.get("message.person.fallback", id));
     }
 
     private void syncSecretariesAndAssistants(Long contractId) {
@@ -269,13 +279,13 @@ public class ContractEditBean implements Serializable {
                     contract.getId(),
                     ContractStatus.STARTED
             );
-            
+
             refreshStatistics();
             refreshTerminationFlags();
 
         } catch (Exception e) {
             showError(
-                    "Could not start contract",
+                    Messages.get("message.contract.startFailed"),
                     e.getMessage()
             );
         }
@@ -302,8 +312,10 @@ public class ContractEditBean implements Serializable {
     public void terminate() {
 
         if (!isStarted()) {
-            showError("Could not terminate contract",
-                    "Only a started contract can be terminated.");
+            showError(
+                    Messages.get("message.contract.terminateFailed"),
+                    Messages.get("message.contract.onlyStarted")
+            );
             return;
         }
         try {
@@ -312,9 +324,15 @@ public class ContractEditBean implements Serializable {
             contract = contractLogic.terminateContract(contract.getId(), true);
         } catch (TerminationBlockedException e) {
             // A timesheet was signed by the employee after the page was rendered
-            showError("Contract cannot be terminated", e.getMessage());
+            showError(
+                    Messages.get("message.contract.terminateBlocked"),
+                    e.getMessage()
+            );
         } catch (Exception e) {
-            showError("Could not terminate contract", e.getMessage());
+            showError(
+                    Messages.get("message.contract.terminateFailed"),
+                    e.getMessage()
+            );
         } finally {
             refreshStatistics();
             refreshTerminationFlags();
@@ -327,7 +345,7 @@ public class ContractEditBean implements Serializable {
             redirectToContracts();
         } catch (Exception e) {
             showError(
-                    "Could not delete contract",
+                    Messages.get("message.contract.deleteFailed"),
                     e.getMessage()
             );
         }
@@ -338,7 +356,7 @@ public class ContractEditBean implements Serializable {
             redirectToContracts();
         } catch (IOException e) {
             showError(
-                    "Could not return to contracts",
+                    Messages.get("message.contract.returnFailed"),
                     e.getMessage()
             );
         }
@@ -347,7 +365,7 @@ public class ContractEditBean implements Serializable {
     private PersonDTO findSelectedPerson() {
         if (contract.getPersonId() == null) {
             throw new IllegalArgumentException(
-                    "Please select an employee."
+                    Messages.get("message.contract.employeeRequired")
             );
         }
 
@@ -358,7 +376,7 @@ public class ContractEditBean implements Serializable {
                 .findFirst()
                 .orElseThrow(()
                         -> new IllegalArgumentException(
-                        "Selected employee could not be found."
+                        Messages.get("message.contract.employeeNotFound")
                 )
                 );
     }
@@ -368,7 +386,7 @@ public class ContractEditBean implements Serializable {
         String contextPath
                 = facesContext.getExternalContext().getRequestContextPath();
 
-        String section = loginBean.hasRole("SUPERVISOR")
+        String section = loginBean.isActiveRole("SUPERVISOR")
                 ? "supervisor"
                 : "assistant";
 
@@ -396,33 +414,37 @@ public class ContractEditBean implements Serializable {
         updateDateOfBirthRequired();
     }
 
-   private void updateDateOfBirthRequired() {
-    dateOfBirthRequired = false;   
-    dateOfBirth = null;
+    private void updateDateOfBirthRequired() {
+        dateOfBirthRequired = false;
+        dateOfBirth = null;
 
-    if (contract == null || contract.getPersonId() == null) {
-        return;
-    }
-    PersonDTO employee = persons.stream()
-            .filter(p -> contract.getPersonId().equals(p.getId()))
-            .findFirst()
-            .orElse(null);
-    if (employee == null) {
-        return;
+        if (contract == null || contract.getPersonId() == null) {
+            return;
+        }
+        PersonDTO employee = persons.stream()
+                .filter(p -> contract.getPersonId().equals(p.getId()))
+                .findFirst()
+                .orElse(null);
+        if (employee == null) {
+            return;
+        }
+
+        dateOfBirth = employee.getDateOfBirth();
+        dateOfBirthRequired = true;
     }
 
-    dateOfBirth = employee.getDateOfBirth();   
-    dateOfBirthRequired = true;                
-}
+    private void validateDateOfBirth() {
+        if (dateOfBirthRequired && dateOfBirth == null) {
+            PersonDTO employee = findSelectedPerson();
 
-private void validateDateOfBirth() {
-    if (dateOfBirthRequired && dateOfBirth == null) {
-        PersonDTO employee = findSelectedPerson();
-        throw new IllegalArgumentException(
-                "Date of birth is required for " + employee.getFirstName()
-                + " " + employee.getLastName() + ".");
+            throw new IllegalArgumentException(
+                    Messages.get(
+                            "message.contract.dateOfBirthRequired",
+                            employee.getFirstName() + " " + employee.getLastName()
+                    )
+            );
+        }
     }
-}
 
     public boolean isNewContract() {
         return id == null;
@@ -508,7 +530,7 @@ private void validateDateOfBirth() {
     public ContractStatisticsDTO getStatistics() {
         return statistics;
     }
-    
+
     private void refreshStatistics() {
         if (contract != null && contract.getId() != null) {
             statistics = contractLogic.getContractStatistics(
@@ -517,8 +539,49 @@ private void validateDateOfBirth() {
         }
     }
 
-
     public LocalDate getToday() {
         return LocalDate.now();
+    }
+
+    public LocalDate getStartMonth() {
+        if (contract == null || contract.getStartDate() == null) {
+            return null;
+        }
+
+        return contract.getStartDate().withDayOfMonth(1);
+    }
+
+    public void setStartMonth(LocalDate startMonth) {
+        if (contract == null) {
+            return;
+        }
+
+        contract.setStartDate(
+                startMonth != null
+                        ? startMonth.withDayOfMonth(1)
+                        : null
+        );
+    }
+
+    public LocalDate getEndMonth() {
+        if (contract == null || contract.getEndDate() == null) {
+            return null;
+        }
+
+        return contract.getEndDate().withDayOfMonth(1);
+    }
+
+    public void setEndMonth(LocalDate endMonth) {
+        if (contract == null) {
+            return;
+        }
+
+        contract.setEndDate(
+                endMonth != null
+                        ? endMonth.withDayOfMonth(
+                                endMonth.lengthOfMonth()
+                        )
+                        : null
+        );
     }
 }

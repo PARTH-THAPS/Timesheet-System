@@ -7,11 +7,11 @@
     xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
-        Create Account
+        #{msg['signup.title']}
     </ui:define>
 
     <ui:define name="pageHeadline">
-        Create Account
+        #{msg['signup.title']}
     </ui:define>
 
     <ui:define name="content">
@@ -19,7 +19,7 @@
             <div class="card auth-card">
 
                 <p class="text-muted auth-description">
-                    Create your BRAVO-TSS account.
+                    #{msg['signup.description']}
                 </p>
 
                 <p:messages
@@ -27,48 +27,76 @@
                     showDetail="true"
                     closable="true"
                     styleClass="app-messages"
-                />
+                    />
 
                 <h:form id="signupForm">
                     <div class="form-field">
-                        <p:outputLabel for="firstName" value="First name"/>
+                        <p:outputLabel for="firstName" value="#{msg['signup.firstName']}"/>
                         <p:inputText
                             id="firstName"
                             value="#{CreatePersonBean.personDto.firstName}"
                             required="true"
+                            requiredMessage="#{msg['signup.firstName.required']}"
                             styleClass="form-input"
-                            placeholder="First name"/>
+                            placeholder="#{msg['signup.firstName.placeholder']}"/>
+                        <p:message
+                            for="firstName"
+                            styleClass="field-message"/>
                     </div>
 
                     <div class="form-field">
-                        <p:outputLabel for="lastName" value="Last name"/>
+                        <p:outputLabel
+                            for="lastName"
+                            value="#{msg['signup.lastName']}"/>
+
                         <p:inputText
                             id="lastName"
                             value="#{CreatePersonBean.personDto.lastName}"
                             required="true"
+                            requiredMessage="#{msg['signup.lastName.required']}"
                             styleClass="form-input"
-                            placeholder="Last name"/>
+                            placeholder="#{msg['signup.lastName.placeholder']}"/>
+
+                        <p:message
+                            for="lastName"
+                            styleClass="field-message"/>
                     </div>
 
                     <div class="form-field">
-                        <p:outputLabel for="emailAddress" value="Email"/>
+                        <p:outputLabel
+                            for="emailAddress"
+                            value="#{msg['signup.email']}"/>
+
                         <p:inputText
                             id="emailAddress"
                             value="#{CreatePersonBean.personDto.emailAddress}"
                             required="true"
+                            requiredMessage="#{msg['signup.email.required']}"
                             styleClass="form-input"
-                            placeholder="name@example.com"/>
+                            placeholder="#{msg['signup.email.placeholder']}"/>
+
+                        <p:message
+                            for="emailAddress"
+                            styleClass="field-message"/>
                     </div>
 
                     <div class="form-field">
-                        <p:outputLabel for="password" value="Password"/>
+                        <p:outputLabel
+                            for="password"
+                            value="#{msg['signup.password']}"/>
+
                         <p:password
                             id="password"
                             value="#{CreatePersonBean.personDto.password}"
                             required="true"
+                            requiredMessage="#{msg['signup.password.required']}"
                             feedback="false"
                             styleClass="form-input"
-                            placeholder="Password"/>
+                            placeholder="#{msg['signup.password.placeholder']}"/>
+
+                        <p:message
+                            for="password"
+                            styleClass="field-message"/>
                     </div>
 
                     <div class="form-checkbox">
@@ -76,13 +104,20 @@
                             id="consent"
                             value="#{CreatePersonBean.personDto.consent}"
                             required="true"
-                            />
-                        <p:outputLabel for="consent" value="I agree to the required data processing."/>
+                            requiredMessage="#{msg['signup.consent.required']}"/>
+
+                        <p:outputLabel
+                            for="consent"
+                            value="#{msg['signup.consent']}"/>
                     </div>
+
+                    <p:message
+                        for="consent"
+                        styleClass="field-message"/>
 
                     <div class="form-actions auth-actions">
                         <p:commandButton
-                            value="Create Account"
+                            value="#{msg['signup.submit']}"
                             icon="pi pi-user-plus"
                             action="#{CreatePersonBean.createPerson}"
                             update="signupForm formMessages"/>
@@ -90,8 +125,10 @@
                 </h:form>
 
                 <p class="auth-footer">
-                    Already have an account?
-                    <h:link outcome="/index" value="Back to login"/>
+                    #{msg['signup.loginPrompt']}
+                    <h:link
+                        outcome="/index"
+                        value="#{msg['signup.loginLink']}"/>
                 </p>
 
             </div>

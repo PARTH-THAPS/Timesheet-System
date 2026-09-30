@@ -155,10 +155,10 @@
                                     class="status-badge status-#{timesheet.status}">
 
                                     #{msg[
-                                        'timesheet.status.'.concat(
-                                            timesheet.status
-                                        )
-                                    ]}
+                                      'timesheet.status.'.concat(
+                                      timesheet.status
+                                      )
+                                      ]}
 
                                 </span>
 
@@ -184,7 +184,7 @@
 
                                         </h:outputText>
 
-                                        h
+                                        #{msg['timesheet.hoursUnit']}
 
                                     </strong>
 
@@ -208,7 +208,7 @@
 
                                         </h:outputText>
 
-                                        h
+                                        #{msg['timesheet.hoursUnit']}
 
                                     </strong>
 
@@ -223,11 +223,11 @@
 
                                     <strong
                                         class="statistic-value
-                                            #{timesheet.balance gt 0
-                                                ? 'text-success'
-                                                : timesheet.balance lt 0
-                                                    ? 'text-warning'
-                                                    : ''}">
+                                        #{timesheet.balance gt 0
+                                          ? 'text-success'
+                                          : timesheet.balance lt 0
+                                          ? 'text-warning'
+                                          : ''}">
 
                                         <h:outputText
                                             value="#{timesheet.balance}">
@@ -238,7 +238,7 @@
 
                                         </h:outputText>
 
-                                        h
+                                        #{msg['timesheet.hoursUnit']}
 
                                     </strong>
 
@@ -340,12 +340,6 @@
 
                     </div>
 
-                    <p:button
-                        value="#{msg['timesheets.title']}"
-                        icon="pi pi-list"
-                        outcome="/views/supervisor/timesheets"
-                        styleClass="ui-button-secondary"/>
-
                 </div>
 
 
@@ -373,14 +367,14 @@
 
                 <ui:fragment
                     rendered="#{
-                        not empty homeDashboardBean.supervisorTimesheets
+                    not empty homeDashboardBean.supervisorTimesheets
                     }">
 
                     <div class="card">
 
                         <p:dataTable
                             value="#{
-                                homeDashboardBean.supervisorTimesheets
+                            homeDashboardBean.supervisorTimesheets
                             }"
                             var="timesheet"
                             rows="5">
@@ -390,7 +384,7 @@
 
                                 <h:outputText
                                     value="#{
-                                        timesheet.employeeFirstName
+                                    timesheet.employeeFirstName
                                     } #{timesheet.employeeLastName}"/>
 
                             </p:column>
@@ -436,7 +430,7 @@
 
                                 </h:outputText>
 
-                                <span> h</span>
+                                <span> #{msg['timesheet.hoursUnit']}</span>
 
                             </p:column>
 
@@ -448,6 +442,7 @@
 
                                 <p:button
                                     icon="pi pi-eye"
+                                    title="#{msg['timesheet.open']}"
                                     outcome="/views/supervisor/timesheet"
                                     styleClass="ui-button-secondary">
 
@@ -505,7 +500,7 @@
                         styleClass="dashboard-primary-action"/>
 
                     <p:button
-                        value="#{msg['timesheets.title']}"
+                        value="#{msg['timesheet.assistant.title']}"
                         icon="pi pi-clock"
                         outcome="/views/assistant/timesheets"
                         styleClass="ui-button-secondary"/>
@@ -568,7 +563,7 @@
                 <div class="dashboard-action-grid">
 
                     <p:button
-                        value="#{msg['timesheets.title']}"
+                        value="#{msg['timesheet.secretary.title']}"
                         icon="pi pi-clock"
                         outcome="/views/secretary/timesheets"
                         styleClass="ui-button-secondary"/>

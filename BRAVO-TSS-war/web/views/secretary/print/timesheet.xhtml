@@ -18,11 +18,11 @@
     </f:metadata>
 
     <ui:define name="pageTitle">
-        Print Timesheets
+        #{msg['print.timesheets.title']}
     </ui:define>
 
     <ui:define name="pageHeadline">
-        Print Timesheets
+        #{msg['print.timesheets.title']}
     </ui:define>
 
     <ui:define name="navigation">
@@ -38,20 +38,19 @@
         <div class="print-actions">
 
             <p:commandButton
-                value="Print"
+                value="#{msg['button.print']}"
                 icon="pi pi-print"
                 type="button"
                 onclick="window.print();"
                 styleClass="ui-button-secondary"/>
 
             <p:button
-                value="Back"
+                value="#{msg['button.back']}"
                 icon="pi pi-arrow-left"
                 outcome="/views/secretary/timesheets"
                 styleClass="ui-button-secondary"/>
 
         </div>
-
 
         <ui:fragment
             rendered="#{not empty secretaryTimesheetPrintBean.timesheets}">
@@ -76,12 +75,11 @@
 
         </ui:fragment>
 
-
         <ui:fragment
             rendered="#{empty secretaryTimesheetPrintBean.timesheets}">
 
             <section class="card">
-                No timesheets are available for printing.
+                #{msg['print.timesheets.none']}
             </section>
 
         </ui:fragment>

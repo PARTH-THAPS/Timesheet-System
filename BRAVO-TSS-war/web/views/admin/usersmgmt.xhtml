@@ -117,8 +117,8 @@
                         </f:facet>
 
                         <span class="role-badge">
-                            <ui:repeat value="#{person.role}" var="r">
-                                #{msg['role.'.concat(r)]}
+                            <ui:repeat value="#{person.role}" var="r" varStatus="status">
+                                #{msg['role.'.concat(r)]}#{status.last ? '' : ', '}
                             </ui:repeat>
                         </span>
 
@@ -126,7 +126,7 @@
 
                     <!-- Consent -->
                     <p:column
-                        headerText="#{msg['user.consent']}"
+                        headerText="#{msg['user.dataProcessingConsent']}"
                         styleClass="table-small-column">
 
                         <i class="#{person.consent

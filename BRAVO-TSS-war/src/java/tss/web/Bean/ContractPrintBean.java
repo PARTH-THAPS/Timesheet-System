@@ -19,6 +19,7 @@ import tss.dto.TimesheetDTO;
 import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
 import tss.logic.TimesheetLogic;
+import tss.web.i18n.Messages;
 
 @Named
 @ViewScoped
@@ -123,7 +124,7 @@ public class ContractPrintBean implements Serializable {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         try {
             facesContext.getExternalContext()
-                    .responseSendError(403, "You are not authorized to access this contract.");
+                    .responseSendError(403, Messages.get("accessDenied.description"));
             facesContext.responseComplete();
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Failed to send 403 for contract " + contractId, e);

@@ -17,6 +17,7 @@ import tss.dto.TimesheetDTO;
 import tss.dto.User;
 import tss.entity.TimesheetStatus;
 import tss.logic.TimesheetLogic;
+import tss.web.i18n.Messages;
 
 @Named("supervisorSignBean")
 @ViewScoped
@@ -48,7 +49,10 @@ public class SupervisorSignBean
 
     public void signTimesheet(Long timesheetId) {
         if (timesheetId == null) {
-            showError("Could not sign timesheet", "No timesheet was selected.");
+            showError(
+                    Messages.get("message.timesheet.signFailed"),
+                    Messages.get("message.timesheet.notSelected")
+            );
             return;
         }
 
@@ -56,7 +60,9 @@ public class SupervisorSignBean
             timesheetLogic.signBySupervisor(timesheetId);
 
             showInfo(
-                    "Timesheet signed", "The timesheet was signed successfully.");
+                    Messages.get("message.timesheet.signed.summary"),
+                    Messages.get("message.timesheet.signed.detail")
+            );
 
             reload();
 
@@ -64,30 +70,44 @@ public class SupervisorSignBean
                 | IllegalStateException e) {
 
             showError(
-                    "Could not sign timesheet", messageOf(e));
+                    Messages.get("message.timesheet.signFailed"),
+                    messageOf(e)
+            );
         }
     }
 
     public void requestChanges(Long timesheetId) {
         if (timesheetId == null) {
-            showError("Could Not Request Changes", "No timesheet was selected.");
+            showError(
+                    Messages.get("message.timesheet.requestChangesFailed"),
+                    Messages.get("message.timesheet.notSelected")
+            );
             return;
         }
 
         User user = loginBean.getUser();
 
         if (user == null) {
-            showError("Could Not Request Changes", "No authenticated supervisor was found.");
+            showError(
+                    Messages.get("message.timesheet.requestChangesFailed"),
+                    Messages.get("message.auth.noSupervisor")
+            );
             return;
         }
 
         try {
             timesheetLogic.requestChangesBySupervisor(timesheetId, user.getId());
-            showInfo("Changes Requested", "The employee can edit this timesheet again.");
+            showInfo(
+                    Messages.get("message.timesheet.changesRequested.summary"),
+                    Messages.get("message.timesheet.changesRequested.detail")
+            );
             reload();
 
         } catch (IllegalArgumentException | IllegalStateException e) {
-            showError("Could Not Request Changes", messageOf(e));
+            showError(
+                    Messages.get("message.timesheet.requestChangesFailed"),
+                    messageOf(e)
+            );
         }
     }
 
@@ -102,7 +122,9 @@ public class SupervisorSignBean
     }
 
     private String messageOf(Exception e) {
-        return e.getMessage() != null ? e.getMessage() : "The operation could not be completed.";
+        return e.getMessage() != null
+                ? e.getMessage()
+                : Messages.get("message.common.operationFailed");
     }
 
     private void showInfo(String summary, String detail) {

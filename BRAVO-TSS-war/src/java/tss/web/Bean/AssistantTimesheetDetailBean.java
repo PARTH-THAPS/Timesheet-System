@@ -15,6 +15,7 @@ import tss.dto.TimesheetEntryDTO;
 import tss.dto.User;
 import tss.entity.TimesheetStatus;
 import tss.logic.TimesheetLogic;
+import tss.web.i18n.Messages;
 
 @Named("assistantTimesheetDetailBean")
 @ViewScoped
@@ -24,7 +25,7 @@ public class AssistantTimesheetDetailBean implements Serializable {
 
     @EJB
     private TimesheetLogic timesheetLogic;
-    
+
     @Inject
     private loginBean loginBean;
 
@@ -37,28 +38,39 @@ public class AssistantTimesheetDetailBean implements Serializable {
         }
 
         if (id == null) {
-            showError("Could Not Load Timesheet", "No timesheet id was provided.");
+            showError(
+                    Messages.get("message.timesheet.loadFailed"),
+                    Messages.get("message.timesheet.noId")
+            );
             return;
         }
-        
+
         User user = loginBean.getUser();
 
         if (user == null) {
-            showError("Could Not Load Timesheet", "No authenticated assistant was found.");
+            showError(
+                    Messages.get("message.timesheet.loadFailed"),
+                    Messages.get("message.auth.noAssistant")
+            );
             return;
         }
-
 
         try {
             timesheet = timesheetLogic.getTimesheetForAssistant(id, user.getId());
         } catch (IllegalArgumentException e) {
-            showError("Could Not Load Timesheet", messageOf(e));
+            showError(
+                    Messages.get("message.timesheet.loadFailed"),
+                    messageOf(e)
+            );
         }
     }
 
     public void requestChanges() {
         if (timesheet == null || timesheet.getId() == null) {
-            showError("Could Not Request Changes", "No timesheet is loaded.");
+            showError(
+                    Messages.get("message.timesheet.requestChangesFailed"),
+                    Messages.get("message.timesheet.notLoaded")
+            );
             return;
         }
 
@@ -67,22 +79,34 @@ public class AssistantTimesheetDetailBean implements Serializable {
                 .getUserPrincipal();
 
         if (principal == null) {
-            showError("Could Not Request Changes", "No authenticated assistant was found.");
+            showError(
+                    Messages.get("message.timesheet.requestChangesFailed"),
+                    Messages.get("message.auth.noAssistant")
+            );
             return;
         }
-        
+
         User user = loginBean.getUser();
 
         if (user == null) {
-            showError("Could Not Request Changes", "No authenticated assistant was found.");
+            showError(
+                    Messages.get("message.timesheet.requestChangesFailed"),
+                    Messages.get("message.auth.noAssistant")
+            );
             return;
         }
 
         try {
             timesheet = timesheetLogic.requestChanges(timesheet.getId(), user.getId());
-            showInfo("Changes Requested", "The employee can edit this timesheet again.");
+            showInfo(
+                    Messages.get("message.timesheet.changesRequested.summary"),
+                    Messages.get("message.timesheet.changesRequested.detail")
+            );
         } catch (IllegalArgumentException | IllegalStateException e) {
-            showError("Could Not Request Changes", messageOf(e));
+            showError(
+                    Messages.get("message.timesheet.requestChangesFailed"),
+                    messageOf(e)
+            );
         }
     }
 
@@ -108,7 +132,9 @@ public class AssistantTimesheetDetailBean implements Serializable {
     }
 
     private String messageOf(Exception e) {
-        return e.getMessage() != null ? e.getMessage() : "The operation could not be completed.";
+        return e.getMessage() != null
+                ? e.getMessage()
+                : Messages.get("message.common.operationFailed");
     }
 
     private void showInfo(String summary, String detail) {

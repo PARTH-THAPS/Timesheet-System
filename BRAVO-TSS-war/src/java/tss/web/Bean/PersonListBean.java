@@ -9,6 +9,7 @@ import java.util.List;
 import tss.dto.PersonDTO;
 import tss.entity.Role;
 import tss.logic.PersonLogic;
+import tss.web.i18n.Messages;
 
 @Named("PersonListBean")
 @RequestScoped
@@ -17,8 +18,8 @@ public class PersonListBean implements Serializable {
     @EJB
     private PersonLogic personLogic;
 //    private List<Person> persons;
-    
-    private List <PersonDTO> persons;
+
+    private List<PersonDTO> persons;
 
     @PostConstruct
     public void init() {
@@ -29,11 +30,11 @@ public class PersonListBean implements Serializable {
     public List<PersonDTO> getPersons() {
         return persons;
     }
-    
+
     public Role[] getRoles() {
         return Role.values();
     }
-    
+
     public String getFullName(PersonDTO person) {
         return person.getFirstName() + " " + person.getLastName();
     }
@@ -44,7 +45,7 @@ public class PersonListBean implements Serializable {
         }
 
         return person.getRole().stream()
-                .map(Role::name)
+                .map(role -> Messages.get("role." + role.name()))
                 .sorted()
                 .reduce((a, b) -> a + ", " + b)
                 .orElse("");

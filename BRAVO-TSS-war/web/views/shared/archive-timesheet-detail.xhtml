@@ -40,7 +40,7 @@
                 </h2>
             </div>
             <span class="status-badge">
-                #{msg['timesheet.status.'.concat(timesheetDetailBean.timesheet.status.name())]}
+                #{msg['timesheet.status.'.concat(timesheetDetailBean.timesheet.status)]}
             </span>
         </section>
 
@@ -50,7 +50,7 @@
                 <strong class="statistic-value">
                     <h:outputText value="#{timesheetDetailBean.timesheet.hoursDue}">
                         <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
-                    </h:outputText> h
+                    </h:outputText> #{msg['timesheet.hoursUnit']}
                 </strong>
             </div>
             <div class="statistic">
@@ -58,7 +58,7 @@
                 <strong class="statistic-value">
                     <h:outputText value="#{timesheetDetailBean.reportedHours}">
                         <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
-                    </h:outputText> h
+                    </h:outputText> #{msg['timesheet.hoursUnit']}
                 </strong>
             </div>
             <div class="statistic">
@@ -66,7 +66,7 @@
                 <strong class="statistic-value">
                     <h:outputText value="#{timesheetDetailBean.balance}">
                         <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
-                    </h:outputText> h
+                    </h:outputText> #{msg['timesheet.hoursUnit']}
                 </strong>
             </div>
         </section>

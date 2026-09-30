@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition
-        template="/WEB-INF/templates/page-layout.xhtml"
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:h="jakarta.faces.html"
-        xmlns:f="jakarta.faces.core"
-        xmlns:ui="jakarta.faces.facelets"
-        xmlns:p="http://primefaces.org/ui">
+    template="/WEB-INF/templates/page-layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
 
     <f:metadata>
         <f:viewParam name="error" value="#{loginErrorBean.error}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">
-        Login
+        #{msg['login.title']}
     </ui:define>
 
     <ui:define name="pageHeadline">
+        #{msg['login.title']}
     </ui:define>
 
     <ui:define name="content">
         <section class="auth-container">
             <div class="card auth-card">
                 <p class="text-muted auth-description">
-                    Login to access BRAVO-TSS.
+                    #{msg['login.description']}
                 </p>
 
                 <ui:fragment rendered="#{loginErrorBean.error}">
@@ -30,9 +31,9 @@
                         <i class="pi pi-times-circle"></i>
 
                         <div class="app-message-content">
-                            <strong>Login failed</strong>
+                            <strong>#{msg['login.failed']}</strong>
                             <span>
-                                Invalid email or password. Please try again.
+                                #{msg['login.failed.detail']}
                             </span>
                         </div>
                     </div>
@@ -41,39 +42,42 @@
                 <form action="j_security_check" method="POST">
                     <div class="form-field">
                         <label for="username">
-                            Email
+                            #{msg['login.email']}
                         </label>
                         <input
                             id="username"
                             name="j_username"
                             type="email"
                             class="form-input"
-                            placeholder="name@example.com"/>
+                            placeholder="#{msg['login.email.placeholder']}"/>
                     </div>
+
                     <div class="form-field">
                         <label for="password">
-                            Password
+                            #{msg['login.password']}
                         </label>
                         <input
                             id="password"
                             name="j_password"
                             type="password"
                             class="form-input"
-                            placeholder="Password"/>
+                            placeholder="#{msg['login.password.placeholder']}"/>
                     </div>
+
                     <div class="form-actions auth-actions">
                         <button
                             type="submit"
                             class="button button-primary">
-                            Log In
+                            #{msg['login.submit']}
                         </button>
                     </div>
                 </form>
+
                 <p class="auth-footer">
-                    No account yet?
+                    #{msg['login.signupPrompt']}
                     <h:link
                         outcome="/signup"
-                        value="Create an account"/>
+                        value="#{msg['login.signupLink']}"/>
                 </p>
             </div>
         </section>

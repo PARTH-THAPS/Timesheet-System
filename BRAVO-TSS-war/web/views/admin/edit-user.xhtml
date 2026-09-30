@@ -46,7 +46,7 @@
                     showDetail="true"
                     closable="true"
                     styleClass="app-messages"
-                />
+                    />
 
                 <!-- First Name -->
                 <div class="form-field">
@@ -59,6 +59,7 @@
                         id="firstName"
                         value="#{adminUserBean.person.firstName}"
                         required="true"
+                        requiredMessage="#{msg['user.firstName.required']}"
                         placeholder="#{msg['user.firstName.placeholder']}"
                         styleClass="form-input"/>
 
@@ -75,6 +76,7 @@
                         id="lastName"
                         value="#{adminUserBean.person.lastName}"
                         required="true"
+                        requiredMessage="#{msg['user.lastName.required']}"
                         placeholder="#{msg['user.lastName.placeholder']}"
                         styleClass="form-input"/>
 
@@ -92,6 +94,7 @@
                         type="email"
                         value="#{adminUserBean.person.emailAddress}"
                         required="true"
+                        requiredMessage="#{msg['user.email.required']}"
                         placeholder="#{msg['user.email.placeholder']}"
                         styleClass="form-input"/>
 
@@ -110,6 +113,7 @@
                             id="password"
                             value="#{adminUserBean.person.password}"
                             required="true"
+                            requiredMessage="#{msg['user.initialPassword.required']}"
                             feedback="false"
                             placeholder="#{msg['user.initialPassword.placeholder']}"
                             styleClass="form-input"/>
@@ -129,31 +133,46 @@
                         id="role"
                         value="#{adminUserBean.selectedRoleNames}"
                         required="true"
+                        requiredMessage="#{msg['user.roles.required']}"
                         layout="responsive"
                         columns="1">
 
                         <f:selectItems
                             value="#{adminUserBean.roles}"
                             var="role"
-                            itemValue="#{role.name()}"
-                            itemLabel="#{msg['role.'.concat(role.name())]}"/>
+                            itemValue="#{role}"
+                            itemLabel="#{msg['role.'.concat(role)]}"/>
 
                     </p:selectManyCheckbox>
 
                 </div>
 
                 <!-- Consent -->
-                <div class="form-checkbox">
+                <ui:fragment rendered="#{not adminUserBean.newUser}">
 
-                    <p:selectBooleanCheckbox
-                        id="consent"
-                        value="#{adminUserBean.person.consent}"/>
+                    <div class="form-field">
 
-                    <p:outputLabel
-                        for="consent"
-                        value="#{msg['user.dataProcessingConsent']}"/>
+                        <p:outputLabel
+                            value="#{msg['user.dataProcessingConsent']}"/>
 
-                </div>
+                        <div>
+                            <span class="status-badge #{adminUserBean.person.consent
+                                                        ? 'status-signed_by_supervisor'
+                                                        : 'status-archived'}">
+
+                                #{adminUserBean.person.consent
+                                  ? msg['common.yes']
+                                  : msg['common.no']}
+                            </span>
+                        </div>
+
+                        <small class="form-help">
+                            #{msg['user.consent.help']}
+                        </small>
+
+                    </div>
+
+                </ui:fragment>
 
                 <!-- Actions -->
                 <div class="form-actions">
@@ -187,23 +206,38 @@
 
                     </p:commandButton>
 
-                    <p:confirmDialog global="true">
+                    <p:commandButton
+                        value="#{msg['user.consent.revoke']}"
+                        icon="pi pi-ban"
+                        action="#{adminUserBean.revokeConsent}"
+                        update="userForm"
+                        rendered="#{not adminUserBean.newUser and adminUserBean.person.consent}"
+                        styleClass="ui-button-warning">
 
-                        <p:commandButton
-                            value="#{msg['button.yes']}"
-                            type="button"
-                            styleClass="ui-confirmdialog-yes"
-                            icon="pi pi-check"/>
+                        <p:confirm
+                            header="#{msg['user.consent.revoke.header']}"
+                            message="#{msg['user.consent.revoke.message']}"
+                            icon="pi pi-exclamation-triangle"/>
 
-                        <p:commandButton
-                            value="#{msg['button.no']}"
-                            type="button"
-                            styleClass="ui-confirmdialog-no ui-button-secondary"
-                            icon="pi pi-times"/>
-
-                    </p:confirmDialog>
+                    </p:commandButton>
 
                 </div>
+
+                <p:confirmDialog global="true">
+
+                    <p:commandButton
+                        value="#{msg['button.yes']}"
+                        type="button"
+                        styleClass="ui-confirmdialog-yes"
+                        icon="pi pi-check"/>
+
+                    <p:commandButton
+                        value="#{msg['button.no']}"
+                        type="button"
+                        styleClass="ui-confirmdialog-no ui-button-secondary"
+                        icon="pi pi-times"/>
+
+                </p:confirmDialog>
 
             </h:form>
 

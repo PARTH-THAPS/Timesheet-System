@@ -35,13 +35,13 @@
             <dd>
                 <h:outputText value="#{contractPrintBean.contract.hoursPerWeek}">
                     <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
-                </h:outputText> h
+                </h:outputText> #{msg['timesheet.hoursUnit']}
             </dd>
             <dt>#{msg['contract.hoursDue']}</dt>
             <dd>
                 <h:outputText value="#{contractPrintBean.contract.hoursDue}">
                     <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
-                </h:outputText> h
+                </h:outputText> #{msg['timesheet.hoursUnit']}
             </dd>
             <dt>#{msg['contract.frequency']}</dt>
             <dd>#{msg['contract.frequency.'.concat(contractPrintBean.contract.frequency)]}</dd>
@@ -87,7 +87,7 @@
                             minFractionDigits="2"
                             maxFractionDigits="2"/>
                     </h:outputText>
-                    h
+                    #{msg['timesheet.hoursUnit']}
                 </dd>
 
                 <dt>
@@ -100,7 +100,7 @@
                             minFractionDigits="2"
                             maxFractionDigits="2"/>
                     </h:outputText>
-                    h
+                    #{msg['timesheet.hoursUnit']}
                 </dd>
 
                 <dt>
@@ -113,7 +113,7 @@
                             minFractionDigits="2"
                             maxFractionDigits="2"/>
                     </h:outputText>
-                    h
+                    #{msg['timesheet.hoursUnit']}
                 </dd>
 
                 <dt>
@@ -126,7 +126,7 @@
                             minFractionDigits="2"
                             maxFractionDigits="2"/>
                     </h:outputText>
-                    h
+                    #{msg['timesheet.hoursUnit']}
                 </dd>
 
                 <dt>
@@ -139,7 +139,7 @@
                             minFractionDigits="2"
                             maxFractionDigits="2"/>
                     </h:outputText>
-                    h
+                    #{msg['timesheet.hoursUnit']}
                 </dd>
 
                 <dt>
@@ -152,7 +152,7 @@
                             minFractionDigits="2"
                             maxFractionDigits="2"/>
                     </h:outputText>
-                    h
+                    #{msg['timesheet.hoursUnit']}
                 </dd>
 
             </dl>

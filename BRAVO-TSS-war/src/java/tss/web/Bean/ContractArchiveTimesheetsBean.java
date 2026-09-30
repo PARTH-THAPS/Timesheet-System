@@ -16,6 +16,7 @@ import tss.dto.TimesheetDTO;
 import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
 import tss.logic.TimesheetLogic;
+import tss.web.i18n.Messages;
 
 @Named("contractArchiveTimesheetsBean")
 @ViewScoped
@@ -43,13 +44,13 @@ public class ContractArchiveTimesheetsBean implements Serializable {
         loadPersonNames();
 
         if (id == null) {
-            throw new IllegalArgumentException("No contract id provided.");
+            throw new IllegalArgumentException(Messages.get("message.contract.noId"));
         }
 
         contract = contractLogic.searchContract(id);
 
         if (contract == null) {
-            throw new IllegalArgumentException("No contract found with id: " + id);
+            throw new IllegalArgumentException(Messages.get("message.contract.notFound", id));
         }
 
         timesheets = timesheetLogic.getTimesheetsForContract(id);
@@ -65,7 +66,10 @@ public class ContractArchiveTimesheetsBean implements Serializable {
     }
 
     public String getPersonName(Long personId) {
-        return personNames.getOrDefault(personId, "Unknown");
+        return personNames.getOrDefault(
+                personId,
+                Messages.get("common.unknown")
+        );
     }
 
     public Long getId() {
@@ -84,6 +88,3 @@ public class ContractArchiveTimesheetsBean implements Serializable {
         return timesheets;
     }
 }
-
-
-

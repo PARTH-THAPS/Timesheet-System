@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <ui:composition
     template="/WEB-INF/templates/page-layout.xhtml"
     xmlns="http://www.w3.org/1999/xhtml"
@@ -8,11 +9,11 @@
     xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
-        Contract Archive
+        #{msg['archive.contractArchive']}
     </ui:define>
 
     <ui:define name="pageHeadline">
-        Contract Archive
+        #{msg['archive.contractArchive']}
     </ui:define>
 
     <ui:define name="navigation">
@@ -20,21 +21,31 @@
     </ui:define>
 
     <ui:define name="headerActions">
-        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
+        <ui:include src="/WEB-INF/components/header-actions.xhtml"/>
     </ui:define>
 
     <ui:define name="content">
+
         <section class="page-section-header">
+
             <div>
-                <h2>All Contracts</h2>
+
+                <h2>
+                    #{msg['archive.allContracts']}
+                </h2>
+
                 <p class="text-muted">
-                    Select a contract to review its timesheets.
+                    #{msg['archive.selectContract']}
                 </p>
+
             </div>
+
         </section>
 
         <section class="card">
+
             <h:form id="archiveContractsForm">
+
                 <p:dataTable
                     id="contractsTable"
                     widgetVar="contractsTable"
@@ -44,92 +55,125 @@
                     rows="10"
                     stripedRows="true"
                     sortMode="single"
-                    emptyMessage="No contracts found.">
+                    emptyMessage="#{msg['contracts.noContracts']}">
 
                     <p:column
-                        headerText="Name"
+                        headerText="#{msg['contract.name']}"
                         sortBy="#{contract.name}"
                         filterBy="#{contract.name}"
                         filterMatchMode="contains">
-                        <h:outputText value="#{contract.name}"/>
+
+                        <h:outputText
+                            value="#{contract.name}"/>
+
                     </p:column>
 
                     <p:column
-                            headerText="Employee"
-                            sortBy="#{archiveContractsBean.getPersonName(contract.personId)}"
-                            filterBy="#{archiveContractsBean.getPersonName(contract.personId)}"
-                            filterMatchMode="contains">
-                        <h:outputText value="#{archiveContractsBean.getPersonName(contract.personId)}"/>
+                        headerText="#{msg['contract.employee']}"
+                        sortBy="#{archiveContractsBean.getPersonName(contract.personId)}"
+                        filterBy="#{archiveContractsBean.getPersonName(contract.personId)}"
+                        filterMatchMode="contains">
+
+                        <h:outputText
+                            value="#{archiveContractsBean.getPersonName(contract.personId)}"/>
+
                     </p:column>
 
                     <p:column
-                        headerText="Start"
+                        headerText="#{msg['contract.start']}"
                         sortBy="#{contract.startDate}">
-                        <h:outputText value="#{contract.startDate}">
-                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+
+                        <h:outputText
+                            value="#{contract.startDate}">
+
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+
                         </h:outputText>
+
                     </p:column>
 
                     <p:column
-                        headerText="End"
+                        headerText="#{msg['contract.end']}"
                         sortBy="#{contract.endDate}">
-                        <h:outputText value="#{contract.endDate}">
-                            <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
+
+                        <h:outputText
+                            value="#{contract.endDate}">
+
+                            <f:convertDateTime
+                                type="localDate"
+                                pattern="dd.MM.yyyy"/>
+
                         </h:outputText>
+
                     </p:column>
 
                     <p:column
-                        headerText="Status"
+                        headerText="#{msg['contract.status']}"
                         sortBy="#{contract.status}"
                         filterBy="#{contract.status}"
                         filterMatchMode="exact">
 
                         <f:facet name="filter">
-                            <p:selectOneMenu onchange="PF('contractsTable').filter()">
+
+                            <p:selectOneMenu
+                                onchange="PF('contractsTable').filter()">
 
                                 <f:selectItem
-                                    itemLabel="All"
+                                    itemLabel="#{msg['common.all']}"
                                     itemValue="#{null}"
                                     noSelectionOption="true"/>
 
                                 <f:selectItems
                                     value="#{archiveContractsBean.statuses}"
                                     var="status"
-                                    itemLabel="#{status}"
-                                    itemValue="#{status}"/>
+                                    itemValue="#{status}"
+                                    itemLabel="#{msg['contract.status.'.concat(status)]}"/>
 
                             </p:selectOneMenu>
+
                         </f:facet>
 
-                        <span class="status-badge">
-                            #{contract.status}
+                        <span class="status-badge status-#{contract.status}">
+                            #{msg['contract.status.'.concat(contract.status)]}
                         </span>
 
                     </p:column>
 
                     <p:column
-                        headerText="Hours / Week"
+                        headerText="#{msg['contract.hoursPerWeek']}"
                         sortBy="#{contract.hoursPerWeek}">
-                        <h:outputText value="#{contract.hoursPerWeek}"/>
+
+                        <h:outputText
+                            value="#{contract.hoursPerWeek}"/>
+
                     </p:column>
 
                     <p:column
-                        headerText="Actions"
+                        headerText="#{msg['common.actions']}"
                         styleClass="table-actions-column">
+
                         <p:button
                             icon="pi pi-folder-open"
-                            title="Open timesheets"
+                            title="#{msg['archive.openTimesheets']}"
                             outcome="/views/shared/archive-contract-timesheets"
                             styleClass="ui-button-secondary">
+
                             <f:param
                                 name="id"
                                 value="#{contract.id}"/>
+
                         </p:button>
+
                     </p:column>
 
                 </p:dataTable>
-            </h:form>
-        </section>
-    </ui:define>
-</ui:composition>
 
+            </h:form>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>

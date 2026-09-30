@@ -9,11 +9,14 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.security.Principal;
+import java.time.LocalDate;
 import tss.dto.PersonDTO;
 import tss.dto.User;
-import tss.entity.Language;   // adjust to the real package of your enum
+import tss.entity.Language;
+import tss.entity.Role;
 import tss.logic.PersonLogic;
 import tss.logic.UserLogic;
+import tss.web.i18n.Messages;
 
 @Named
 @SessionScoped
@@ -33,7 +36,11 @@ public class PersonalDataBean implements Serializable {
     @Inject
     private LocaleBean localeBean;
 
-    private String oldPrincipalName = null;   // was Principal (not serializable)
+    private String oldPrincipalName = null;
+
+    private String currentPassword;
+    private String newPassword;
+    private String confirmPassword;
 
     public User getUser() {
         Principal p = FacesContext.getCurrentInstance()
@@ -78,7 +85,7 @@ public class PersonalDataBean implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_INFO,
-                            "Saved successfully!",
+                            Messages.get("message.personalInfo.saved"),
                             null
                     )
             );
@@ -89,12 +96,101 @@ public class PersonalDataBean implements Serializable {
                     null,
                     new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,
-                            "Saving failed: " + e.getMessage(),
+                            Messages.get(
+                                    "message.personalInfo.saveFailed",
+                                    e.getMessage()
+                            ),
                             null
                     )
             );
         }
 
         return null;
+    }
+
+    public LocalDate getToday() {
+        return LocalDate.now();
+    }
+
+    public boolean isDateOfBirthRequired() {
+        return personDTO != null
+                && personDTO.getRole() != null
+                && personDTO.getRole().contains(Role.EMPLOYEE);
+    }
+
+    public String getCurrentPassword() {
+        return this.currentPassword;
+    }
+
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
+    }
+
+    public String getNewPassword() {
+        return this.newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public String getConfirmPassword() {
+        return this.confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
+    public void changePassword() {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+
+        try {
+            if (newPassword == null
+                    || !newPassword.equals(confirmPassword)) {
+
+                throw new IllegalArgumentException(
+                        Messages.get("message.password.mismatch")
+                );
+            }
+
+            User user = getUser();
+
+            if (user == null) {
+                throw new IllegalStateException(
+                        Messages.get("message.auth.noUser")
+                );
+            }
+
+            personLogic.changePassword(
+                    user.getId(),
+                    currentPassword,
+                    newPassword
+            );
+
+            currentPassword = null;
+            newPassword = null;
+            confirmPassword = null;
+
+            ctx.addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            Messages.get("message.password.changed.summary"),
+                            Messages.get("message.password.changed.detail")
+                    )
+            );
+
+        } catch (EJBException | IllegalArgumentException | IllegalStateException e) {
+
+            ctx.addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            Messages.get("message.password.changeFailed"),
+                            e.getMessage()
+                    )
+            );
+        }
     }
 }

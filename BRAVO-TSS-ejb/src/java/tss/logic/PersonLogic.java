@@ -10,11 +10,22 @@ import tss.entity.Role;
 
 @Remote
 public interface PersonLogic {
-     PersonDTO createPerson(String firstName, String lastName, String emailAddress, boolean consent, String password, Set<Role> role);
-     PersonDTO findPerson(Long id);
-     void deletePerson(PersonDTO person);
-     PersonDTO updatePerson(PersonDTO person);
-     List<PersonDTO> findAllPersons();
-     void updateDateOfBirth(Long personId, LocalDate dob);
-     
+
+    PersonDTO createPerson(String firstName, String lastName, String emailAddress, boolean consent, String password, Set<Role> role);
+
+    PersonDTO findPerson(Long id);
+
+    void deletePerson(PersonDTO person);
+
+    PersonDTO updatePerson(PersonDTO person);
+
+    List<PersonDTO> findAllPersons();
+
+    void updateDateOfBirth(Long personId, LocalDate dob);
+
+    void acceptConsent(Long personId);
+
+    void revokeConsent(Long personId);
+
+    void changePassword(Long personId, String currentPassword, String newPassword);
 }

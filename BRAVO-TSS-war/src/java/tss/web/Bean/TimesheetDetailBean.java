@@ -15,6 +15,7 @@ import tss.entity.ReportType;
 import tss.entity.TimesheetStatus;
 import tss.logic.ContractLogic;
 import tss.logic.TimesheetLogic;
+import tss.web.i18n.Messages;
 
 @Named
 @ViewScoped
@@ -49,7 +50,7 @@ public class TimesheetDetailBean implements Serializable {
 
         if (id == null) {
             throw new IllegalArgumentException(
-                    "No timesheet id provided."
+                    Messages.get("message.timesheet.noId")
             );
         }
 
@@ -57,7 +58,7 @@ public class TimesheetDetailBean implements Serializable {
 
         if (timesheet == null) {
             throw new IllegalArgumentException(
-                    "No timesheet found with id: " + id
+                    Messages.get("message.timesheet.notFound", id)
             );
         }
 
@@ -137,8 +138,8 @@ public class TimesheetDetailBean implements Serializable {
                 );
 
                 showInfo(
-                        "Entry updated",
-                        "The entry was updated successfully."
+                        Messages.get("message.timesheet.entryUpdated.summary"),
+                        Messages.get("message.timesheet.entryUpdated.detail")
                 );
             } else {
                 timesheetLogic.addEntry(
@@ -147,8 +148,8 @@ public class TimesheetDetailBean implements Serializable {
                 );
 
                 showInfo(
-                        "Entry added",
-                        "The entry was added successfully."
+                        Messages.get("message.timesheet.entryAdded.summary"),
+                        Messages.get("message.timesheet.entryAdded.detail")
                 );
             }
 
@@ -160,7 +161,7 @@ public class TimesheetDetailBean implements Serializable {
             FacesContext.getCurrentInstance().validationFailed();
 
             showError(
-                    "Could not save entry",
+                    Messages.get("message.timesheet.entrySaveFailed"),
                     e.getMessage()
             );
         }
@@ -171,11 +172,14 @@ public class TimesheetDetailBean implements Serializable {
             timesheetLogic.removeEntry(timesheet.getId(), entry.getId());
 
             reload();
-            showInfo("Entry removed", "The entry was removed successfully.");
+            showInfo(
+                    Messages.get("message.timesheet.entryRemoved.summary"),
+                    Messages.get("message.timesheet.entryRemoved.detail")
+            );
 
         } catch (Exception e) {
             showError(
-                    "Could not delete entry",
+                    Messages.get("message.timesheet.entryDeleteFailed"),
                     e.getMessage()
             );
         }
@@ -195,7 +199,10 @@ public class TimesheetDetailBean implements Serializable {
 
     public void signByEmployee() {
         if (timesheet == null || timesheet.getId() == null) {
-            showError("Could not sign", "No timesheet is loaded.");
+            showError(
+                    Messages.get("message.timesheet.signFailed"),
+                    Messages.get("message.timesheet.notLoaded")
+            );
             return;
         }
 
@@ -203,17 +210,23 @@ public class TimesheetDetailBean implements Serializable {
             timesheet = timesheetLogic.signByEmployee(timesheet.getId());
 
             showInfo(
-                    "Timesheet signed",
-                    "The timesheet was signed successfully."
+                    Messages.get("message.timesheet.signed.summary"),
+                    Messages.get("message.timesheet.signed.detail")
             );
         } catch (IllegalArgumentException | IllegalStateException e) {
-            showError("Could not sign", messageOf(e));
+            showError(
+                    Messages.get("message.timesheet.signFailed"),
+                    messageOf(e)
+            );
         }
     }
 
     public void revokeEmployeeSignature() {
         if (timesheet == null || timesheet.getId() == null) {
-            showError("Could not revoke signature", "No timesheet is loaded.");
+            showError(
+                    Messages.get("message.timesheet.revokeFailed"),
+                    Messages.get("message.timesheet.notLoaded")
+            );
             return;
         }
 
@@ -221,11 +234,13 @@ public class TimesheetDetailBean implements Serializable {
             timesheet = timesheetLogic.revokeEmployeeSignature(timesheet.getId());
 
             showInfo(
-                    "Signature revoked",
-                    "The employee signature was revoked."
+                    Messages.get("message.timesheet.revoked.summary"),
+                    Messages.get("message.timesheet.revoked.detail")
             );
         } catch (IllegalArgumentException | IllegalStateException e) {
-            showError("Could not revoke signature", messageOf(e)
+            showError(
+                    Messages.get("message.timesheet.revokeFailed"),
+                    messageOf(e)
             );
         }
     }
@@ -233,7 +248,7 @@ public class TimesheetDetailBean implements Serializable {
     private String messageOf(Exception e) {
         return e.getMessage() != null
                 ? e.getMessage()
-                : "The operation could not be completed.";
+                : Messages.get("message.common.operationFailed");
     }
 
     private void reload() {
@@ -253,11 +268,9 @@ public class TimesheetDetailBean implements Serializable {
     }
 
     public double getBalance() {
-        if (timesheet == null) {
-            return 0;
-        }
-
-        return timesheet.getHoursDue() - getReportedHours();
+        return timesheet != null
+                ? timesheet.getBalance()
+                : 0.0;
     }
 
     public boolean isEditable() {

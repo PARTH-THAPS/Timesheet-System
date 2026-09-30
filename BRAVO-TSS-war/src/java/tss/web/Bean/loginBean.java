@@ -14,34 +14,35 @@ import java.util.logging.Logger;
 import tss.dto.User;
 import tss.entity.Role;
 import tss.logic.UserLogic;
+import tss.web.i18n.Messages;
 
 @Named
 @SessionScoped
 public class loginBean implements Serializable {
 
-   private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-   private static final Logger LOG =
-           Logger.getLogger(loginBean.class.getName());
+    private static final Logger LOG
+            = Logger.getLogger(loginBean.class.getName());
 
-   private boolean error;
-   private User currentUser;
-   
-   private Role activeRole;
+    private boolean error;
+    private User currentUser;
 
-   @EJB
-   private UserLogic u;
+    private Role activeRole;
 
-   private Principal oldPrincipal = null;
+    @EJB
+    private UserLogic u;
 
-   public boolean isLoggedIn() {
+    private Principal oldPrincipal = null;
 
-       return FacesContext.getCurrentInstance()
-               .getExternalContext()
-               .getUserPrincipal() != null;
-   }
+    public boolean isLoggedIn() {
 
-   public User getUser() {
+        return FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getUserPrincipal() != null;
+    }
+
+    public User getUser() {
 
         Principal p = FacesContext.getCurrentInstance()
                 .getExternalContext()
@@ -74,138 +75,138 @@ public class loginBean implements Serializable {
         return currentUser;
     }
 
-   public void invalidateSession() {
+    public void invalidateSession() {
 
-       LOG.log(Level.INFO, "invalidateSession()");
-       
-       currentUser = null;
-       oldPrincipal = null;
-       activeRole = null;
+        LOG.log(Level.INFO, "invalidateSession()");
 
-       Principal p = FacesContext.getCurrentInstance()
-               .getExternalContext()
-               .getUserPrincipal();
+        currentUser = null;
+        oldPrincipal = null;
+        activeRole = null;
 
-       if (p != null) {
+        Principal p = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getUserPrincipal();
 
-           LOG.log(
-                   Level.INFO,
-                   "Person: LOGOUT user {0}",
-                   p.getName()
-           );
-       }
+        if (p != null) {
 
-       currentUser = null;
-       oldPrincipal = null;
+            LOG.log(
+                    Level.INFO,
+                    "Person: LOGOUT user {0}",
+                    p.getName()
+            );
+        }
 
-       FacesContext.getCurrentInstance()
-               .getExternalContext()
-               .invalidateSession();
-   }
+        currentUser = null;
+        oldPrincipal = null;
 
-   public void logout() {
+        FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .invalidateSession();
+    }
 
-       invalidateSession();
+    public void logout() {
 
-       try {
+        invalidateSession();
 
-           FacesContext ctx =
-                   FacesContext.getCurrentInstance();
+        try {
 
-           String contextPath =
-                   ctx.getExternalContext()
-                           .getRequestContextPath();
+            FacesContext ctx
+                    = FacesContext.getCurrentInstance();
 
-           ctx.getExternalContext()
-                   .redirect(
-                           contextPath + "/views/login.xhtml"
-                   );
+            String contextPath
+                    = ctx.getExternalContext()
+                            .getRequestContextPath();
 
-       } catch (IOException e) {
+            ctx.getExternalContext()
+                    .redirect(
+                            contextPath + "/views/login.xhtml"
+                    );
 
-           LOG.log(
-                   Level.SEVERE,
-                   "Error redirecting after logout",
-                   e
-           );
-       }
-   }
+        } catch (IOException e) {
 
-   public void redirectIfLoggedIn() {
+            LOG.log(
+                    Level.SEVERE,
+                    "Error redirecting after logout",
+                    e
+            );
+        }
+    }
 
-       if (isLoggedIn()) {
+    public void redirectIfLoggedIn() {
 
-           try {
+        if (isLoggedIn()) {
 
-               FacesContext ctx =
-                       FacesContext.getCurrentInstance();
+            try {
 
-               String contextPath =
-                       ctx.getExternalContext()
-                               .getRequestContextPath();
+                FacesContext ctx
+                        = FacesContext.getCurrentInstance();
 
-               ctx.getExternalContext()
-                       .redirect(
-                               contextPath
-                                       + "/views/portal/home.xhtml"
-                       );
+                String contextPath
+                        = ctx.getExternalContext()
+                                .getRequestContextPath();
 
-           } catch (IOException e) {
+                ctx.getExternalContext()
+                        .redirect(
+                                contextPath
+                                + "/views/portal/home.xhtml"
+                        );
 
-               LOG.log(
-                       Level.SEVERE,
-                       "Error redirecting from index",
-                       e
-               );
-           }
-       }
-   }
+            } catch (IOException e) {
 
-   public boolean isError() {
-       return error;
-   }
+                LOG.log(
+                        Level.SEVERE,
+                        "Error redirecting from index",
+                        e
+                );
+            }
+        }
+    }
 
-   public void setError(boolean error) {
-       this.error = error;
-   }
+    public boolean isError() {
+        return error;
+    }
 
-   public boolean hasRole(String roleName) {
+    public void setError(boolean error) {
+        this.error = error;
+    }
 
-       User user = getUser();
+    public boolean hasRole(String roleName) {
 
-       if (user == null || user.getRoles() == null) {
-           return false;
-       }
+        User user = getUser();
 
-       return user.getRoles()
-               .stream()
-               .anyMatch(
-                       r -> r.name()
-                               .equalsIgnoreCase(roleName)
-               );
-   }
+        if (user == null || user.getRoles() == null) {
+            return false;
+        }
 
-   public boolean hasOnlyRole(String roleName) {
+        return user.getRoles()
+                .stream()
+                .anyMatch(
+                        r -> r.name()
+                                .equalsIgnoreCase(roleName)
+                );
+    }
 
-       User user = getUser();
+    public boolean hasOnlyRole(String roleName) {
 
-       if (user == null
-               || user.getRoles() == null
-               || user.getRoles().isEmpty()) {
+        User user = getUser();
 
-           return false;
-       }
+        if (user == null
+                || user.getRoles() == null
+                || user.getRoles().isEmpty()) {
 
-       return user.getRoles().size() == 1
-               && user.getRoles()
-                       .stream()
-                       .anyMatch(
-                               r -> r.name()
-                                       .equalsIgnoreCase(roleName)
-                       );
-   }
-   
-   private void initializeActiveRole() {
+            return false;
+        }
+
+        return user.getRoles().size() == 1
+                && user.getRoles()
+                        .stream()
+                        .anyMatch(
+                                r -> r.name()
+                                        .equalsIgnoreCase(roleName)
+                        );
+    }
+
+    private void initializeActiveRole() {
 
         if (currentUser == null
                 || currentUser.getRoles() == null
@@ -226,8 +227,8 @@ public class loginBean implements Serializable {
                 .findFirst()
                 .orElse(null);
     }
-   
-   public Role getActiveRole() {
+
+    public Role getActiveRole() {
         return activeRole;
     }
 
@@ -244,17 +245,17 @@ public class loginBean implements Serializable {
                 || !user.getRoles().contains(activeRole)) {
 
             throw new IllegalArgumentException(
-                    "The selected role is not assigned to this user."
+                    Messages.get("message.role.notAssigned")
             );
         }
 
         this.activeRole = activeRole;
     }
-    
+
     public boolean isActiveRole(String roleName) {
         return activeRole != null && activeRole.name().equalsIgnoreCase(roleName);
     }
-    
+
     public String changeActiveRole() {
 
         User user = getUser();
@@ -269,7 +270,7 @@ public class loginBean implements Serializable {
 
         return "/views/portal/home.xhtml?faces-redirect=true";
     }
-    
+
     public void roleChanged() {
 
         User user = getUser();

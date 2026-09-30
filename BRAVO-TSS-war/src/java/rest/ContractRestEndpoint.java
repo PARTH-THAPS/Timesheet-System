@@ -5,25 +5,19 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.util.List;
-import tss.logic.ContractLogic;
+import java.util.Map;
 import java.util.logging.Logger;
 import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
-import tss.entity.ContractStatus;
 import tss.logic.ContractLogic;
 import tss.logic.PersonLogic;
-
-import tss.logic.TerminationBlockedException;
 
 @Stateless
 @LocalBean
@@ -60,8 +54,6 @@ public class ContractRestEndpoint {
     }
 
   
-
-   
 
     @POST
     @Path("{id}/secretaries")

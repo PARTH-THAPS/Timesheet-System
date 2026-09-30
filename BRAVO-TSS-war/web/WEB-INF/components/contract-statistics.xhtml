@@ -41,7 +41,7 @@
                                         minFractionDigits="2"
                                         maxFractionDigits="2"/>
                                 </h:outputText>
-                                h
+                                #{msg['timesheet.hoursUnit']}
                             </strong>
 
                         </div>
@@ -60,7 +60,7 @@
                                         minFractionDigits="2"
                                         maxFractionDigits="2"/>
                                 </h:outputText>
-                                h
+                                #{msg['timesheet.hoursUnit']}
                             </strong>
 
                         </div>
@@ -79,7 +79,7 @@
                                         minFractionDigits="2"
                                         maxFractionDigits="2"/>
                                 </h:outputText>
-                                h
+                                #{msg['timesheet.hoursUnit']}
                             </strong>
 
                         </div>
@@ -94,10 +94,10 @@
                             <strong
                                 class="contract-statistic-value
                                 #{statistics.balance gt 0
-                                    ? 'contract-balance-due'
-                                    : (statistics.balance lt 0
-                                        ? 'contract-balance-overtime'
-                                        : 'contract-balance-balanced')}">
+                                  ? 'contract-balance-due'
+                                  : (statistics.balance lt 0
+                                  ? 'contract-balance-overtime'
+                                  : 'contract-balance-balanced')}">
 
                                 <h:outputText
                                     value="#{statistics.balance}">
@@ -105,7 +105,7 @@
                                         minFractionDigits="2"
                                         maxFractionDigits="2"/>
                                 </h:outputText>
-                                h
+                                #{msg['timesheet.hoursUnit']}
 
                             </strong>
 
@@ -142,7 +142,7 @@
                                         minFractionDigits="2"
                                         maxFractionDigits="2"/>
                                 </h:outputText>
-                                h
+                                #{msg['timesheet.hoursUnit']}
                             </strong>
 
                         </div>
@@ -161,7 +161,7 @@
                                         minFractionDigits="2"
                                         maxFractionDigits="2"/>
                                 </h:outputText>
-                                h
+                                #{msg['timesheet.hoursUnit']}
                             </strong>
 
                         </div>

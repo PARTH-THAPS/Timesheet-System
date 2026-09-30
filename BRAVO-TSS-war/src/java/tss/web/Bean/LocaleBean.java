@@ -119,8 +119,7 @@ public class LocaleBean implements Serializable {
 
     private void synchronizeWithLoggedInUser() {
 
-        FacesContext context
-                = FacesContext.getCurrentInstance();
+        FacesContext context = FacesContext.getCurrentInstance();
 
         if (context == null) {
             return;
@@ -134,37 +133,43 @@ public class LocaleBean implements Serializable {
             return;
         }
 
-        String principalName
-                = principal.getName();
+        String principalName = principal.getName();
 
-        if (principalName.equals(
-                initializedPrincipalName)) {
+        if (principalName.equals(initializedPrincipalName)) {
             return;
         }
 
-        User user = loginBean.getUser();
+        try {
+            User user = loginBean.getUser();
 
-        if (user == null
-                || user.getId() == null) {
-            return;
+            if (user == null || user.getId() == null) {
+                return;
+            }
+
+            PersonDTO person
+                    = personLogic.findPerson(user.getId());
+
+            if (person != null
+                    && person.getPreferredLanguage() != null) {
+
+                userLocale
+                        = localeForLanguage(
+                                person.getPreferredLanguage()
+                        );
+
+                updateCurrentViewLocale();
+            }
+
+            initializedPrincipalName = principalName;
+
+        } catch (Exception e) {
+            System.err.println(
+                    "Could not load preferred locale for "
+                    + principalName
+                    + ": "
+                    + e.getMessage()
+            );
         }
-
-        PersonDTO person
-                = personLogic.findPerson(user.getId());
-
-        if (person != null
-                && person.getPreferredLanguage() != null) {
-
-            userLocale
-                    = localeForLanguage(
-                            person.getPreferredLanguage()
-                    );
-
-            updateCurrentViewLocale();
-        }
-
-        initializedPrincipalName
-                = principalName;
     }
 
     private void persistPreferredLanguage(

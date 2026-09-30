@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import tss.web.i18n.Messages;
 
 @Named("CreatePersonBean")
 @RequestScoped
@@ -39,25 +40,42 @@ public class createPersonBean {
                     roles
             );
 
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Account created", "Welcome, " + created.getFirstName()));
+            FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            Messages.get("message.signup.created.summary"),
+                            Messages.get(
+                                    "message.signup.created.detail",
+                                    created.getFirstName()
+                            )
+                    )
+            );
 
             return "/views/login.xhtml?faces-redirect=true";
 
         } catch (IllegalArgumentException e) {
             LOG.log(Level.WARNING, "Validation error creating person", e);
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error creating person", e.getMessage()));
+            FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            Messages.get("message.signup.createFailed"),
+                            e.getMessage()
+                    )
+            );
             return null;
 
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unexpected error creating person", e);
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error creating person",
-                            "Could not create account. The email may already be in use."));
+            FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            Messages.get("message.signup.createFailed"),
+                            Messages.get("message.signup.createFailed.detail")
+                    )
+            );
             return null;
         }
     }
