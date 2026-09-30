@@ -9,9 +9,11 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.security.Principal;
+import java.time.LocalDate;
 import tss.dto.PersonDTO;
 import tss.dto.User;
-import tss.entity.Language;   // adjust to the real package of your enum
+import tss.entity.Language;
+import tss.entity.Role;
 import tss.logic.PersonLogic;
 import tss.logic.UserLogic;
 
@@ -96,5 +98,15 @@ public class PersonalDataBean implements Serializable {
         }
 
         return null;
+    }
+
+    public LocalDate getToday() {
+        return LocalDate.now();
+    }
+
+    public boolean isDateOfBirthRequired() {
+        return personDTO != null
+                && personDTO.getRole() != null
+                && personDTO.getRole().contains(Role.EMPLOYEE);
     }
 }

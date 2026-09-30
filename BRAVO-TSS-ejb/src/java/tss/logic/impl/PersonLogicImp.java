@@ -62,9 +62,13 @@ public class PersonLogicImp implements PersonLogic {
         if (person == null) {
             throw new IllegalArgumentException("No Person found with id: " + dto.getId());
         }
+        
+        validateDateOfBirth(dto.getDateOfBirth(), dto.getRole());
+        
         person.setFirstName(dto.getFirstName());
         person.setLastName(dto.getLastName());
         person.setEmailAddress(dto.getEmailAddress());
+        person.setDateOfBirth(dto.getDateOfBirth());
         person.setConsent(dto.isConsent());
         person.setRoles(dto.getRole());
         person.setPreferredLanguage(dto.getPreferredLanguage());
@@ -102,6 +106,9 @@ public class PersonLogicImp implements PersonLogic {
         if (person == null) {
             throw new IllegalArgumentException("No Person found with id: " + personId);
         }
+        
+        validateDateOfBirth(dob, person.getRole());
+        
         person.setDateOfBirth(dob);
         personDao.updatePerson(person);
     }
@@ -120,4 +127,23 @@ public class PersonLogicImp implements PersonLogic {
         return dto;
     }
 
+    private void validateDateOfBirth(
+            LocalDate dateOfBirth,
+            Set<Role> roles
+    ) {
+        if (dateOfBirth != null
+                && dateOfBirth.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                    "Date of birth cannot be in the future."
+            );
+        }
+
+        if (roles != null
+                && roles.contains(Role.EMPLOYEE)
+                && dateOfBirth == null) {
+            throw new IllegalArgumentException(
+                    "Date of birth is required for employees."
+            );
+        }
+    }
 }

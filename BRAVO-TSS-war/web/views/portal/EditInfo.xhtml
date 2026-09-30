@@ -31,7 +31,7 @@
                 showDetail="true"
                 closable="true"
                 styleClass="app-messages"
-            />
+                />
 
             <h:outputText value="#{personalDataBean.user}" style="display:none;"/>
 
@@ -44,7 +44,7 @@
                 <p:message
                     for="firstName"
                     styleClass="field-message"
-                />
+                    />
 
                 <h:outputLabel for="lastName" value="#{msg['person.lastName']}:"/>
                 <h:inputText id="lastName"
@@ -54,7 +54,7 @@
                 <p:message
                     for="lastName"
                     styleClass="field-message"
-                />
+                    />
 
                 <h:outputLabel for="email" value="#{msg['person.email']}:"/>
                 <h:inputText id="email"
@@ -64,7 +64,24 @@
                 <p:message
                     for="email"
                     styleClass="field-message"
-                />
+                    />
+
+                <p:outputLabel
+                    for="dateOfBirth"
+                    value="#{msg['person.dateOfBirth']}:"/>
+
+                <p:datePicker
+                    id="dateOfBirth"
+                    value="#{personalDataBean.personDTO.dateOfBirth}"
+                    pattern="dd.MM.yyyy"
+                    showIcon="true"
+                    maxdate="#{personalDataBean.today}"
+                    required="#{personalDataBean.dateOfBirthRequired}"
+                    requiredMessage="#{msg['person.dateOfBirth.required']}"/>
+
+                <p:message
+                    for="dateOfBirth"
+                    styleClass="field-message"/>
 
                 <h:outputLabel for="preferredLanguage"
                                value="#{msg['personalInfo.PreferedLanguage.ForReminder']}:"/>
@@ -83,7 +100,7 @@
                 <p:message
                     for="preferredLanguage"
                     styleClass="field-message"
-                />
+                    />
             </h:panelGrid>
 
             <br/>
