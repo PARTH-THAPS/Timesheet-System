@@ -27,7 +27,6 @@ public class AdminUserBean implements Serializable {
     private Long id;
     private PersonDTO person;
 
-   
     private Set<String> selectedRoleNames = new HashSet<>();
 
     public void init() {
@@ -38,7 +37,7 @@ public class AdminUserBean implements Serializable {
 
         if (id == null) {
             person = new PersonDTO();
-            person.setRole(new HashSet<>()); 
+            person.setRole(new HashSet<>());
         } else {
             person = personLogic.findPerson(id);
         }
@@ -64,7 +63,7 @@ public class AdminUserBean implements Serializable {
                         person.getFirstName(),
                         person.getLastName(),
                         person.getEmailAddress(),
-                        person.isConsent(),
+                        false, // Consent
                         person.getPassword(),
                         person.getRole()
                 );
@@ -155,5 +154,35 @@ public class AdminUserBean implements Serializable {
 
     public void setSelectedRoleNames(Set<String> selectedRoleNames) {
         this.selectedRoleNames = selectedRoleNames;
+    }
+
+    public void revokeConsent() {
+        if (person == null || person.getId() == null) {
+            return;
+        }
+
+        try {
+            personLogic.revokeConsent(person.getId());
+            person.setConsent(false);
+
+            FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            "Consent revoked",
+                            "The user's consent has been revoked."
+                    )
+            );
+
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Could not revoke consent",
+                            e.getMessage()
+                    )
+            );
+        }
     }
 }

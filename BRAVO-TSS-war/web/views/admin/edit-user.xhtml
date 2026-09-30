@@ -46,7 +46,7 @@
                     showDetail="true"
                     closable="true"
                     styleClass="app-messages"
-                />
+                    />
 
                 <!-- First Name -->
                 <div class="form-field">
@@ -134,25 +134,39 @@
                         <f:selectItems
                             value="#{adminUserBean.roles}"
                             var="role"
-                            itemValue="#{role.name()}"
-                            itemLabel="#{msg['role.'.concat(role.name())]}"/>
+                            itemValue="#{role}"
+                            itemLabel="#{msg['role.'.concat(role)]}"/>
 
                     </p:selectManyCheckbox>
 
                 </div>
 
                 <!-- Consent -->
-                <div class="form-checkbox">
+                <ui:fragment rendered="#{not adminUserBean.newUser}">
 
-                    <p:selectBooleanCheckbox
-                        id="consent"
-                        value="#{adminUserBean.person.consent}"/>
+                    <div class="form-field">
 
-                    <p:outputLabel
-                        for="consent"
-                        value="#{msg['user.dataProcessingConsent']}"/>
+                        <p:outputLabel
+                            value="#{msg['user.dataProcessingConsent']}"/>
 
-                </div>
+                        <div>
+                            <span class="status-badge #{adminUserBean.person.consent
+                                                        ? 'status-signed_by_supervisor'
+                                                        : 'status-archived'}">
+
+                                #{adminUserBean.person.consent
+                                  ? msg['common.yes']
+                                  : msg['common.no']}
+                            </span>
+                        </div>
+
+                        <small class="form-help">
+                            Consent can only be granted by the user.
+                        </small>
+
+                    </div>
+
+                </ui:fragment>
 
                 <!-- Actions -->
                 <div class="form-actions">
@@ -201,6 +215,21 @@
                             icon="pi pi-times"/>
 
                     </p:confirmDialog>
+
+                    <p:commandButton
+                        value="Revoke consent"
+                        icon="pi pi-ban"
+                        action="#{adminUserBean.revokeConsent}"
+                        update="userForm"
+                        rendered="#{not adminUserBean.newUser and adminUserBean.person.consent}"
+                        styleClass="ui-button-warning">
+
+                        <p:confirm
+                            header="Revoke consent"
+                            message="Are you sure you want to revoke this user's consent?"
+                            icon="pi pi-exclamation-triangle"/>
+
+                    </p:commandButton>
 
                 </div>
 

@@ -62,14 +62,13 @@ public class PersonLogicImp implements PersonLogic {
         if (person == null) {
             throw new IllegalArgumentException("No Person found with id: " + dto.getId());
         }
-        
+
         validateDateOfBirth(dto.getDateOfBirth(), dto.getRole());
-        
+
         person.setFirstName(dto.getFirstName());
         person.setLastName(dto.getLastName());
         person.setEmailAddress(dto.getEmailAddress());
         person.setDateOfBirth(dto.getDateOfBirth());
-        person.setConsent(dto.isConsent());
         person.setRoles(dto.getRole());
         person.setPreferredLanguage(dto.getPreferredLanguage());
         return personDto(personDao.updatePerson(person));
@@ -106,10 +105,38 @@ public class PersonLogicImp implements PersonLogic {
         if (person == null) {
             throw new IllegalArgumentException("No Person found with id: " + personId);
         }
-        
+
         validateDateOfBirth(dob, person.getRole());
-        
+
         person.setDateOfBirth(dob);
+        personDao.updatePerson(person);
+    }
+
+    @Override
+    public void acceptConsent(Long personId) {
+        Person person = personDao.findPersonById(personId);
+
+        if (person == null) {
+            throw new IllegalArgumentException(
+                    "No Person found with id: " + personId
+            );
+        }
+
+        person.setConsent(true);
+        personDao.updatePerson(person);
+    }
+
+    @Override
+    public void revokeConsent(Long personId) {
+        Person person = personDao.findPersonById(personId);
+
+        if (person == null) {
+            throw new IllegalArgumentException(
+                    "No Person found with id: " + personId
+            );
+        }
+
+        person.setConsent(false);
         personDao.updatePerson(person);
     }
 

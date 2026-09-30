@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/templates/page-layout.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{consentBean.init}"/>
+    </f:metadata>
+
+    <ui:define name="pageTitle">
+        Data processing consent
+    </ui:define>
+
+    <ui:define name="pageHeadline">
+        Data processing consent
+    </ui:define>
+
+    <ui:define name="navigation">
+        <!-- intentionally empty -->
+    </ui:define>
+
+    <ui:define name="headerActions">
+        <!-- intentionally empty -->
+    </ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="consentForm">
+
+            <p:messages
+                id="messages"
+                showDetail="true"
+                closable="true"
+                styleClass="app-messages"/>
+
+            <div class="form-card">
+
+                <p>
+                    Before you can use the Time Sheet System,
+                    you must consent to the processing and storage
+                    of the personal data required to operate the system.
+                </p>
+
+                <p>
+                    By accepting, you confirm that you understand
+                    and agree to the required data processing.
+                </p>
+
+                <div class="form-actions">
+
+                    <p:commandButton
+                        value="I agree"
+                        icon="pi pi-check"
+                        action="#{consentBean.accept}"
+                        ajax="false"/>
+
+                    <p:commandButton
+                        value="#{msg['button.logout']}"
+                        icon="pi pi-sign-out"
+                        action="#{loginBean.logout}"
+                        immediate="true"
+                        ajax="false"
+                        styleClass="ui-button-secondary"/>
+
+                </div>
+
+            </div>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
