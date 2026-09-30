@@ -4,6 +4,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="jakarta.faces.html"
     xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core"
     xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
@@ -104,8 +105,7 @@
                         <p:selectBooleanCheckbox
                             id="consent"
                             value="#{CreatePersonBean.personDto.consent}"
-                            required="true"
-                            requiredMessage="#{msg['signup.consent.required']}"/>
+                            validator="#{CreatePersonBean.validateConsent}"/>
 
                         <p:outputLabel
                             for="consent"
