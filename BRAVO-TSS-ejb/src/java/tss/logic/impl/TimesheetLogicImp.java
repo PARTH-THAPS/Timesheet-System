@@ -25,6 +25,10 @@ import tss.entity.FederalState;
 import tss.entity.ReportType;
 import tss.logic.HolidayLogic;
 
+/**
+ * Implementation of the {@link TimesheetLogic} interface.
+ * Provides business logic for creating, updating, signing, and archiving timesheets.
+ */
 @Stateless
 public class TimesheetLogicImp implements TimesheetLogic {
 
@@ -40,6 +44,14 @@ public class TimesheetLogicImp implements TimesheetLogic {
     @EJB
     HolidayLogic holidayLogic;
 
+    /**
+     * Generates all required timesheets for a given contract based on its start date,
+     * end date, and frequency.
+     *
+     * @param contractId The ID of the contract.
+     * @throws IllegalArgumentException if the contract is not found.
+     * @throws IllegalStateException if the contract is not in STARTED status or lacks dates.
+     */
     @Override
     public void generateTimesheetsForContract(Long contractId) {
         Contract contract = contractsDao.findContract(contractId);
@@ -96,6 +108,13 @@ public class TimesheetLogicImp implements TimesheetLogic {
         }
     }
 
+    /**
+     * Adds a new entry to an existing timesheet.
+     *
+     * @param timesheetId The ID of the timesheet.
+     * @param entryDTO The entry details to add.
+     * @return The updated TimesheetDTO.
+     */
     @Override
     public TimesheetDTO addEntry(Long timesheetId, TimesheetEntryDTO entryDTO) {
         if (entryDTO == null) {
@@ -138,7 +157,15 @@ public class TimesheetLogicImp implements TimesheetLogic {
 
         return toDTO(timesheet);
     }
-    
+
+    /**
+     * Updates an existing entry within a timesheet.
+     *
+     * @param timesheetId The ID of the timesheet.
+     * @param entryId The ID of the entry to update.
+     * @param updatedEntryDTO The updated entry data.
+     * @return The updated TimesheetDTO.
+     */
     @Override
     public TimesheetDTO updateEntry(Long timesheetId, Long entryId, TimesheetEntryDTO updatedEntryDTO) {
         if (updatedEntryDTO == null) {
@@ -191,6 +218,12 @@ public class TimesheetLogicImp implements TimesheetLogic {
         return toDTO(timesheet);
     }
 
+    /**
+     * Removes a specific entry from a timesheet.
+     *
+     * @param timesheetId The ID of the timesheet.
+     * @param entryId The ID of the entry to remove.
+     */
     @Override
     public void removeEntry(Long timesheetId, Long entryId) {
         Timesheet timesheet = timesheetDAO.findById(timesheetId);
@@ -205,6 +238,11 @@ public class TimesheetLogicImp implements TimesheetLogic {
         timesheetDAO.updateTimesheet(timesheet);
     }
 
+    /**
+     * Deletes all timesheets associated with a contract that are still in progress.
+     *
+     * @param contractId The ID of the contract.
+     */
     @Override
 public void deleteInProgressTimesheets(Long contractId) {
     List<Timesheet> timesheets = timesheetDAO.findByContractId(contractId);
@@ -221,6 +259,13 @@ public void deleteInProgressTimesheets(Long contractId) {
         timesheetDAO.deleteTimesheet(ts);
     }
 }
+
+    /**
+     * Retrieves all timesheets for a given contract.
+     *
+     * @param contractId The ID of the contract.
+     * @return A list of TimesheetDTOs.
+     */
     @Override
     public List<TimesheetDTO> getTimesheetsForContract(Long contractId) {
         Contract contract = contractsDao.findContract(contractId);
@@ -234,6 +279,12 @@ public void deleteInProgressTimesheets(Long contractId) {
         return timesheets.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a timesheet by its ID.
+     *
+     * @param timesheetId The ID of the timesheet.
+     * @return The requested TimesheetDTO.
+     */
     @Override
     public TimesheetDTO getTimesheetById(Long timesheetId) {
         Timesheet timesheet = timesheetDAO.findByIdWithEntries(timesheetId);
@@ -243,6 +294,12 @@ public void deleteInProgressTimesheets(Long contractId) {
         return toDTO(timesheet);
     }
 
+    /**
+     * Retrieves the total number of vacation hours used for a contract.
+     *
+     * @param contractId The ID of the contract.
+     * @return The total used vacation hours.
+     */
     @Override
     public double getUsedVacationHours(Long contractId) {
         Contract contract = contractsDao.findContract(contractId);
@@ -252,6 +309,12 @@ public void deleteInProgressTimesheets(Long contractId) {
         return calculateUsedVacationHours(contract, null);
     }
 
+    /**
+     * Signs the timesheet on behalf of the employee.
+     *
+     * @param timesheetId The ID of the timesheet.
+     * @return The signed TimesheetDTO.
+     */
     @Override
     public TimesheetDTO signByEmployee(Long timesheetId) {
         Timesheet timesheet = timesheetDAO.findById(timesheetId);
@@ -269,6 +332,12 @@ public void deleteInProgressTimesheets(Long contractId) {
         return toDTO(timesheet);
     }
 
+    /**
+     * Revokes the employee's signature from the timesheet.
+     *
+     * @param timesheetId The ID of the timesheet.
+     * @return The updated TimesheetDTO.
+     */
     @Override
     public TimesheetDTO revokeEmployeeSignature(Long timesheetId) {
         Timesheet timesheet = timesheetDAO.findById(timesheetId);
@@ -286,6 +355,12 @@ public void deleteInProgressTimesheets(Long contractId) {
         return toDTO(timesheet);
     }
 
+    /**
+     * Signs the timesheet on behalf of the supervisor.
+     *
+     * @param timesheetId The ID of the timesheet.
+     * @return The signed TimesheetDTO.
+     */
     @Override
     public TimesheetDTO signBySupervisor(Long timesheetId) {
         Timesheet timesheet = timesheetDAO.findById(timesheetId);
@@ -307,6 +382,12 @@ public void deleteInProgressTimesheets(Long contractId) {
         return toDTO(timesheet);
     }
 
+    /**
+     * Finds all timesheets pending signature for a specific supervisor.
+     *
+     * @param emailAddress The supervisor's email address.
+     * @return A list of TimesheetDTOs pending signature.
+     */
     @Override
     public List<TimesheetDTO> findPendingSignaturesForSupervisor(String emailAddress) {
 
@@ -321,6 +402,12 @@ public void deleteInProgressTimesheets(Long contractId) {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Finds all timesheets for a specific employee.
+     *
+     * @param personId The employee's ID.
+     * @return A list of TimesheetDTOs.
+     */
     @Override
     public List<TimesheetDTO> findByEmployeeId(Long personId) {
         List<Timesheet> entities = timesheetDAO.findByEmployeeId(personId);
@@ -329,6 +416,12 @@ public void deleteInProgressTimesheets(Long contractId) {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Finds all timesheets overseen by a specific supervisor.
+     *
+     * @param supervisorId The supervisor's ID.
+     * @return A list of TimesheetDTOs.
+     */
     @Override
     public List<TimesheetDTO> findTimesheetsForSupervisor(Long supervisorId) {
         List<Timesheet> entities = timesheetDAO.findBySupervisorId(supervisorId);
@@ -339,12 +432,26 @@ public void deleteInProgressTimesheets(Long contractId) {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a timesheet specific to a supervisor's access.
+     *
+     * @param timesheetId The timesheet ID.
+     * @param supervisorId The supervisor ID.
+     * @return The requested TimesheetDTO.
+     */
     @Override
     public TimesheetDTO getTimesheetForSupervisor(Long timesheetId, Long supervisorId) {
         Timesheet timesheet = timesheetDAO.findByIdForSupervisorId(timesheetId, supervisorId);
         return toDTO(timesheet);
     }
 
+    /**
+     * Submits a request for changes on a timesheet by the supervisor, reverting it to IN_PROGRESS.
+     *
+     * @param timesheetId The timesheet ID.
+     * @param supervisorId The supervisor ID.
+     * @return The updated TimesheetDTO.
+     */
     @Override
     public TimesheetDTO requestChangesBySupervisor(Long timesheetId, Long supervisorId) {
         Timesheet timesheet = timesheetDAO.findByIdForSupervisorId(timesheetId, supervisorId);
@@ -362,6 +469,13 @@ public void deleteInProgressTimesheets(Long contractId) {
         return toDTO(timesheet);
     }
 
+    /**
+     * Verifies if a supervisor has access rights to a particular timesheet.
+     *
+     * @param timesheetId The timesheet ID.
+     * @param supervisorId The supervisor ID.
+     * @return true if access is allowed, false otherwise.
+     */
     @Override
     public boolean canSupervisorAccessTimesheet(Long timesheetId, Long supervisorId) {
         if (timesheetId == null || supervisorId == null) {
@@ -377,6 +491,12 @@ public void deleteInProgressTimesheets(Long contractId) {
         }
     }
 
+    /**
+     * Finds all timesheets accessible by a specific assistant.
+     *
+     * @param assistantId The assistant's ID.
+     * @return A list of TimesheetDTOs.
+     */
     @Override
     public List<TimesheetDTO> findTimesheetsForAssistant(Long assistantId) {
         List<Timesheet> entities = timesheetDAO.findByAssistantId(assistantId);
@@ -386,12 +506,26 @@ public void deleteInProgressTimesheets(Long contractId) {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a timesheet specific to an assistant's access.
+     *
+     * @param timesheetId The timesheet ID.
+     * @param assistantId The assistant ID.
+     * @return The requested TimesheetDTO.
+     */
     @Override
     public TimesheetDTO getTimesheetForAssistant(Long timesheetId, Long assistantId) {
         Timesheet timesheet = timesheetDAO.findByIdForAssistantId(timesheetId, assistantId);
         return toDTO(timesheet);
     }
 
+    /**
+     * Submits a request for changes on a timesheet by an assistant, reverting it to IN_PROGRESS.
+     *
+     * @param timesheetId The timesheet ID.
+     * @param assistantId The assistant ID.
+     * @return The updated TimesheetDTO.
+     */
     @Override
     public TimesheetDTO requestChanges(Long timesheetId, Long assistantId) {
         Timesheet timesheet = timesheetDAO.findByIdForAssistantId(timesheetId, assistantId);
@@ -409,6 +543,12 @@ public void deleteInProgressTimesheets(Long contractId) {
         return toDTO(timesheet);
     }
 
+    /**
+     * Finds all timesheets accessible by a specific secretary.
+     *
+     * @param secretaryId The secretary's ID.
+     * @return A list of TimesheetDTOs.
+     */
     @Override
     public List<TimesheetDTO> findTimesheetsForSecretary(Long secretaryId) {
         List<Timesheet> entities = timesheetDAO.findBySecretaryId(secretaryId);
@@ -418,12 +558,25 @@ public void deleteInProgressTimesheets(Long contractId) {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a timesheet specific to a secretary's access.
+     *
+     * @param timesheetId The timesheet ID.
+     * @param secretaryId The secretary ID.
+     * @return The requested TimesheetDTO.
+     */
     @Override
     public TimesheetDTO getTimesheetForSecretary(Long timesheetId, Long secretaryId) {
         Timesheet timesheet = timesheetDAO.findByIdForSecretaryId(timesheetId, secretaryId);
         return toDTO(timesheet);
     }
-    
+
+    /**
+     * Finds all timesheets pending archive action for a secretary based on email.
+     *
+     * @param emailAddress The secretary's email address.
+     * @return A list of TimesheetDTOs pending archive.
+     */
     @Override
     public List<TimesheetDTO> findPendingArchivesForSecretary(String emailAddress) {
         List<Timesheet> entities = timesheetDAO.findPendingArchivesForSecretary(emailAddress);
@@ -444,6 +597,11 @@ public void deleteInProgressTimesheets(Long contractId) {
         return dtos;
     }
 
+    /**
+     * Archives a timesheet if it has been signed by a supervisor.
+     *
+     * @param timesheetId The ID of the timesheet to archive.
+     */
     @Override
     public void archiveTimesheet(Long timesheetId) {
         Timesheet entity = timesheetDAO.findById(timesheetId);
@@ -471,6 +629,11 @@ public void deleteInProgressTimesheets(Long contractId) {
         }
     }
 
+    /**
+     * Deletes and archives old records system-wide.
+     *
+     * @return The number of records archived.
+     */
     @Override
     public int archiveOldRecords() {
         return timesheetDAO.deleteArchiveOldRecords();

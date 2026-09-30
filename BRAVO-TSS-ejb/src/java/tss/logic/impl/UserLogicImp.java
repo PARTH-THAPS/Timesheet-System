@@ -15,6 +15,10 @@ import tss.dto.User;
 import tss.entity.Person;
 import tss.logic.UserLogic;
 
+/**
+ * Stateless session bean implementation of the {@link UserLogic} interface.
+ * Handles user role declarations and retrieval of the currently authenticated user.
+ */
 @Stateless
 @DeclareRoles({
    UserLogic.USER_ROLE,
@@ -33,6 +37,11 @@ public class UserLogicImp implements UserLogic {
    @Resource
    private EJBContext ejbContext;
 
+    /**
+     * Retrieves the currently authenticated user from the EJB context.
+     *
+     * @return A {@link User} DTO representing the currently logged-in user.
+     */
    @Override
    @RolesAllowed({
        USER_ROLE,
@@ -52,6 +61,12 @@ public class UserLogicImp implements UserLogic {
        return createDTO(person);
    }
 
+    /**
+     * Converts a {@link Person} entity into a {@link User} DTO.
+     *
+     * @param p The Person entity to convert.
+     * @return The User DTO, or null if the input person is null.
+     */
    public User createDTO(Person p) {
 
        if (p == null) {
