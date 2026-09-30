@@ -17,7 +17,6 @@ public class TimesheetDTO extends AbstractDTO {
     private Long contractId;
     private List<TimesheetEntryDTO> entries;
     private String state;
-
     private String employeeFirstName;
     private String employeeLastName;
 

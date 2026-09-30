@@ -2,7 +2,6 @@ package tss.dto;
 
 import tss.entity.Language;
 import tss.entity.Role;
-
 import java.util.Set;
 import java.time.LocalDate;
 
@@ -85,11 +84,11 @@ public class PersonDTO extends AbstractDTO {
         this.role = role;
     }
 
-    public void setPreferredLanguage(Language language) {
-        this.preferredLanguage = language;
+    public void setPreferredLanguage(Language language) { 
+        this.preferredLanguage = language; 
     }
 
     public Language getPreferredLanguage() {
-        return preferredLanguage;
+        return preferredLanguage; 
     }
 }

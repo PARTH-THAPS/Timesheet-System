@@ -151,7 +151,9 @@ public class ContractEditBean implements Serializable {
                         contract.getState(),
                         contract.getArchiveDuration()
                 );
+
                 contractId = created.getId();
+                
 
                 if (contract.getSupervisorId() != null) {
                     contractLogic.addSupervisor(contractId, contract.getSupervisorId());
@@ -166,7 +168,6 @@ public class ContractEditBean implements Serializable {
                     contractLogic.removeSupervisor(contractId);
                 }
             }
-
             if (dateOfBirthRequired && dateOfBirth != null) {
                 personLogic.updateDateOfBirth(contract.getPersonId(), dateOfBirth);
             }
@@ -180,6 +181,7 @@ public class ContractEditBean implements Serializable {
                     e.getMessage()
             );
         }
+
     }
 
     private void validateNoOverlap() {

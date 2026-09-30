@@ -53,16 +53,7 @@ public class ContractRestEndpoint {
         );
     }
 
-    // Read-only check the UI calls before terminating, to decide which message or dialog to show.
-    @GET
-    @Path("/{contractId}/termination-check")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Boolean> terminationCheck(@PathParam("contractId") Long contractId) {
-        return Map.of(
-                "blockedBySupervisorSignature", contractlogic.hasTimesheetsPendingSupervisorSignature(contractId),
-                "hasInProgressWithEntries", contractlogic.hasUnresolvedInProgressTimesheets(contractId),
-                "hasEmptyInProgress", contractlogic.hasEmptyInProgressTimesheets(contractId));
-    }
+  
 
     @POST
     @Path("{id}/secretaries")
