@@ -19,12 +19,21 @@
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
+    
+    <ui:define name="headerActions">
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
+    </ui:define>
 
     <ui:define name="content">
 
         <h:form id="secretaryTimesheetForm">
 
-            <p:messages closable="true"/>
+            <p:messages
+                id="messages"
+                showDetail="true"
+                closable="true"
+                styleClass="app-messages"
+            />
 
             <section class="page-section-header">
                 <div>
@@ -116,7 +125,19 @@
                             value="Back"
                             icon="pi pi-arrow-left"
                             outcome="/views/secretary/timesheets.xhtml"
-                            styleClass="ui-button-secondary"/>
+                            styleClass="ui-button-secondary"
+                    />
+                    <p:button
+                        value="Print"
+                        icon="pi pi-print"
+                        outcome="/views/secretary/print/timesheet"
+                        styleClass="ui-button-secondary">
+
+                        <f:param
+                            name="id"
+                            value="#{secretaryTimesheetDetailBean.timesheet.id}"/>
+
+                    </p:button>
 
                 </div>
             </section>

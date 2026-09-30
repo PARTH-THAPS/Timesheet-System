@@ -1,16 +1,17 @@
 package tss.web.Bean;
 
 import jakarta.ejb.EJB;
+import jakarta.ejb.EJBException;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
-
 import java.io.Serializable;
 import java.security.Principal;
-
 import tss.dto.PersonDTO;
 import tss.dto.User;
+import tss.entity.Language;   // adjust to the real package of your enum
 import tss.logic.PersonLogic;
 import tss.logic.UserLogic;
 
@@ -18,62 +19,82 @@ import tss.logic.UserLogic;
 @SessionScoped
 public class PersonalDataBean implements Serializable {
 
-   private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-   private User currentUser;
-   private PersonDTO personDTO;
+    private User currentUser;
+    private PersonDTO personDTO;
 
-   @EJB
-   private UserLogic userLogic;
+    @EJB
+    private UserLogic userLogic;
 
-   @EJB
-   private PersonLogic personLogic;
+    @EJB
+    private PersonLogic personLogic;
 
-   private Principal oldPrincipal = null;
+    @Inject
+    private LocaleBean localeBean;
 
-   public User getUser() {
+    private String oldPrincipalName = null;   // was Principal (not serializable)
 
-       Principal p = FacesContext.getCurrentInstance()
-               .getExternalContext()
-               .getUserPrincipal();
+    public User getUser() {
+        Principal p = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getUserPrincipal();
 
-       if (p == null) {
+        if (p == null) {
+            currentUser = null;
+            personDTO = null;
+            oldPrincipalName = null;
+        } else {
+            if (oldPrincipalName == null || !p.getName().equals(oldPrincipalName)) {
+                currentUser = userLogic.getCurrentUser();
+                personDTO = personLogic.findPerson(currentUser.getId());
+            }
+            oldPrincipalName = p.getName();
+        }
+        return currentUser;
+    }
 
-           currentUser = null;
-           personDTO = null;
+    public PersonDTO getPersonDTO() {
+        return personDTO;
+    }
 
-       } else {
+    public Language[] getLanguages() {
+        return Language.values();
+    }
 
-           if (oldPrincipal == null
-                   || !p.getName().equals(oldPrincipal.getName())) {
+    public String save() {
+        FacesContext ctx = FacesContext.getCurrentInstance();
 
-               currentUser = userLogic.getCurrentUser();
+        try {
+            personDTO = personLogic.updatePerson(personDTO);
 
-               personDTO = personLogic.findPerson(
-                       currentUser.getId()
-               );
-           }
-       }
+            if (personDTO.getPreferredLanguage() != null) {
+                localeBean.applyPreferredLanguage(
+                        personDTO.getPreferredLanguage()
+                );
+            }
 
-       oldPrincipal = p;
+            ctx.addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            "Saved successfully!",
+                            null
+                    )
+            );
 
-       return currentUser;
-   }
+        } catch (EJBException | IllegalArgumentException e) {
 
-   public PersonDTO getPersonDTO() {
-       return personDTO;
-   }
+            ctx.addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Saving failed: " + e.getMessage(),
+                            null
+                    )
+            );
+        }
 
-   public String save() {
-
-       personLogic.updatePerson(personDTO);
-
-       FacesContext.getCurrentInstance()
-               .addMessage(
-                       null,
-                       new FacesMessage("Saved successfully!")
-               );
-
-       return null;
-   }
+        return null;
+    }
 }

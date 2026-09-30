@@ -2,18 +2,18 @@ package tss.web.Bean;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
-import java.security.Principal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import tss.dto.TimesheetDTO;
 import tss.dto.User;
+import tss.entity.TimesheetStatus;
 import tss.logic.TimesheetLogic;
 
 @Named("secretaryTimesheetsBean")
@@ -34,12 +34,16 @@ public class SecretaryTimesheetsBean implements Serializable {
         User user = loginBean.getUser();
 
         if (user != null) {
-            List<TimesheetDTO> result =timesheetLogic.findTimesheetsForSecretary(user.getId());
+            List<TimesheetDTO> result = timesheetLogic.findTimesheetsForSecretary(user.getId());
             timesheetList = result != null ? result : Collections.emptyList();
         }
     }
 
     public List<TimesheetDTO> getTimesheetList() {
         return timesheetList;
+    }
+
+    public List<TimesheetStatus> getStatuses() {
+        return Arrays.asList(TimesheetStatus.values());
     }
 }

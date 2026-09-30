@@ -20,14 +20,7 @@
     </ui:define>
 
     <ui:define name="headerActions">
-        <div class="user-info">
-            <span class="user-name">
-                #{mockUserBean.fullName}
-            </span>
-            <span class="user-role">
-                #{mockUserBean.role}
-            </span>
-        </div>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
 
     <ui:define name="content">
@@ -90,9 +83,28 @@
                         sortBy="#{contract.status}"
                         filterBy="#{contract.status}"
                         filterMatchMode="exact">
+
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('contractsTable').filter()">
+
+                                <f:selectItem
+                                    itemLabel="All"
+                                    itemValue="#{null}"
+                                    noSelectionOption="true"/>
+
+                                <f:selectItems
+                                    value="#{archiveContractsBean.statuses}"
+                                    var="status"
+                                    itemLabel="#{status}"
+                                    itemValue="#{status}"/>
+
+                            </p:selectOneMenu>
+                        </f:facet>
+
                         <span class="status-badge">
                             #{contract.status}
                         </span>
+
                     </p:column>
 
                     <p:column

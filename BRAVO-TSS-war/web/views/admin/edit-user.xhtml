@@ -32,18 +32,7 @@
     </ui:define>
 
     <ui:define name="headerActions">
-        <div class="user-info">
-            <span class="user-name">
-                #{loginBean.user.firstName} #{loginBean.user.lastName}
-            </span>
-            <ui:repeat
-                value="#{loginBean.user.roles}"
-                var="role">
-                <span class="badge">
-                    #{msg['role.'.concat(role.name())]}
-                </span>
-            </ui:repeat>
-        </div>
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
     </ui:define>
 
     <ui:define name="content">
@@ -53,8 +42,11 @@
             <h:form id="userForm">
 
                 <p:messages
+                    id="messages"
                     showDetail="true"
-                    closable="true"/>
+                    closable="true"
+                    styleClass="app-messages"
+                />
 
                 <!-- First Name -->
                 <div class="form-field">
@@ -97,6 +89,7 @@
 
                     <p:inputText
                         id="email"
+                        type="email"
                         value="#{adminUserBean.person.emailAddress}"
                         required="true"
                         placeholder="#{msg['user.email.placeholder']}"

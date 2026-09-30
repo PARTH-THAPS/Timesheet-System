@@ -19,12 +19,21 @@
     <ui:define name="navigation">
         <ui:include src="/WEB-INF/components/navigation.xhtml"/>
     </ui:define>
+    
+    <ui:define name="headerActions">
+        <ui:include src="/WEB-INF/components/header-actions.xhtml" />
+    </ui:define>
 
     <ui:define name="content">
 
         <h:form id="assistantTimesheetForm">
 
-            <p:messages closable="true"/>
+            <p:messages
+                id="messages"
+                showDetail="true"
+                closable="true"
+                styleClass="app-messages"
+            />
 
             <section class="page-section-header">
                 <div>

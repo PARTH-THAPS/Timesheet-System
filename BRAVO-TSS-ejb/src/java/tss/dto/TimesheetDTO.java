@@ -6,6 +6,7 @@ import java.util.List;
 import tss.entity.TimesheetStatus;
 
 public class TimesheetDTO extends AbstractDTO {
+
     private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -38,7 +39,7 @@ public class TimesheetDTO extends AbstractDTO {
     public TimesheetDTO() {
         this.entries = Collections.emptyList();
     }
-    
+
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -59,11 +60,9 @@ public class TimesheetDTO extends AbstractDTO {
         return status;
     }
 
-
     public void setStatus(TimesheetStatus status) {
         this.status = status;
     }
-
 
     public LocalDate getSignedByEmployee() {
         return signedByEmployee;
@@ -102,13 +101,13 @@ public class TimesheetDTO extends AbstractDTO {
     }
 
     public void setEntries(List<TimesheetEntryDTO> entries) {
-        if (entries != null) { 
-            this.entries = entries; 
-        } 
-        else { 
-            this.entries = Collections.emptyList(); }
+        if (entries != null) {
+            this.entries = entries;
+        } else {
+            this.entries = Collections.emptyList();
+        }
     }
-    
+
     public String getEmployeeFirstName() {
         return employeeFirstName;
     }
@@ -124,7 +123,7 @@ public class TimesheetDTO extends AbstractDTO {
     public void setEmployeeLastName(String employeeLastName) {
         this.employeeLastName = employeeLastName;
     }
-    
+
     public String getEmployeeFullName() {
         if (employeeFirstName == null && employeeLastName == null) {
             return "";
@@ -145,6 +144,18 @@ public class TimesheetDTO extends AbstractDTO {
 
         return sb.toString();
     }
-}
-    
 
+    public double getHoursWorked() {
+        if (entries == null) {
+            return 0.0;
+        }
+
+        return entries.stream()
+                .mapToDouble(TimesheetEntryDTO::getHours)
+                .sum();
+    }
+
+    public double getBalance() {
+        return getHoursWorked() - hoursDue;
+    }
+}

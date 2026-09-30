@@ -9,6 +9,8 @@
 
         <ul class="navigation-list">
 
+            <!-- Common -->
+
             <li>
                 <h:link
                     outcome="/views/portal/home"
@@ -22,21 +24,25 @@
                 <h:link
                     outcome="/views/portal/EditInfo"
                     styleClass="navigation-link">
-                    <i class="pi pi-users"></i>
+                    <i class="pi pi-user"></i>
                     <span>#{msg['navigation.myProfile']}</span>
                 </h:link>
             </li>
-            
-            <li>
-                <h:link
-                    outcome="/views/shared/mycontractView"
-                    styleClass="navigation-link">
-                    <i class="pi pi-file"></i>
-                    <span>#{msg['my.contract']}</span>
-                </h:link>
-            </li>
 
-            <ui:fragment rendered="#{loginBean.hasRole('EMPLOYEE')}">
+
+            <!-- Employee -->
+
+            <ui:fragment rendered="#{loginBean.isActiveRole('EMPLOYEE')}">
+
+                <li>
+                    <h:link
+                        outcome="/views/shared/mycontractView"
+                        styleClass="navigation-link">
+                        <i class="pi pi-file"></i>
+                        <span>#{msg['my.contract']}</span>
+                    </h:link>
+                </li>
+
                 <li>
                     <h:link
                         outcome="/views/employee/timesheets"
@@ -49,8 +55,10 @@
             </ui:fragment>
             
 
-            <ui:fragment
-                rendered="#{loginBean.hasRole('ASSISTANT')}">
+
+            <!-- Assistant -->
+
+            <ui:fragment rendered="#{loginBean.isActiveRole('ASSISTANT')}">
 
                 <li>
                     <h:link
@@ -71,54 +79,9 @@
             </ui:fragment>
 
 
+            <!-- Supervisor -->
 
-            <ui:fragment rendered="#{loginBean.hasRole('SECRETARY')}">
-
-                <li>
-                    <h:link
-                        outcome="/views/shared/archive-contracts"
-                        styleClass="navigation-link">
-                        <i class="pi pi-folder-open"></i>
-                        <span>#{msg['archive.contractArchive']}</span>
-                    </h:link>
-                </li>
-                
-                <li>
-                    <h:link outcome="/views/secretary/timesheets" styleClass="navigation-link">
-                        <i class="pi pi-clock"></i>
-                        <span>#{msg['timesheet.secretary.title']}</span>
-                    </h:link>
-                </li>
-                
-            </ui:fragment>
-
-            <ui:fragment rendered="#{loginBean.hasRole('SUPERVISOR')}">
-                <li>
-                    <h:link
-                        outcome="/views/supervisor/archived-contracts"
-                        styleClass="navigation-link">
-                        <i class="pi pi-briefcase"></i>
-                        <span>#{msg['supervisionArchive.title']}</span>
-                    </h:link>
-                </li>
-
-
-                <li>
-                    <h:link
-                        outcome="/views/shared/archive-contracts"
-                        styleClass="navigation-link">
-                        <i class="pi pi-folder-open"></i>
-                        <span>#{msg['archive.contractArchive']}</span>
-                    </h:link>
-                </li>
-                
-                <li>
-                    <h:link outcome="/views/supervisor/timesheets" styleClass="navigation-link">
-                        <i class="pi pi-file-edit"></i>
-                        <span>#{msg['timesheet.supervisor.title']}</span>
-                    </h:link>
-                </li>
-
+            <ui:fragment rendered="#{loginBean.isActiveRole('SUPERVISOR')}">
 
                 <li>
                     <h:link
@@ -129,9 +92,58 @@
                     </h:link>
                 </li>
 
+                <li>
+                    <h:link
+                        outcome="/views/supervisor/timesheets"
+                        styleClass="navigation-link">
+                        <i class="pi pi-clock"></i>
+                        <span>#{msg['timesheets.title']}</span>
+                    </h:link>
+                </li>
+
+                <li>
+                    <h:link
+                        outcome="/views/supervisor/archived-contracts"
+                        styleClass="navigation-link">
+                        <i class="pi pi-briefcase"></i>
+                        <span>#{msg['supervisionArchive.title']}</span>
+                    </h:link>
+                </li>
+
+                <li>
+                    <h:link
+                        outcome="/views/shared/archive-contracts"
+                        styleClass="navigation-link">
+                        <i class="pi pi-folder-open"></i>
+                        <span>#{msg['archive.contractArchive']}</span>
+                    </h:link>
+                </li>
+
             </ui:fragment>
 
-            <ui:fragment rendered="#{loginBean.hasRole('SECRETARY')}">
+
+            <!-- Secretary -->
+
+            <ui:fragment rendered="#{loginBean.isActiveRole('SECRETARY')}">
+
+                <li>
+                    <h:link
+                        outcome="/views/secretary/timesheets"
+                        styleClass="navigation-link">
+                        <i class="pi pi-clock"></i>
+                        <span>#{msg['timesheets.title']}</span>
+                    </h:link>
+                </li>
+                
+                <li>
+                    <h:link
+                        outcome="/views/secretary/contracts"
+                        styleClass="navigation-link">
+                        <i class="pi pi-file"></i>
+                        <span>#{msg['contracts.title']}</span>
+                    </h:link>
+                </li>
+                
                 <li>
                     <h:link
                         outcome="/views/secretary/secretary-archive"
@@ -140,19 +152,22 @@
                         <span>#{msg['archive.title']}</span>
                     </h:link>
                 </li>
-                
+
                 <li>
                     <h:link
-                        outcome="/views/secretary/contracts"
+                        outcome="/views/shared/archive-contracts"
                         styleClass="navigation-link">
-                        <i class="pi pi-print"></i>
-                        <span>#{msg['print.contract']}</span>
+                        <i class="pi pi-folder-open"></i>
+                        <span>#{msg['archive.contractArchive']}</span>
                     </h:link>
                 </li>
-                     
+
             </ui:fragment>
 
-            <ui:fragment rendered="#{loginBean.hasRole('ADMIN')}">
+
+            <!-- Admin -->
+
+            <ui:fragment rendered="#{loginBean.isActiveRole('ADMIN')}">
 
                 <li>
                     <h:link
@@ -167,7 +182,7 @@
                     <h:link
                         outcome="/views/admin/HolidayList"
                         styleClass="navigation-link">
-                        <i class="pi pi-address-book"></i>
+                        <i class="pi pi-calendar"></i>
                         <span>#{msg['holiday.list']}</span>
                     </h:link>
                 </li>
@@ -180,8 +195,6 @@
                         <span>#{msg['dashboard.title']}</span>
                     </h:link>
                 </li>
-                
-                
 
             </ui:fragment>
 

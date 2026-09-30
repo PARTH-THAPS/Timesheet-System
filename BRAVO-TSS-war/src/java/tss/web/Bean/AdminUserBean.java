@@ -38,7 +38,7 @@ public class AdminUserBean implements Serializable {
 
         if (id == null) {
             person = new PersonDTO();
-            person.setRole(Set.of(Role.EMPLOYEE));
+            person.setRole(new HashSet<>()); 
         } else {
             person = personLogic.findPerson(id);
         }

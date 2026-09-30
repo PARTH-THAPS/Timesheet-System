@@ -1,5 +1,5 @@
 package tss.entity;
 
 public enum Language {
-    EN, DE
+    EN, DE, FR, PL
 }

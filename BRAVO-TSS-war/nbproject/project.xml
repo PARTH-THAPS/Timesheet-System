@@ -11,6 +11,7 @@
             <web-module-libraries>
                 <library dirs="100">
                     <file>${reference.BRAVO-TSS-ejb.dist}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${file.reference.primefaces-15.0.3-jakarta.jar}</file>

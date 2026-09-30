@@ -1,6 +1,7 @@
 package tss.logic;
 
 import jakarta.ejb.Remote;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -14,4 +15,6 @@ public interface PersonLogic {
      void deletePerson(PersonDTO person);
      PersonDTO updatePerson(PersonDTO person);
      List<PersonDTO> findAllPersons();
+     void updateDateOfBirth(Long personId, LocalDate dob);
+     
 }

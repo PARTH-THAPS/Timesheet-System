@@ -5,9 +5,12 @@ import jakarta.ejb.EJB;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import tss.dto.ContractDTO;
 import tss.dto.PersonDTO;
 import tss.entity.ContractStatus;
@@ -33,24 +36,30 @@ public class ContractListBean {
         List<ContractDTO> all = contractLogic.findAllContracts();
         Long currentPersonId = loginBean.getUser().getId();
 
+        Set<ContractDTO> visible = new LinkedHashSet<>();
+
         if (loginBean.hasRole("SUPERVISOR")) {
-            contracts = all.stream()
-                    .filter(c -> currentPersonId.equals(c.getSupervisorId()))
-                    .toList();
-        } else if (loginBean.hasRole("ASSISTANT")) {
-            contracts = all.stream()
-                    .filter(c -> c.getAssistantIds() != null
+            visible.addAll(
+                    all.stream()
+                            .filter(c -> currentPersonId.equals(c.getSupervisorId()))
+                            .toList()
+            );
+        }
+        if (loginBean.hasRole("ASSISTANT")) {
+            visible.addAll(
+                    all.stream()
+                            .filter(c -> c.getAssistantIds() != null
                             && c.getAssistantIds().contains(currentPersonId))
-                    .toList();
-        } else {
-            contracts = all;
+                            .toList()
+            );
         }
 
+        contracts = visible.stream()
+            .filter(c -> c.getStatus() != ContractStatus.ARCHIVED)
+            .toList();
+
         for (PersonDTO person : personLogic.findAllPersons()) {
-            personNames.put(
-                    person.getId(),
-                    person.getFirstName() + " " + person.getLastName()
-            );
+            personNames.put(person.getId(), person.getFirstName() + " " + person.getLastName());
         }
     }
 
