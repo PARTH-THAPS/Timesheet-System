@@ -6,15 +6,23 @@
         xmlns:f="jakarta.faces.core"
         xmlns:ui="jakarta.faces.facelets"
         xmlns:p="http://primefaces.org/ui">
+    
     <f:metadata>
         <f:event type="preRenderView" listener="#{loginBean.redirectIfLoggedIn}" />
     </f:metadata>
+    
     <ui:define name="pageTitle">
         BRAVO-TSS
     </ui:define>
+    
     <ui:define name="pageHeadline">
         #{msg['welcome.title']}
     </ui:define>
+    
+    <ui:define name="headerActions">
+        <ui:include src="/WEB-INF/components/language-selector.xhtml"/>
+    </ui:define>
+    
     <ui:define name="content">
 
         <h:outputStylesheet library="css" name="bravo.css"/>

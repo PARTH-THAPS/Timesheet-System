@@ -4,6 +4,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="jakarta.faces.html"
     xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core"
     xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="pageTitle">
@@ -14,6 +15,10 @@
         #{msg['signup.title']}
     </ui:define>
 
+    <ui:define name="headerActions">
+        <ui:include src="/WEB-INF/components/language-selector.xhtml"/>
+    </ui:define>
+    
     <ui:define name="content">
         <section class="auth-container">
             <div class="card auth-card">
@@ -104,8 +109,7 @@
                         <p:selectBooleanCheckbox
                             id="consent"
                             value="#{CreatePersonBean.personDto.consent}"
-                            required="true"
-                            requiredMessage="#{msg['signup.consent.required']}"/>
+                            validator="#{CreatePersonBean.validateConsent}"/>
 
                         <p:outputLabel
                             for="consent"

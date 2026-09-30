@@ -3,7 +3,9 @@ package tss.web.Bean;
 import jakarta.ejb.EJB;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.validator.ValidatorException;
 import jakarta.inject.Named;
 import tss.dto.PersonDTO;
 import tss.entity.Role;
@@ -86,5 +88,21 @@ public class createPersonBean {
 
     public void setPersonDto(PersonDTO personDto) {
         this.personDto = personDto;
+    }
+
+    public void validateConsent(
+            FacesContext context,
+            UIComponent component,
+            Object value
+    ) {
+        if (!(value instanceof Boolean) || !((Boolean) value)) {
+            throw new ValidatorException(
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            Messages.get("signup.consent.required"),
+                            null
+                    )
+            );
+        }
     }
 }

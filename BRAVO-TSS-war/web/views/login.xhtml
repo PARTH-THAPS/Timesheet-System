@@ -18,6 +18,10 @@
     <ui:define name="pageHeadline">
         #{msg['login.title']}
     </ui:define>
+    
+    <ui:define name="headerActions">
+        <ui:include src="/WEB-INF/components/language-selector.xhtml"/>
+    </ui:define>
 
     <ui:define name="content">
         <section class="auth-container">
