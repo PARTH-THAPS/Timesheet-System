@@ -57,7 +57,8 @@
                 itemLabel="#{msg['language.'.concat(language.shortLabel)]}"/>
 
             <p:ajax
-                update="@all"/>
+                process="@this"
+                oncomplete="window.location.reload();"/>
 
         </p:selectOneMenu>
 
