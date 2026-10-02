@@ -7,7 +7,7 @@ The system supports the time sheet process from contract management and recordin
 
 The TSS also provides functionality for managing contracts, viewing and managing time sheets, signing and archiving time sheets, and controlling access to personal data. Since the system processes sensitive personal information, it is designed to ensure that only authorized users can access the relevant data and to support privacy and confidentiality.
 
-The project's documentation, including its architecture, requirements, project report, group rules, and meeting minutes, can be found in the [Project Wiki](https://gitlab.uni-koblenz.de/jeewa-2026-bravo/jeewa-2026-bravo/-/wikis/home).
+The project's documentation, including its architecture, requirements, project report, group rules, and meeting minutes, can be found in the [Project Wiki]https://github.com/PARTH-THAPS/Timesheet-System/wiki
 
 ## Visuals
 
