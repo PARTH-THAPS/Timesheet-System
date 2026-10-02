@@ -1,18 +1,3 @@
-# Time Sheet System
-
-## Group Members and Supervisors
-
-### Group Members
-
-- Areeba Naseer
-- Florian Keil
-- Parth Thapliyal
-- Paweł Grzegory
-- Tia Benny
-
-### Professor
-
-- Dr. Volker Riediger
 
 ## Description
 
