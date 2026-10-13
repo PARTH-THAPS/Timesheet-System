@@ -43,4 +43,3 @@ The following software and resources are required to configure and run the proje
 - **MariaDB Connector/J 3.5.8 or later**
 
 
-We would like to thank Professor **Dr. Volker Riediger** for his helpful guidance throughout the project and implementation process. We also appreciate the interesting examples he provided, which offered valuable inspiration and helped us develop the Time Sheet System.
